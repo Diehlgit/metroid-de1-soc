@@ -5,7 +5,6 @@
  * Display : 320×240 pixels, blocos de 8×8
  * Grade   : 40×30 blocos
  */
-
 #include <stdint.h>
 #include <stdlib.h>   /* rand() */
 
@@ -15,6 +14,101 @@
 #include "entities.c"
 #include "vga.c"
 #include "jtag_uart.c"
+
+#ifdef RUNNING_LINUX
+#include <stdio.h>
+#include <fcntl.h>
+#include <sys/mman.h>
+#include <unistd.h>
+#include <signal.h>
+#include <linux/input.h>
+#define HW_REGS_BASE          0xFF200000
+#define HW_REGS_SPAN          0x00005000 // Cobre a UART (1000) e o VGA (3020)
+#define HW_REGS_MASK          (HW_REGS_SPAN - 1)
+
+#define VGA_BUFFER_SPAN       (512 * 240 * 2) // Largura física * altura * 2 bytes (RGB565)
+#define KEYBOARD_DEVICE "/dev/input/event0"
+
+int keyboard_fd = -1;
+
+int init_linux_memory(void) {
+    int fd = open("/dev/mem", (O_RDWR | O_SYNC));
+    if (fd < 0) {
+        perror("Erro ao abrir /dev/mem");
+        return -1;
+    }
+
+    void *virtual_base = mmap(NULL, HW_REGS_SPAN, (PROT_READ | PROT_WRITE), MAP_SHARED, fd, HW_REGS_BASE);
+    if (virtual_base == MAP_FAILED) {
+        perror("Erro no mmap da ponte LW");
+        close(fd);
+        return -1;
+    }
+    
+    uart = (volatile uint32_t *)((char *)virtual_base + ((UART_BASE) & HW_REGS_MASK));
+    pixel_ctrl_ptr = (volatile uint32_t *)((char *)virtual_base + (0xFF203020 & HW_REGS_MASK));
+
+    // Mapeia as duas regiões possíveis do frame buffe
+    vga_mem_virtual_c8 = mmap(NULL, VGA_BUFFER_SPAN, (PROT_READ | PROT_WRITE), MAP_SHARED, fd, 0xC8000000);
+    vga_mem_virtual_c0 = mmap(NULL, VGA_BUFFER_SPAN, (PROT_READ | PROT_WRITE), MAP_SHARED, fd, 0xC0000000);
+
+    if (vga_mem_virtual_c8 == MAP_FAILED || vga_mem_virtual_c0 == MAP_FAILED) {
+        perror("Erro no mmap do Frame Buffer");
+        close(fd);
+        return -1;
+    }
+
+    close(fd);
+    return 0;
+}
+
+void keyboard_handler(int signum) {
+    struct input_event ev;
+    
+    while (read(keyboard_fd, &ev, sizeof(struct input_event)) > 0) {
+        // ev.type == EV_KEY indica evento de teclado
+        // ev.value == 1 indica tecla pressionada (0 = solta, 2 = repetindo) // usar dps
+        if (ev.type == EV_KEY && (ev.value == 1)) {
+            switch (ev.code) {
+                case KEY_A: last_key = 'a'; break;
+                case KEY_D: last_key = 'd'; break;
+                case KEY_W: last_key = 'w'; break;
+                case KEY_F: last_key = 'f'; break;
+                default:    last_key = 0;   break;
+            }
+        }
+    }
+}
+
+int init_linux_input(void) {
+    keyboard_fd = open(KEYBOARD_DEVICE, O_RDONLY | O_NONBLOCK);
+    if (keyboard_fd < 0) {
+        perror("Erro ao abrir dispositivo de teclado");
+        return -1;
+    }
+
+    // 2. Configura a estrutura sigaction para o SIGIO
+    struct sigaction sa;
+    sa.sa_handler = keyboard_handler;
+    sigemptyset(&sa.sa_mask);
+    sa.sa_flags = 0; // Conforme especificado pelo professor
+    
+    if (sigaction(SIGIO, &sa, NULL) < 0) {
+        perror("Erro ao configurar sigaction");
+        return -1;
+    }
+
+    // 3. Define o seu processo atual como o dono do arquivo (para receber o sinal)
+    fcntl(keyboard_fd, F_SETOWN, getpid());
+    
+    // 4. Ativa os flags de input assíncrono (FASYNC) e não-bloqueante no arquivo
+    int flags = fcntl(keyboard_fd, F_GETFL);
+    fcntl(keyboard_fd, F_SETFL, flags | FASYNC | O_NONBLOCK);
+
+    return 0;
+}
+
+#endif
 
 /* ================================================================== */
 /*  INICIALIZAÇÃO                                                       */
@@ -28,12 +122,20 @@ static void game_init(void)
     // evita que o buffer de desenho e o buffer que tá mostrando apontem para o mesmo lugar no início do jogo
     if (current_front_buffer == 0xC0000000) {
         *(pixel_ctrl_ptr + 1) = 0xC8000000;
+        #ifdef RUNNING_LINUX
+        tela = (volatile uint16_t (*)[LWIDTH]) vga_mem_virtual_c8;
+        #endif
     }
     else {
         *(pixel_ctrl_ptr + 1) = 0xC0000000;
+        #ifdef RUNNING_LINUX
+        tela = (volatile uint16_t (*)[LWIDTH]) vga_mem_virtual_c0;
+        #endif
     }
 
+    #ifndef RUNNING_LINUX
     tela = (volatile uint16_t (*)[LWIDTH]) *(pixel_ctrl_ptr + 1);
+    #endif
 
     clear_screen();
 
@@ -67,7 +169,11 @@ static void game_loop(void)
     Entidade *samus = &entidades[0]; /* Samus é sempre a entidade 0   */
 
     while (1) {
+        #ifdef RUNNING_LINUX
+        tela = (volatile uint16_t (*)[LWIDTH]) (*(pixel_ctrl_ptr + 1) == 0xC8000000 ? vga_mem_virtual_c8 : vga_mem_virtual_c0);
+        #else
         tela = (volatile uint16_t (*)[LWIDTH]) *(pixel_ctrl_ptr + 1);
+        #endif
 
         /* ---- 1. Lê input ---- */
         key = uart_read_char();
@@ -160,8 +266,17 @@ static void game_loop(void)
 /* ================================================================== */
 /*  MAIN                                                                */
 /* ================================================================== */
-int main(void)
-{
+int main(void) {
+    #ifdef RUNNING_LINUX
+    if (init_linux_memory() < 0) {
+        return 1;
+    }
+
+    if (init_linux_input() < 0) {
+        return 1;
+    }
+    #endif
+
     uart_print("\r\n*** METROID — CIC0130 UnB ***\r\n");
 
     while (1) {

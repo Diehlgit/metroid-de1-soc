@@ -252,7 +252,7 @@ static void aplica_fisica(Entidade *e)
         e->no_chao = 1;
         ny        = e->y;   /* mantém posição anterior                */
     } else if (e->vy < 0 && colide_mapa(e->x, ny, e->w, e->h)) {
-        /* Bateu na cabeça */
+        /* Bateu na cabeca */
         e->vy        = 0;
         e->jump_ticks = 0;
         ny           = e->y;

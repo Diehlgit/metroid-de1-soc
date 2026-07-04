@@ -6,7 +6,7 @@
 
 /* --- Blocos de Samus em pé, olhando para a direita --- */
 /* Linha 0 do sprite (linha superior) */
-static const uint16_t samus_cabeça[BLOCK_PIXELS] = {
+static const uint16_t samus_cabeca[BLOCK_PIXELS] = {
     TRANS,  TRANS,  RED,    RED,    RED,    RED,    TRANS,  TRANS,
     TRANS,  RED,    RED,    RED,    GREEN,  GREEN,  GREEN,  TRANS,
     TRANS,  RED,    RED,    RED,    RED,    RED,    RED,    TRANS,
@@ -108,7 +108,7 @@ typedef struct {
 
 /* Arrays de ponteiros para os blocos de cada sprite */
 static const uint16_t *samus_blocos[2] = {
-    samus_cabeça,  samus_corpo,
+    samus_cabeca,  samus_corpo,
 };
 static const Sprite SPR_SAMUS = { 1, 2, (const uint16_t **)samus_blocos };
 

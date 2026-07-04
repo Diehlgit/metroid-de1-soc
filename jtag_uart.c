@@ -7,18 +7,31 @@
 /*  JTAG-UART                                                           */
 /* ================================================================== */
 #define UART_BASE   0xFF201000
-static volatile uint32_t * const uart = (volatile uint32_t *) UART_BASE;
 #define UART_RVALID (1 << 15)
+static volatile char last_key = 0;
+
+#ifdef RUNNING_LINUX
+static volatile uint32_t *uart = NULL;
+#else
+static volatile uint32_t * const uart = (volatile uint32_t *) UART_BASE;
+#endif
 
 static char uart_read_char(void)
 {
+    #ifdef RUNNING_LINUX
+    char tecla = last_key;
+    last_key = 0; 
+    return tecla;
+    #else
     uint32_t d = uart[0];
     if (d & UART_RVALID) return (char)(d & 0xFF);
     return 0;
+    #endif
 }
 
 static void uart_write_char(char c)
 {
+    if (!uart) return;
     while ((uart[1] >> 16) == 0);
     uart[0] = (uint32_t)c;
 }

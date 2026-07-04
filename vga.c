@@ -6,8 +6,14 @@
 
 // sempre aponta pro back buffer atual
 static volatile uint16_t (*tela)[LWIDTH];
-static volatile uint32_t *const pixel_ctrl_ptr = (volatile uint32_t *) 0xFF203020; // registrador do controlador do pixel buffer da de1-soc
 
+#ifdef RUNNING_LINUX
+static volatile uint32_t *pixel_ctrl_ptr = NULL;
+static void *vga_mem_virtual_c8 = NULL;
+static void *vga_mem_virtual_c0 = NULL;
+#else
+static volatile uint32_t *const pixel_ctrl_ptr = (volatile uint32_t *) 0xFF203020;
+#endif
 
 /* ================================================================== */
 /*  FUNÇÕES DE DESENHO                                                */

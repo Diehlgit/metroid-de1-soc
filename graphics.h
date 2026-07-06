@@ -44,6 +44,7 @@
  * different format (e.g. 8-bit indexed color).
  * ------------------------------------------------------------------------ */
 typedef uint16_t color_t;
+#define COLOR_TRANSPARENT   0xF81F
 
 /* ------------------------------------------------------------------------
  * draw_map

@@ -48,8 +48,12 @@ static void draw_sprite_generic(uint16_t x, uint16_t y,
             {
                 break; /* off the right edge; rest of this row is too */
             }
+			color_t pixel = sprite[row * w + col];
 
-            plot_pixel(screen_x, screen_y, sprite[row * w + col]);
+			if (pixel != COLOR_TRANSPARENT)
+			{
+            	plot_pixel(screen_x, screen_y, pixel);
+			}
         }
     }
 }

@@ -48,7 +48,7 @@ int init_linux_memory(void) {
     uart = (volatile uint32_t *)((char *)virtual_base + ((UART_BASE) & HW_REGS_MASK));
     pixel_ctrl_ptr = (volatile uint32_t *)((char *)virtual_base + (0xFF203020 & HW_REGS_MASK));
 
-    // Mapeia as duas regiões possíveis do frame buffe
+    // Mapeia as duas regiões possíveis do frame buffer
     vga_mem_virtual_c8 = mmap(NULL, VGA_BUFFER_SPAN, (PROT_READ | PROT_WRITE), MAP_SHARED, fd, 0xC8000000);
     vga_mem_virtual_c0 = mmap(NULL, VGA_BUFFER_SPAN, (PROT_READ | PROT_WRITE), MAP_SHARED, fd, 0xC0000000);
 
@@ -116,28 +116,29 @@ int init_linux_input(void) {
 static void game_init(void)
 {
     int i;
-
+    printf("entrou game init\n");
+    #ifdef RUNNING_LINUX
+    *pixel_ctrl_ptr = 0xC8000000;
+    *(pixel_ctrl_ptr + 1) = 0xC0000000;
+    tela = (volatile uint16_t (*)[LWIDTH]) vga_mem_virtual_c8;
+    #else
     uint32_t current_front_buffer = *pixel_ctrl_ptr;
-
-    // evita que o buffer de desenho e o buffer que tá mostrando apontem para o mesmo lugar no início do jogo
     if (current_front_buffer == 0xC0000000) {
         *(pixel_ctrl_ptr + 1) = 0xC8000000;
-        #ifdef RUNNING_LINUX
-        tela = (volatile uint16_t (*)[LWIDTH]) vga_mem_virtual_c8;
-        #endif
-    }
-    else {
+    } else {
         *(pixel_ctrl_ptr + 1) = 0xC0000000;
-        #ifdef RUNNING_LINUX
-        tela = (volatile uint16_t (*)[LWIDTH]) vga_mem_virtual_c0;
-        #endif
     }
+    tela = (volatile uint16_t (*)[LWIDTH]) *(pixel_ctrl_ptr + 1);
+    #endif
+
+    printf("terminou inicialização telas\n");
 
     #ifndef RUNNING_LINUX
     tela = (volatile uint16_t (*)[LWIDTH]) *(pixel_ctrl_ptr + 1);
     #endif
 
     clear_screen();
+    printf("limpu tela\n");
 
     /* Limpa lista de entidades */
     for (i = 0; i < MAX_ENTIDADES; i++) entidades[i].ativo = 0;
@@ -153,7 +154,9 @@ static void game_init(void)
     entidade_add(TIPO_SCORPIO, 260,  80, 3,
                  DIR_DIR, -1, 0, &SPR_SCORPIO, 16, 16);
 
+    printf("printou entidades\n");
     print_mapa();
+    printf("printou mapa\n");
 
     uart_print("\r\nMetroid — CIC0130 UnB\r\n");
     uart_print("a/d = mover | w = pular | f = atirar\r\n");
@@ -168,6 +171,7 @@ static void game_loop(void)
     char key;
     Entidade *samus = &entidades[0]; /* Samus é sempre a entidade 0   */
 
+    printf("entrou game loop\n");
     while (1) {
         #ifdef RUNNING_LINUX
         tela = (volatile uint16_t (*)[LWIDTH]) (*(pixel_ctrl_ptr + 1) == 0xC8000000 ? vga_mem_virtual_c8 : vga_mem_virtual_c0);
@@ -177,6 +181,7 @@ static void game_loop(void)
 
         /* ---- 1. Lê input ---- */
         key = uart_read_char();
+        printf("KEY PRESSIONADA: %c", key);
 
         /* ---- 2. Itera sobre entidades: IA + física ---- */
         for (i = 0; i < num_entidades; i++) {
@@ -267,18 +272,24 @@ static void game_loop(void)
 /*  MAIN                                                                */
 /* ================================================================== */
 int main(void) {
+    printf("antes de tudo\n");
     #ifdef RUNNING_LINUX
     if (init_linux_memory() < 0) {
         return 1;
     }
 
+    printf("antes de input\n");
+
     if (init_linux_input() < 0) {
         return 1;
     }
+
+    printf("antes de init linux\n");
     #endif
 
     uart_print("\r\n*** METROID — CIC0130 UnB ***\r\n");
 
+    printf("antes do while\n");
     while (1) {
         game_init();
         game_loop();

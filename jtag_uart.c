@@ -2,6 +2,7 @@
 #define __JTAG_C__
 
 #include <stdint.h>
+#include <stdio.h>
 
 /* ================================================================== */
 /*  JTAG-UART                                                           */
@@ -38,7 +39,12 @@ static void uart_write_char(char c)
 
 static void uart_print(const char *s)
 {
-    while (*s) uart_write_char(*s++);
+    #ifdef RUNNING_LINUX
+        printf("%s", s);
+        fflush(stdout);
+    #else
+        while (*s) uart_write_char(*s++);
+    #endif
 }
 
 static void uart_print_int(int n)

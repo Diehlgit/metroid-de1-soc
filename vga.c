@@ -90,7 +90,19 @@ static void clear_screen(void)
 static void swap_buffers() {
     *pixel_ctrl_ptr = 1; // solicita a troca de buffers pra placa
 
-    while ((*(pixel_ctrl_ptr + 3) & 0x1) != 0); // espera o bits de status (bit 0 do quarto reg) esvaziar
+#ifdef RUNNING_LINUX
+    usleep(16666); // espera o sincronismo vertical
+    
+    uint32_t current_front = *pixel_ctrl_ptr;
+    if (current_front == 0xC0000000) {
+        tela = (volatile uint16_t (*)[LWIDTH]) vga_mem_virtual_c8;
+    } else {
+        tela = (volatile uint16_t (*)[LWIDTH]) vga_mem_virtual_c0;
+    }
+    #else
+        while ((*(pixel_ctrl_ptr + 3) & 0x1) != 0);
+        tela = (volatile uint16_t (*)[LWIDTH]) *(pixel_ctrl_ptr + 1);
+    #endif
 }
 
 /* ================================================================== */

@@ -63,7 +63,7 @@ static int num_entidades = 0;
 static void entidade_remove(int i)
 {
     /* Apaga da tela e marca slot como inativo */
-    clear_sprite(entidades[i].sprite, entidades[i].x, entidades[i].y);
+    //clear_sprite(entidades[i].sprite, entidades[i].x, entidades[i].y); // testando pra ver se é esse o erro
     entidades[i].ativo = 0;
 }
 

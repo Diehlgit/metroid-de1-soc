@@ -94,7 +94,7 @@ typedef enum {
     ENTITY_DOOR
 } EntityType;
 
-struct Entity;
+typedef struct Entity Entity;
 
 typedef struct {
     int current_state;          // int genérico para guardar qualquer enum

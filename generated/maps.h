@@ -2404,6 +2404,11 @@ static Grid GRID_STARTING_AREA = {
     .cell_size = 16,
 };
 
+static EntityList ENTIDADES_STARTING_AREA = {
+    .ents = { &STARTING_AREA_ENT_132, &STARTING_AREA_ENT_133, &STARTING_AREA_ENT_134, &STARTING_AREA_ENT_135, &STARTING_AREA_ENT_136, &STARTING_AREA_ENT_137, &STARTING_AREA_ENT_138, &STARTING_AREA_ENT_139, },
+    .count = 8,
+};
+
 static void map_init_STARTING_AREA(void) {
     STARTING_AREA_GENTRY_0_0.next = GRID_STARTING_AREA.cells[0];
     GRID_STARTING_AREA.cells[0] = &STARTING_AREA_GENTRY_0_0;
@@ -2696,9 +2701,18 @@ static Grid *_grids[] = {
     [AREA_STARTING_AREA] = &GRID_STARTING_AREA,
 };
 
+static EntityList *_entidades[] = {
+    [AREA_STARTING_AREA] = &ENTIDADES_STARTING_AREA,
+};
+
 static Grid* get_grid(AreaId id){
     if(id<0||id>=AREA_COUNT) return nullptr;
     return _grids[id];
+}
+
+static EntityList* get_entidades(AreaId id){
+    if(id<0||id>=AREA_COUNT) return nullptr;
+    return _entidades[id];
 }
 
 static void maps_init(void){

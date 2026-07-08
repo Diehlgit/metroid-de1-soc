@@ -92,6 +92,44 @@ def load_png_entries(png_path, color_map, label):
     return entries
 
 
+import math
+
+
+def get_entries_for_ent(col, row, d):
+    hb = d["hitbox"]
+    t = hb["type"]
+
+    # célula onde está o canto superior esquerdo da entidade
+    start_col = col
+    start_row = row
+
+    if t == "rectangle":
+        width = hb["width"]
+        height = hb["height"]
+
+    elif t == "circle":
+        # diâmetro
+        width = height = hb["radius"] * 2
+
+    elif t == "triangle":
+        # aproximação usando o bounding box
+        width = hb["width"]
+        height = hb["height"]
+
+    else:
+        raise ValueError(f"Tipo de hitbox desconhecido: {t}")
+
+    cols = math.ceil(width / CELL_SIZE)
+    rows = math.ceil(height / CELL_SIZE)
+
+    entries = []
+    for dy in range(rows):
+        for dx in range(cols):
+            entries.append((start_col + dx, start_row + dy))
+
+    return entries
+
+
 def gen_entities(lines, map_name, layer_name, entries, idx_offset):
     """Gera Entity estáticas e retorna (cell_to_idxs, próximo idx_offset)."""
     cell_to_idxs = {}
@@ -119,7 +157,9 @@ def gen_entities(lines, map_name, layer_name, entries, idx_offset):
                 f"}};",
             ]
         )
-        cell_to_idxs.setdefault((col, row), []).append(ent_name)
+
+        for cell_col, cell_row in get_entries_for_ent(col, row, d):
+            cell_to_idxs.setdefault((cell_col, cell_row), []).append(ent_name)
         idx += 1
     lines.append("")
     return cell_to_idxs, idx
@@ -195,7 +235,9 @@ def main():
         idx = 0
         col_cells, idx = gen_entities(lines, name, "COL", col_entries, idx)
         ite_cells, idx = gen_entities(lines, name, "ITE", ite_entries, idx)
+        first_ent_idx = idx
         ent_cells, idx = gen_entities(lines, name, "ENT", ent_entries, idx)
+        last_ent_idx = idx
 
         all_cells = merge_cell_maps(col_cells, ite_cells, ent_cells)
 
@@ -211,6 +253,19 @@ def main():
                 f"}};",
             ]
         lines.append("")
+
+        # Entidades
+        ents_lines = ""
+        for i in range(last_ent_idx - first_ent_idx):
+            ents_lines += f"&{name}_ENT_{first_ent_idx + i}, "
+
+        lines += [
+            f"static EntityList ENTIDADES_{name} = {{",
+            f"    .ents     = {{ {ents_lines} }},",
+            f"    .count = {last_ent_idx - first_ent_idx},",
+            f"}};",
+            "",
+        ]
 
         # Grid
         lines += [
@@ -239,12 +294,23 @@ def main():
     lines += ["    AREA_COUNT,", "} AreaId;", "", "static Grid *_grids[] = {"]
     for n in map_names:
         lines.append(f"    [AREA_{n}] = &GRID_{n},")
+    lines += ("};",)
+
+    lines += ["static EntityList *_entidades[] = {"]
+    for n in map_names:
+        lines.append(f"    [AREA_{n}] = &ENTIDADES_{n},")
+
     lines += [
         "};",
         "",
         "static Grid* get_grid(AreaId id){",
         "    if(id<0||id>=AREA_COUNT) return nullptr;",
         "    return _grids[id];",
+        "}",
+        "",
+        "static EntityList* get_entidades(AreaId id){",
+        "    if(id<0||id>=AREA_COUNT) return nullptr;",
+        "    return _entidades[id];",
         "}",
         "",
         "static void maps_init(void){",

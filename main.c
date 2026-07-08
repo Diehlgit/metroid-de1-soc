@@ -119,7 +119,7 @@ static void game_init(void)
     printf("entrou game init\n");
     #ifdef RUNNING_LINUX
     *pixel_ctrl_ptr = 0xC8000000;
-    *(pixel_ctrl_ptr + 1) = 0xC0000000;
+    physical_back_buffer = 0xC0000000;
     tela = (volatile uint16_t (*)[LWIDTH]) vga_mem_virtual_c8;
     #else
     uint32_t current_front_buffer = *pixel_ctrl_ptr;
@@ -138,7 +138,7 @@ static void game_init(void)
     #endif
 
     clear_screen();
-    printf("limpu tela\n");
+    printf("limpou tela\n");
 
     /* Limpa lista de entidades */
     for (i = 0; i < MAX_ENTIDADES; i++) entidades[i].ativo = 0;
@@ -154,9 +154,17 @@ static void game_init(void)
     entidade_add(TIPO_SCORPIO, 260,  80, 3,
                  DIR_DIR, -1, 0, &SPR_SCORPIO, 16, 16);
 
-    printf("printou entidades\n");
     print_mapa();
     printf("printou mapa\n");
+
+    for (i = 0; i < num_entidades; i++) {
+        Entidade *e = &entidades[i];
+        if (!e->ativo) {continue;}
+        printf("printou entidade");
+        draw_sprite(e->sprite, e->x, e->y,
+                    e->direcao == DIR_ESQ ? 1 : 0);
+    }
+
 
     uart_print("\r\nMetroid — CIC0130 UnB\r\n");
     uart_print("a/d = mover | w = pular | f = atirar\r\n");
@@ -174,7 +182,6 @@ static void game_loop(void)
     printf("entrou game loop\n");
     while (1) {
         #ifdef RUNNING_LINUX
-        tela = (volatile uint16_t (*)[LWIDTH]) (*(pixel_ctrl_ptr + 1) == 0xC8000000 ? vga_mem_virtual_c8 : vga_mem_virtual_c0);
         #else
         tela = (volatile uint16_t (*)[LWIDTH]) *(pixel_ctrl_ptr + 1);
         #endif

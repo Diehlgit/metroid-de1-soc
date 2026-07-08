@@ -3,11 +3,13 @@
 
 #include "sprites.h"
 #include "maps.h"
+#include <stdio.h>
 
 // sempre aponta pro back buffer atual
 static volatile uint16_t (*tela)[LWIDTH];
 
 #ifdef RUNNING_LINUX
+static uint32_t physical_back_buffer = 0xC0000000;
 static volatile uint32_t *pixel_ctrl_ptr = NULL;
 static void *vga_mem_virtual_c8 = NULL;
 static void *vga_mem_virtual_c0 = NULL;
@@ -88,21 +90,25 @@ static void clear_screen(void)
 
 /* troca os buffers de desenho*/
 static void swap_buffers() {
-    *pixel_ctrl_ptr = 1; // solicita a troca de buffers pra placa
-
-#ifdef RUNNING_LINUX
-    usleep(16666); // espera o sincronismo vertical
     
-    uint32_t current_front = *pixel_ctrl_ptr;
-    if (current_front == 0xC0000000) {
+#ifdef RUNNING_LINUX
+    *pixel_ctrl_ptr = physical_back_buffer;
+    usleep(16666);
+
+    if (physical_back_buffer == 0xC0000000) {
+        physical_back_buffer = 0xC8000000;
         tela = (volatile uint16_t (*)[LWIDTH]) vga_mem_virtual_c8;
     } else {
+        physical_back_buffer = 0xC0000000;
         tela = (volatile uint16_t (*)[LWIDTH]) vga_mem_virtual_c0;
     }
-    #else
-        while ((*(pixel_ctrl_ptr + 3) & 0x1) != 0);
-        tela = (volatile uint16_t (*)[LWIDTH]) *(pixel_ctrl_ptr + 1);
-    #endif
+#else
+    *pixel_ctrl_ptr = 1; // solicita a troca de buffers pra placa
+    while ((*(pixel_ctrl_ptr + 3) & 0x1) != 0);
+    tela = (volatile uint16_t (*)[LWIDTH]) *(pixel_ctrl_ptr + 1);
+#endif
+    printf("front=%08x back=%08x tela=%p\n",
+       *pixel_ctrl_ptr, *(pixel_ctrl_ptr + 1), (void*)tela);
 }
 
 /* ================================================================== */

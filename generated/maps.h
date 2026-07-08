@@ -1,7 +1,8 @@
 /* AUTO-GERADO por generate_mapas.py — não edite */
 #pragma once
 #include <stdint.h>
-#include "../include/structs.h"
+#include "../include/basics.h"
+#include "../include/entity.h"
 #include "../include/grid.h"
 #include "tiles.h"
 #include "itens.h"

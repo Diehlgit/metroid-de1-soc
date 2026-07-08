@@ -1,7 +1,8 @@
 #ifndef GRID_H
 #define GRID_H
 
-#include "structs.h"
+#include "basics.h"
+#include "entity.h"
 
 #define MAX_ENTS_PER_CELL 16
 #define MAX_GRID_CELLS 1024

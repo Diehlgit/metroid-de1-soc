@@ -1,7 +1,8 @@
 /* AUTO-GERADO por generate_entidades.py — não edite */
 #pragma once
 #include <stdint.h>
-#include "../include/structs.h"
+#include "../include/basics.h"
+#include "../include/entity.h"
 
 extern CellList get_rectangle_cells(Hitbox*,Coordinates,int);
 extern CellList get_circle_cells   (Hitbox*,Coordinates,int);

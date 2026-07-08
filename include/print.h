@@ -1,6 +1,6 @@
 #include <stddef.h>
 #include <stdint.h>
-#include "structs.h"
+#include "basics.h"
 #include "grid.h"
 
 #define ROWS 240

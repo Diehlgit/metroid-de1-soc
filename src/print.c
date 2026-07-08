@@ -1,9 +1,10 @@
 
 #include <stddef.h>
 #include <stdint.h>
-#include "../include/print.h"
-#include "../include/structs.h"
+#include "../include/basics.h"
+#include "../include/entity.h"
 #include "../include/grid.h"
+#include "../include/print.h"
 
 #define ROWS 240
 #define COLS 320

@@ -151,7 +151,10 @@ def main():
 
     lines = [
         "/* AUTO-GERADO por generate_mapas.py — não edite */",
-        "#pragma once","#include <stdint.h>","#include \"../include/structs.h\"", "#include \"../include/grid.h\"",
+        "#pragma once","#include <stdint.h>",
+        '#include \"../include/basics.h"',
+        '#include \"../include/entity.h"',
+        "#include \"../include/grid.h\"",
         "#include \"tiles.h\"","#include \"itens.h\"","#include \"entidades.h\"","",
         f"#define CELL_SIZE         {CELL_SIZE}",
         f"#define MAX_ENTS_PER_CELL {MAX_ENTS_PER_CELL}",

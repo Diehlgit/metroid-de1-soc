@@ -1,4 +1,4 @@
-#include "../include/structs.h"
+#include "../include/basics.h"
 
 CellList get_rectangle_cells(Hitbox *self, Coordinates pos, int cell_size) {
     CellList list = {.count = 0};

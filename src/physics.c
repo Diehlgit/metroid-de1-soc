@@ -1,4 +1,5 @@
-#include "../include/structs.h"
+#include "../include/basics.h"
+#include "../include/entity.h"
 #include "../include/grid.h"
 #include "../include/physics.h"
 

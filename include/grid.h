@@ -19,6 +19,8 @@ typedef struct GridEntry {
 
 struct Grid {
     GridEntry *cells[MAX_GRID_CELLS];
+    int height;
+    int width;
     int cell_size;
 };
 

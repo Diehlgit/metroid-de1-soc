@@ -1,13 +1,12 @@
 #include <stddef.h>
 #include <stdint.h>
-#include "../include/structs.h"
-#include "../include/grid.h"
+#include "structs.h"
+#include "grid.h"
 
 #define ROWS 240
 #define COLS 320
+#define LWIDTH 512
 
-static void print_on_screen(uint16_t pixel, int pos_x, int pos_y);
-
-static void print_sprite(Sprite sprite, int ofx, int ofy, int screen_x, int screen_y);
-
-static void print_game(Grid *grid, Coordinates coord_samus, int cell_size);
+void print_on_screen(volatile uint16_t (*buf)[LWIDTH], uint16_t pixel, int pos_x, int pos_y);
+void print_sprite(volatile uint16_t (*buf)[LWIDTH], Sprite *sprite, int ofx, int ofy, int screen_x, int screen_y);
+void print_game(volatile uint16_t (*buf)[LWIDTH], Grid *area, Coordinates cam, int cell_size);

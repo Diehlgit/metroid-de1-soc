@@ -14,8 +14,33 @@
 #define COLS      320           /* colunas visíveis                   */
 #define ROWS      240           /* linhas visíveis                    */
 
-static volatile uint16_t (*tela)[LWIDTH] =
-    (volatile uint16_t (*)[LWIDTH]) VGA_BASE;
+// Os dois buffers são regiões diferentes da mesma memória física
+static volatile uint16_t (*buffer[2])[LWIDTH] = {
+    (volatile uint16_t (*)[LWIDTH]) VGA_BASE,                        // buffer 0
+    (volatile uint16_t (*)[LWIDTH])(VGA_BASE + ROWS * LWIDTH * 2),  // buffer 1
+};
+
+static int buf_draw    = 0;  // onde print_game() escreve
+static int buf_display = 1;  // o que está na tela agora
+
+#define PIXEL_CTRL_BASE  0xFF203020
+
+static volatile uint32_t *pixel_ctrl =
+    (volatile uint32_t *) PIXEL_CTRL_BASE;
+
+static void swap_buffers(void) {
+    // diz ao controlador para exibir o buffer que acabou de ser desenhado
+    pixel_ctrl[1] = (uint32_t) buffer[buf_draw];
+
+    // aguarda o controlador terminar o frame atual (bit S do status)
+    pixel_ctrl[0] = 1;
+    while (pixel_ctrl[3] & 0x1);  // espera bit S zerar
+
+    // troca os índices
+    int tmp    = buf_draw;
+    buf_draw   = buf_display;
+    buf_display = tmp;
+}
 
 /* ================================================================== */
 /*  JTAG-UART                                                         */
@@ -88,8 +113,6 @@ static void game_loop(Grid *g, EntityList *list) {
 }
 
 int main(void) {
-    uart_print("\r\n*** METROID — CIC0130 UnB ***\r\n");
-
     // Cria a entidade Player
     Entity Samus = {
         .position       = { 152,120 },
@@ -104,27 +127,27 @@ int main(void) {
         .on_collision   = samus_collision,
     };
 
-    EntityList entidades = {
-        .ents = {&Samus},
-        .count = 1,
-    };
-
-    // Pega a área e as outras entidades
     maps_init();
-    Grid *area = get_grid(AREA_STARTING_AREA);
-    EntityList *entidades_area = get_entidades(AREA_STARTING_AREA);
+    Grid *area = get_grid(AREA_INICIAL);
+    EntityList *ents_area   = get_entidades(AREA_INICIAL);
 
-    for (int i = 0; i < entidades_area->count; i++) {
-        entidades.ents[entidades.count++] = entidades_area->ents[i];
+    EntityList entidades = { .ents = {&Samus}, .count = 1 };
+    for (int i = 0; i < ents_area->count; i++) {
+        entidades.ents[entidades.count++] = ents_area->ents[i];
     }
 
+    grid_add_entity(area, &Samus);
+
     while (1) {
+        // desenha sempre no buffer invisível
         Coordinates samus_pos = entidades.ents[0]->position;
-        print_game(area, samus_pos, CELL_SIZE);
+        print_game(buffer[buf_draw], area, samus_pos, CELL_SIZE);
+
+        // lógica
         game_loop(area, &entidades);
 
-        uart_print("Pressione qualquer tecla para reiniciar...\r\n");
-        while (!uart_read_char());
+        // exibe o que foi desenhado e libera o outro buffer para o próximo frame
+        swap_buffers();
     }
     return 0;
 }

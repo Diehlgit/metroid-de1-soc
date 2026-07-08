@@ -1,25 +1,30 @@
+
 #include <stddef.h>
 #include <stdint.h>
+#include "../include/print.h"
 #include "../include/structs.h"
 #include "../include/grid.h"
 
 #define ROWS 240
 #define COLS 320
-#define GET_PIXEL(sprite, x, y) ((sprite).pixels[(y) * (sprite).width + (x)])
+#define GET_PIXEL(sprite, x, y) ((sprite)->pixels[(y) * (sprite)->width + (x)])
 
-static void print_on_screen(uint16_t pixel, int pos_x, int pos_y){
-
+void print_on_screen(volatile uint16_t (*buf)[LWIDTH], uint16_t pixel, int pos_x, int pos_y){
+    if(pos_x < 0 || pos_x >= COLS || pos_y < 0 || pos_y >= ROWS) return;
+    if(pixel == 0x8001) return;  // TRANS — não desenha
+    buf[pos_y][pos_x] = pixel;
 }
 
-static void print_sprite(Sprite sprite, int ofx, int ofy, int screen_x, int screen_y){
+
+void print_sprite(volatile uint16_t (*buf)[LWIDTH], Sprite *sprite, int ofx, int ofy, int screen_x, int screen_y){
     int pos_y = screen_y;
     int pos_x = screen_x;
 
-    for(int y = 0 + ofy; y < sprite.height; y++){
-        for(int x = 0 + ofx; x < sprite.width; x++){
+    for(int y = 0 + ofy; y < sprite->height; y++){
+        for(int x = 0 + ofx; x < sprite->width; x++){
             if(pos_x >= COLS) break;
             uint16_t pixel = GET_PIXEL(sprite, x, y);
-            print_on_screen(pixel, pos_x, pos_y);
+            print_on_screen(buf, pixel, pos_x, pos_y);
             pos_x++;
         }
         pos_x = screen_x;
@@ -28,26 +33,48 @@ static void print_sprite(Sprite sprite, int ofx, int ofy, int screen_x, int scre
     }
 }
 
-static void print_game(Grid *grid, Coordinates coord_samus, int cell_size){
-    int x_samus = coord_samus.x;
-    int y_samus = coord_samus.y;
+void print_game(volatile uint16_t (*buf)[LWIDTH], Grid *area, Coordinates pos_samus, int cell_size){
+    int x0_tela;
+    int y0_tela;
 
-    int x0_tela = x_samus - 152;
-    int y0_tela = y_samus - 120;
+    if(pos_samus.x - 152 < 0){
+        x0_tela = 0;
+    } else if(pos_samus.x + 168 > area->width) {
+        x0_tela = area->width - 320;
+    } else {
+        x0_tela = pos_samus.x - 152;
+    }
 
-    int pbx = (x_samus - 152)/cell_size;
-    int pby = (y_samus - 120)/cell_size;
-    int ubx = (x_samus + 168)/cell_size;
-    int uby = (y_samus + 120)/cell_size;
+    if (pos_samus.y - 120 < 0){
+        y0_tela = 0;
+    } else if(pos_samus.y + 120 > area->height) {
+        y0_tela = area->height - 240;
+    } else {
+        y0_tela = pos_samus.y - 120;
+    }
 
-    int screen_offset_x = x0_tela - pbx*cell_size;
-    int screen_offset_y = y0_tela - pby*cell_size;
+    Coordinates scree_pos = {.x = x0_tela, .y = y0_tela};
+    EntityList entities_to_print = grid_query_region(area, scree_pos, 320, 40);
 
-    int ofx, ofy, screen_x, screen_y;
+    for(int i = 0; i < entities_to_print.count; i++){
+        Entity *e = entities_to_print.ents[i];
 
-    for(int i = pby; i < uby; i++){
-        for(int j = pbx; j < ubx; j++){
+        int offset_x = 0;
+        int offset_y = 0;
 
+        int pos_x = e->position.x - x0_tela;
+        int pos_y = e->position.y - y0_tela;
+
+        if (pos_x < 0){
+            offset_x = pos_x*(-1);
+            pos_x = 0;
         }
+
+        if (pos_y < 0){
+            offset_y = pos_y*(-1);
+            pos_y = 0;
+        }
+
+        print_sprite(buf, e->current_sprite, offset_x, offset_y, pos_x, pos_y);
     }
 }

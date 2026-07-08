@@ -90,13 +90,36 @@ static void game_loop(Grid *g, EntityList *list) {
 int main(void) {
     uart_print("\r\n*** METROID — CIC0130 UnB ***\r\n");
 
+    // Cria a entidade Player
+    Entity Samus = {
+        .position       = { 152,120 },
+        .type           = ENTITY_PLAYER,
+        .hitbox         = {
+            .type      = HITBOX_RECTANGLE,
+            .data      = { .rectangle={ 16, 32 } },
+            .get_cells = get_rectangle_cells,
+        },
+        .current_sprite = &SPRITE_SAMUS,
+        .think          = player_input,
+        .on_collision   = samus_collision,
+    };
+
+    EntityList entidades = {
+        .ents = {&Samus},
+        .count = 1,
+    };
+
+    // Pega a área e as outras entidades
     maps_init();
-    EntityList entidades = get_entities(AREA_STARTING_AREA);
     Grid *area = get_grid(AREA_STARTING_AREA);
+    EntityList *entidades_area = get_entidades(AREA_STARTING_AREA);
+
+    for (int i = 0; i < entidades_area->count; i++) {
+        entidades.ents[entidades.count++] = entidades_area->ents[i];
+    }
 
     while (1) {
         Coordinates samus_pos = entidades.ents[0]->position;
-        //Coordinates samus_pos = {.x = 152, .y = 120};
         print_game(area, samus_pos, CELL_SIZE);
         game_loop(area, &entidades);
 

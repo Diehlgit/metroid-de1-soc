@@ -1825,7 +1825,7 @@ static GridEntry STARTING_AREA_GENTRY_0_3 = {
 };
 static GridEntry STARTING_AREA_GENTRY_19_3 = {
     .key  = { 19,3 },
-    .cell = { .ents={&STARTING_AREA_COL_25}, .count=1 },
+    .cell = { .ents={&STARTING_AREA_COL_25, &STARTING_AREA_ENT_135}, .count=2 },
     .next = NULL,
 };
 static GridEntry STARTING_AREA_GENTRY_0_4 = {
@@ -2040,7 +2040,7 @@ static GridEntry STARTING_AREA_GENTRY_0_9 = {
 };
 static GridEntry STARTING_AREA_GENTRY_7_9 = {
     .key  = { 7,9 },
-    .cell = { .ents={&STARTING_AREA_COL_68}, .count=1 },
+    .cell = { .ents={&STARTING_AREA_COL_68, &STARTING_AREA_ENT_138}, .count=2 },
     .next = NULL,
 };
 static GridEntry STARTING_AREA_GENTRY_8_9 = {
@@ -2230,7 +2230,7 @@ static GridEntry STARTING_AREA_GENTRY_11_13 = {
 };
 static GridEntry STARTING_AREA_GENTRY_16_13 = {
     .key  = { 16,13 },
-    .cell = { .ents={&STARTING_AREA_COL_106}, .count=1 },
+    .cell = { .ents={&STARTING_AREA_COL_106, &STARTING_AREA_ENT_139}, .count=2 },
     .next = NULL,
 };
 static GridEntry STARTING_AREA_GENTRY_17_13 = {
@@ -2355,11 +2355,26 @@ static GridEntry STARTING_AREA_GENTRY_13_6 = {
 };
 static GridEntry STARTING_AREA_GENTRY_7_8 = {
     .key  = { 7,8 },
-    .cell = { .ents={&STARTING_AREA_ITE_131}, .count=1 },
+    .cell = { .ents={&STARTING_AREA_ITE_131, &STARTING_AREA_ENT_138}, .count=2 },
     .next = NULL,
 };
 static GridEntry STARTING_AREA_GENTRY_10_2 = {
     .key  = { 10,2 },
+    .cell = { .ents={&STARTING_AREA_ENT_132}, .count=1 },
+    .next = NULL,
+};
+static GridEntry STARTING_AREA_GENTRY_11_2 = {
+    .key  = { 11,2 },
+    .cell = { .ents={&STARTING_AREA_ENT_132}, .count=1 },
+    .next = NULL,
+};
+static GridEntry STARTING_AREA_GENTRY_10_3 = {
+    .key  = { 10,3 },
+    .cell = { .ents={&STARTING_AREA_ENT_132}, .count=1 },
+    .next = NULL,
+};
+static GridEntry STARTING_AREA_GENTRY_11_3 = {
+    .key  = { 11,3 },
     .cell = { .ents={&STARTING_AREA_ENT_132}, .count=1 },
     .next = NULL,
 };
@@ -2368,8 +2383,18 @@ static GridEntry STARTING_AREA_GENTRY_6_3 = {
     .cell = { .ents={&STARTING_AREA_ENT_133}, .count=1 },
     .next = NULL,
 };
+static GridEntry STARTING_AREA_GENTRY_7_3 = {
+    .key  = { 7,3 },
+    .cell = { .ents={&STARTING_AREA_ENT_133}, .count=1 },
+    .next = NULL,
+};
 static GridEntry STARTING_AREA_GENTRY_12_3 = {
     .key  = { 12,3 },
+    .cell = { .ents={&STARTING_AREA_ENT_134}, .count=1 },
+    .next = NULL,
+};
+static GridEntry STARTING_AREA_GENTRY_13_3 = {
+    .key  = { 13,3 },
     .cell = { .ents={&STARTING_AREA_ENT_134}, .count=1 },
     .next = NULL,
 };
@@ -2383,13 +2408,48 @@ static GridEntry STARTING_AREA_GENTRY_16_6 = {
     .cell = { .ents={&STARTING_AREA_ENT_136}, .count=1 },
     .next = NULL,
 };
+static GridEntry STARTING_AREA_GENTRY_17_6 = {
+    .key  = { 17,6 },
+    .cell = { .ents={&STARTING_AREA_ENT_136}, .count=1 },
+    .next = NULL,
+};
+static GridEntry STARTING_AREA_GENTRY_16_7 = {
+    .key  = { 16,7 },
+    .cell = { .ents={&STARTING_AREA_ENT_136}, .count=1 },
+    .next = NULL,
+};
+static GridEntry STARTING_AREA_GENTRY_17_7 = {
+    .key  = { 17,7 },
+    .cell = { .ents={&STARTING_AREA_ENT_136}, .count=1 },
+    .next = NULL,
+};
 static GridEntry STARTING_AREA_GENTRY_3_8 = {
     .key  = { 3,8 },
     .cell = { .ents={&STARTING_AREA_ENT_137}, .count=1 },
     .next = NULL,
 };
+static GridEntry STARTING_AREA_GENTRY_4_8 = {
+    .key  = { 4,8 },
+    .cell = { .ents={&STARTING_AREA_ENT_137}, .count=1 },
+    .next = NULL,
+};
+static GridEntry STARTING_AREA_GENTRY_3_9 = {
+    .key  = { 3,9 },
+    .cell = { .ents={&STARTING_AREA_ENT_137}, .count=1 },
+    .next = NULL,
+};
+static GridEntry STARTING_AREA_GENTRY_4_9 = {
+    .key  = { 4,9 },
+    .cell = { .ents={&STARTING_AREA_ENT_137}, .count=1 },
+    .next = NULL,
+};
 static GridEntry STARTING_AREA_GENTRY_6_8 = {
     .key  = { 6,8 },
+    .cell = { .ents={&STARTING_AREA_ENT_138}, .count=1 },
+    .next = NULL,
+};
+static GridEntry STARTING_AREA_GENTRY_6_9 = {
+    .key  = { 6,9 },
     .cell = { .ents={&STARTING_AREA_ENT_138}, .count=1 },
     .next = NULL,
 };
@@ -2399,14 +2459,14 @@ static GridEntry STARTING_AREA_GENTRY_15_13 = {
     .next = NULL,
 };
 
+static EntityList ENTIDADES_STARTING_AREA = {
+    .ents     = { &STARTING_AREA_ENT_132, &STARTING_AREA_ENT_133, &STARTING_AREA_ENT_134, &STARTING_AREA_ENT_135, &STARTING_AREA_ENT_136, &STARTING_AREA_ENT_137, &STARTING_AREA_ENT_138, &STARTING_AREA_ENT_139,  },
+    .count = 8,
+};
+
 static Grid GRID_STARTING_AREA = {
     .cells     = { NULL },
     .cell_size = 16,
-};
-
-static EntityList ENTIDADES_STARTING_AREA = {
-    .ents = { &STARTING_AREA_ENT_132, &STARTING_AREA_ENT_133, &STARTING_AREA_ENT_134, &STARTING_AREA_ENT_135, &STARTING_AREA_ENT_136, &STARTING_AREA_ENT_137, &STARTING_AREA_ENT_138, &STARTING_AREA_ENT_139, },
-    .count = 8,
 };
 
 static void map_init_STARTING_AREA(void) {
@@ -2676,18 +2736,42 @@ static void map_init_STARTING_AREA(void) {
     GRID_STARTING_AREA.cells[255] = &STARTING_AREA_GENTRY_7_8;
     STARTING_AREA_GENTRY_10_2.next = GRID_STARTING_AREA.cells[52];
     GRID_STARTING_AREA.cells[52] = &STARTING_AREA_GENTRY_10_2;
+    STARTING_AREA_GENTRY_11_2.next = GRID_STARTING_AREA.cells[53];
+    GRID_STARTING_AREA.cells[53] = &STARTING_AREA_GENTRY_11_2;
+    STARTING_AREA_GENTRY_10_3.next = GRID_STARTING_AREA.cells[87];
+    GRID_STARTING_AREA.cells[87] = &STARTING_AREA_GENTRY_10_3;
+    STARTING_AREA_GENTRY_11_3.next = GRID_STARTING_AREA.cells[86];
+    GRID_STARTING_AREA.cells[86] = &STARTING_AREA_GENTRY_11_3;
     STARTING_AREA_GENTRY_6_3.next = GRID_STARTING_AREA.cells[91];
     GRID_STARTING_AREA.cells[91] = &STARTING_AREA_GENTRY_6_3;
+    STARTING_AREA_GENTRY_7_3.next = GRID_STARTING_AREA.cells[90];
+    GRID_STARTING_AREA.cells[90] = &STARTING_AREA_GENTRY_7_3;
     STARTING_AREA_GENTRY_12_3.next = GRID_STARTING_AREA.cells[81];
     GRID_STARTING_AREA.cells[81] = &STARTING_AREA_GENTRY_12_3;
+    STARTING_AREA_GENTRY_13_3.next = GRID_STARTING_AREA.cells[80];
+    GRID_STARTING_AREA.cells[80] = &STARTING_AREA_GENTRY_13_3;
     STARTING_AREA_GENTRY_18_3.next = GRID_STARTING_AREA.cells[79];
     GRID_STARTING_AREA.cells[79] = &STARTING_AREA_GENTRY_18_3;
     STARTING_AREA_GENTRY_16_6.next = GRID_STARTING_AREA.cells[170];
     GRID_STARTING_AREA.cells[170] = &STARTING_AREA_GENTRY_16_6;
+    STARTING_AREA_GENTRY_17_6.next = GRID_STARTING_AREA.cells[171];
+    GRID_STARTING_AREA.cells[171] = &STARTING_AREA_GENTRY_17_6;
+    STARTING_AREA_GENTRY_16_7.next = GRID_STARTING_AREA.cells[201];
+    GRID_STARTING_AREA.cells[201] = &STARTING_AREA_GENTRY_16_7;
+    STARTING_AREA_GENTRY_17_7.next = GRID_STARTING_AREA.cells[200];
+    GRID_STARTING_AREA.cells[200] = &STARTING_AREA_GENTRY_17_7;
     STARTING_AREA_GENTRY_3_8.next = GRID_STARTING_AREA.cells[251];
     GRID_STARTING_AREA.cells[251] = &STARTING_AREA_GENTRY_3_8;
+    STARTING_AREA_GENTRY_4_8.next = GRID_STARTING_AREA.cells[252];
+    GRID_STARTING_AREA.cells[252] = &STARTING_AREA_GENTRY_4_8;
+    STARTING_AREA_GENTRY_3_9.next = GRID_STARTING_AREA.cells[276];
+    GRID_STARTING_AREA.cells[276] = &STARTING_AREA_GENTRY_3_9;
+    STARTING_AREA_GENTRY_4_9.next = GRID_STARTING_AREA.cells[275];
+    GRID_STARTING_AREA.cells[275] = &STARTING_AREA_GENTRY_4_9;
     STARTING_AREA_GENTRY_6_8.next = GRID_STARTING_AREA.cells[254];
     GRID_STARTING_AREA.cells[254] = &STARTING_AREA_GENTRY_6_8;
+    STARTING_AREA_GENTRY_6_9.next = GRID_STARTING_AREA.cells[273];
+    GRID_STARTING_AREA.cells[273] = &STARTING_AREA_GENTRY_6_9;
     STARTING_AREA_GENTRY_15_13.next = GRID_STARTING_AREA.cells[412];
     GRID_STARTING_AREA.cells[412] = &STARTING_AREA_GENTRY_15_13;
 }
@@ -2700,7 +2784,6 @@ typedef enum {
 static Grid *_grids[] = {
     [AREA_STARTING_AREA] = &GRID_STARTING_AREA,
 };
-
 static EntityList *_entidades[] = {
     [AREA_STARTING_AREA] = &ENTIDADES_STARTING_AREA,
 };

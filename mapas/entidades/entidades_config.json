@@ -1,0 +1,40 @@
+{
+  "entidades": [
+    {
+      "name": "samus",
+      "color": [106, 0, 0],
+      "sprite": "samus/sprites/Samus_parada.png",
+      "hitbox": { "type": "rectangle", "width": 16, "height": 32 },
+      "on_collision": "samus_collision",
+      "think": "player_input",
+      "entity_type": "ENTITY_PLAYER"
+    },
+    {
+      "name": "projetil",
+      "color": [40, 117, 74],
+      "sprite": "projeteis/sprites/projetil.png",
+      "hitbox": { "type": "rectangle", "width": 4, "height": 4 },
+      "on_collision": "dano_projetil",
+      "think": "mover_projetil",
+      "entity_type": "ENTITY_PROJECTILE"
+    },
+    {
+      "name": "pinwheel",
+      "color": [0, 255, 2],
+      "sprite": "pinwheel/sprites/pinwheel_parado.png",
+      "hitbox": { "type": "rectangle", "width": 32, "height": 32 },
+      "on_collision": "pinwheel_collision",
+      "think": "pinwheel_ai",
+      "entity_type": "ENTITY_ENEMY"
+    },
+    {
+      "name": "escorpiao",
+      "color": [178, 0, 255],
+      "sprite": "scorpion/sprites/novo_escorpiao.png",
+      "hitbox": { "type": "rectangle", "width": 32, "height": 16 },
+      "on_collision": "scorpion_collision",
+      "think": "scorpion_ai",
+      "entity_type": "ENTITY_ENEMY"
+    }
+  ]
+}

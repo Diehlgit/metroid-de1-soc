@@ -4,78 +4,9 @@
 #include "../include/print.h"
 #include "../include/physics.h"
 #include "../generated/maps.h"
+#include "../include/vga.h"
 
 #include <stdlib.h>   /* rand() */
-
-/* ================================================================== */
-/*  DISPLAY VGA                                                       */
-/* ================================================================== */
-#define VGA_BASE  0xC8000000
-#define LWIDTH    512           /* largura física da linha (pixels)   */
-#define COLS      320           /* colunas visíveis                   */
-#define ROWS      240           /* linhas visíveis                    */
-
-// Os dois buffers são regiões diferentes da mesma memória física
-static volatile uint16_t (*buffer[2])[LWIDTH] = {
-    (volatile uint16_t (*)[LWIDTH]) VGA_BASE,                        // buffer 0
-    (volatile uint16_t (*)[LWIDTH])(VGA_BASE + ROWS * LWIDTH * 2),  // buffer 1
-};
-
-static int buf_draw    = 0;  // onde print_game() escreve
-static int buf_display = 1;  // o que está na tela agora
-
-#define PIXEL_CTRL_BASE  0xFF203020
-
-static volatile uint32_t *pixel_ctrl =
-    (volatile uint32_t *) PIXEL_CTRL_BASE;
-
-static void swap_buffers(void) {
-    // diz ao controlador para exibir o buffer que acabou de ser desenhado
-    pixel_ctrl[1] = (uint32_t) buffer[buf_draw];
-
-    // aguarda o controlador terminar o frame atual (bit S do status)
-    pixel_ctrl[0] = 1;
-    while (pixel_ctrl[3] & 0x1);  // espera bit S zerar
-
-    // troca os índices
-    int tmp    = buf_draw;
-    buf_draw   = buf_display;
-    buf_display = tmp;
-}
-
-/* ================================================================== */
-/*  JTAG-UART                                                         */
-/* ================================================================== */
-#define UART_BASE   0xFF201000
-static volatile uint32_t * const uart = (volatile uint32_t *) UART_BASE;
-#define UART_RVALID (1 << 15)
-
-static char uart_read_char(void)
-{
-    uint32_t d = uart[0];
-    if (d & UART_RVALID) return (char)(d & 0xFF);
-    return 0;
-}
-
-static void uart_write_char(char c)
-{
-    while ((uart[1] >> 16) == 0);
-    uart[0] = (uint32_t)c;
-}
-
-static void uart_print(const char *s)
-{
-    while (*s) uart_write_char(*s++);
-}
-
-static void uart_print_int(int n)
-{
-    char buf[12]; int i = 10; buf[11] = '\0';
-    if (n == 0) { uart_write_char('0'); return; }
-    if (n < 0)  { uart_write_char('-'); n = -n; }
-    while (n > 0 && i >= 0) { buf[i--] = '0' + (n % 10); n /= 10; }
-    uart_print(buf + i + 1);
-}
 
 /* ================================================================== */
 /*  GAME LOOP                                                         */
@@ -114,9 +45,12 @@ static void game_loop(Grid *g, EntityList *list) {
 }
 
 int main(void) {
+    if (vga_init() < 0)
+        return 1;
+
     // Cria a entidade Player
     Entity Samus = {
-        .position       = { 152,120 },
+        .position       = { 16,16 },
         .type           = ENTITY_PLAYER,
         .hitbox         = {
             .type      = HITBOX_RECTANGLE,
@@ -138,11 +72,12 @@ int main(void) {
     }
 
     grid_add_entity(area, &Samus);
+    swap_buffers();
 
     while (1) {
         // desenha sempre no buffer invisível
         Coordinates samus_pos = entidades.ents[0]->position;
-        print_game(buffer[buf_draw], area, samus_pos, CELL_SIZE);
+        print_game(tela, area, samus_pos, CELL_SIZE);
 
         // lógica
         game_loop(area, &entidades);

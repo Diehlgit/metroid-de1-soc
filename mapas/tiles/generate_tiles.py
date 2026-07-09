@@ -144,7 +144,7 @@ def main():
         "        TileInfo *t=&TILE_REGISTRY[i];",
         "        if(t->r==r&&t->g==g&&t->b==b) return t;",
         "    }",
-        "    return nullptr;",
+        "    return NULL;",
         "}",
     ]
 

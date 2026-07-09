@@ -55,7 +55,7 @@ void print_game(volatile uint16_t (*buf)[LWIDTH], Grid *area, Coordinates pos_sa
     }
 
     Coordinates scree_pos = {.x = x0_tela, .y = y0_tela};
-    EntityList entities_to_print = grid_query_region(area, scree_pos, 320, 40);
+    EntityList entities_to_print = grid_query_region(area, scree_pos, 320, 240);
 
     for(int i = 0; i < entities_to_print.count; i++){
         Entity *e = entities_to_print.ents[i];

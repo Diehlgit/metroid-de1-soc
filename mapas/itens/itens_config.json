@@ -1,22 +1,5 @@
 {
   "itens": [
-    {
-      "name": "powerup_bola",
-      "color": [156, 255, 0],
-      "sprite": "bola/item_bola.png",
-      "hitbox": { "type": "rectangle", "width": 16, "height": 16 },
-      "on_collision": "ball_collision",
-      "think": null,
-      "entity_type": "ENTITY_ITEM"
-    },
-    {
-      "name": "powerup_arma",
-      "color": [0, 255, 69],
-      "sprite": "arma/arma.png",
-      "hitbox": { "type": "rectangle", "width": 16, "height": 16 },
-      "on_collision": "gun_collision",
-      "think": null,
-      "entity_type": "ENTITY_ITEM"
-    }
+
   ]
 }

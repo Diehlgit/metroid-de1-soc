@@ -8,10 +8,9 @@ extern CellList get_rectangle_cells(Hitbox*,Coordinates,int);
 extern CellList get_circle_cells   (Hitbox*,Coordinates,int);
 extern CellList get_triangle_cells (Hitbox*,Coordinates,int);
 
-extern void tijolos_collision(struct Entity*,struct Entity*);
+extern void porta_collision(struct Entity*,struct Entity*);
 extern void tijolos_collision(struct Entity*,struct Entity*);
 extern void transicao_collision(struct Entity*,struct Entity*);
-extern void porta_collision(struct Entity*,struct Entity*);
 
 static const uint16_t TIJOLOS_PIXELS[256] = {
     0xC618, 0xC618, 0xC618, 0xC618, 0x0000, 0x0000, 0xC618, 0xC618, 0xC618, 0xC618, 0xC618, 0x0000, 0xC618, 0xC618, 0xC618, 0x0000,
@@ -166,5 +165,5 @@ static TileInfo* tile_from_color(uint8_t r,uint8_t g,uint8_t b){
         TileInfo *t=&TILE_REGISTRY[i];
         if(t->r==r&&t->g==g&&t->b==b) return t;
     }
-    return nullptr;
+    return NULL;
 }

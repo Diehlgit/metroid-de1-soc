@@ -1577,127 +1577,7 @@ static Entity INICIAL_COL_129 = {
     .on_collision   = tijolos_collision,
 };
 
-static Entity INICIAL_ITE_130 = {
-    .position       = { 208,96 },
-    .type           = ENTITY_ITEM,
-    .hitbox         = {
-        .type      = HITBOX_RECTANGLE,
-        .data      = { .rectangle={ 16, 16 } },
-        .get_cells = get_rectangle_cells,
-    },
-    .current_sprite = &SPRITE_POWERUP_BOLA,
-    .think          = NULL,
-    .on_collision   = ball_collision,
-};
-static Entity INICIAL_ITE_131 = {
-    .position       = { 112,128 },
-    .type           = ENTITY_ITEM,
-    .hitbox         = {
-        .type      = HITBOX_RECTANGLE,
-        .data      = { .rectangle={ 16, 16 } },
-        .get_cells = get_rectangle_cells,
-    },
-    .current_sprite = &SPRITE_POWERUP_ARMA,
-    .think          = NULL,
-    .on_collision   = gun_collision,
-};
 
-static Entity INICIAL_ENT_132 = {
-    .position       = { 160,32 },
-    .type           = ENTITY_ENEMY,
-    .hitbox         = {
-        .type      = HITBOX_RECTANGLE,
-        .data      = { .rectangle={ 32, 32 } },
-        .get_cells = get_rectangle_cells,
-    },
-    .current_sprite = &SPRITE_PINWHEEL,
-    .think          = pinwheel_ai,
-    .on_collision   = pinwheel_collision,
-};
-static Entity INICIAL_ENT_133 = {
-    .position       = { 96,48 },
-    .type           = ENTITY_ENEMY,
-    .hitbox         = {
-        .type      = HITBOX_RECTANGLE,
-        .data      = { .rectangle={ 32, 16 } },
-        .get_cells = get_rectangle_cells,
-    },
-    .current_sprite = &SPRITE_ESCORPIAO,
-    .think          = scorpion_ai,
-    .on_collision   = scorpion_collision,
-};
-static Entity INICIAL_ENT_134 = {
-    .position       = { 192,48 },
-    .type           = ENTITY_ENEMY,
-    .hitbox         = {
-        .type      = HITBOX_RECTANGLE,
-        .data      = { .rectangle={ 32, 16 } },
-        .get_cells = get_rectangle_cells,
-    },
-    .current_sprite = &SPRITE_ESCORPIAO,
-    .think          = scorpion_ai,
-    .on_collision   = scorpion_collision,
-};
-static Entity INICIAL_ENT_135 = {
-    .position       = { 288,48 },
-    .type           = ENTITY_ENEMY,
-    .hitbox         = {
-        .type      = HITBOX_RECTANGLE,
-        .data      = { .rectangle={ 32, 16 } },
-        .get_cells = get_rectangle_cells,
-    },
-    .current_sprite = &SPRITE_ESCORPIAO,
-    .think          = scorpion_ai,
-    .on_collision   = scorpion_collision,
-};
-static Entity INICIAL_ENT_136 = {
-    .position       = { 256,96 },
-    .type           = ENTITY_ENEMY,
-    .hitbox         = {
-        .type      = HITBOX_RECTANGLE,
-        .data      = { .rectangle={ 32, 32 } },
-        .get_cells = get_rectangle_cells,
-    },
-    .current_sprite = &SPRITE_PINWHEEL,
-    .think          = pinwheel_ai,
-    .on_collision   = pinwheel_collision,
-};
-static Entity INICIAL_ENT_137 = {
-    .position       = { 48,128 },
-    .type           = ENTITY_ENEMY,
-    .hitbox         = {
-        .type      = HITBOX_RECTANGLE,
-        .data      = { .rectangle={ 32, 32 } },
-        .get_cells = get_rectangle_cells,
-    },
-    .current_sprite = &SPRITE_PINWHEEL,
-    .think          = pinwheel_ai,
-    .on_collision   = pinwheel_collision,
-};
-static Entity INICIAL_ENT_138 = {
-    .position       = { 96,128 },
-    .type           = ENTITY_ENEMY,
-    .hitbox         = {
-        .type      = HITBOX_RECTANGLE,
-        .data      = { .rectangle={ 32, 32 } },
-        .get_cells = get_rectangle_cells,
-    },
-    .current_sprite = &SPRITE_PINWHEEL,
-    .think          = pinwheel_ai,
-    .on_collision   = pinwheel_collision,
-};
-static Entity INICIAL_ENT_139 = {
-    .position       = { 240,208 },
-    .type           = ENTITY_ENEMY,
-    .hitbox         = {
-        .type      = HITBOX_RECTANGLE,
-        .data      = { .rectangle={ 32, 16 } },
-        .get_cells = get_rectangle_cells,
-    },
-    .current_sprite = &SPRITE_ESCORPIAO,
-    .think          = scorpion_ai,
-    .on_collision   = scorpion_collision,
-};
 
 static GridEntry INICIAL_GENTRY_0_0 = {
     .key  = { 0,0 },
@@ -1826,7 +1706,7 @@ static GridEntry INICIAL_GENTRY_0_3 = {
 };
 static GridEntry INICIAL_GENTRY_19_3 = {
     .key  = { 19,3 },
-    .cell = { .ents={&INICIAL_COL_25, &INICIAL_ENT_135}, .count=2 },
+    .cell = { .ents={&INICIAL_COL_25}, .count=1 },
     .next = NULL,
 };
 static GridEntry INICIAL_GENTRY_0_4 = {
@@ -2041,7 +1921,7 @@ static GridEntry INICIAL_GENTRY_0_9 = {
 };
 static GridEntry INICIAL_GENTRY_7_9 = {
     .key  = { 7,9 },
-    .cell = { .ents={&INICIAL_COL_68, &INICIAL_ENT_138}, .count=2 },
+    .cell = { .ents={&INICIAL_COL_68}, .count=1 },
     .next = NULL,
 };
 static GridEntry INICIAL_GENTRY_8_9 = {
@@ -2231,7 +2111,7 @@ static GridEntry INICIAL_GENTRY_11_13 = {
 };
 static GridEntry INICIAL_GENTRY_16_13 = {
     .key  = { 16,13 },
-    .cell = { .ents={&INICIAL_COL_106, &INICIAL_ENT_139}, .count=2 },
+    .cell = { .ents={&INICIAL_COL_106}, .count=1 },
     .next = NULL,
 };
 static GridEntry INICIAL_GENTRY_17_13 = {
@@ -2349,120 +2229,10 @@ static GridEntry INICIAL_GENTRY_19_14 = {
     .cell = { .ents={&INICIAL_COL_129}, .count=1 },
     .next = NULL,
 };
-static GridEntry INICIAL_GENTRY_13_6 = {
-    .key  = { 13,6 },
-    .cell = { .ents={&INICIAL_ITE_130}, .count=1 },
-    .next = NULL,
-};
-static GridEntry INICIAL_GENTRY_7_8 = {
-    .key  = { 7,8 },
-    .cell = { .ents={&INICIAL_ITE_131, &INICIAL_ENT_138}, .count=2 },
-    .next = NULL,
-};
-static GridEntry INICIAL_GENTRY_10_2 = {
-    .key  = { 10,2 },
-    .cell = { .ents={&INICIAL_ENT_132}, .count=1 },
-    .next = NULL,
-};
-static GridEntry INICIAL_GENTRY_11_2 = {
-    .key  = { 11,2 },
-    .cell = { .ents={&INICIAL_ENT_132}, .count=1 },
-    .next = NULL,
-};
-static GridEntry INICIAL_GENTRY_10_3 = {
-    .key  = { 10,3 },
-    .cell = { .ents={&INICIAL_ENT_132}, .count=1 },
-    .next = NULL,
-};
-static GridEntry INICIAL_GENTRY_11_3 = {
-    .key  = { 11,3 },
-    .cell = { .ents={&INICIAL_ENT_132}, .count=1 },
-    .next = NULL,
-};
-static GridEntry INICIAL_GENTRY_6_3 = {
-    .key  = { 6,3 },
-    .cell = { .ents={&INICIAL_ENT_133}, .count=1 },
-    .next = NULL,
-};
-static GridEntry INICIAL_GENTRY_7_3 = {
-    .key  = { 7,3 },
-    .cell = { .ents={&INICIAL_ENT_133}, .count=1 },
-    .next = NULL,
-};
-static GridEntry INICIAL_GENTRY_12_3 = {
-    .key  = { 12,3 },
-    .cell = { .ents={&INICIAL_ENT_134}, .count=1 },
-    .next = NULL,
-};
-static GridEntry INICIAL_GENTRY_13_3 = {
-    .key  = { 13,3 },
-    .cell = { .ents={&INICIAL_ENT_134}, .count=1 },
-    .next = NULL,
-};
-static GridEntry INICIAL_GENTRY_18_3 = {
-    .key  = { 18,3 },
-    .cell = { .ents={&INICIAL_ENT_135}, .count=1 },
-    .next = NULL,
-};
-static GridEntry INICIAL_GENTRY_16_6 = {
-    .key  = { 16,6 },
-    .cell = { .ents={&INICIAL_ENT_136}, .count=1 },
-    .next = NULL,
-};
-static GridEntry INICIAL_GENTRY_17_6 = {
-    .key  = { 17,6 },
-    .cell = { .ents={&INICIAL_ENT_136}, .count=1 },
-    .next = NULL,
-};
-static GridEntry INICIAL_GENTRY_16_7 = {
-    .key  = { 16,7 },
-    .cell = { .ents={&INICIAL_ENT_136}, .count=1 },
-    .next = NULL,
-};
-static GridEntry INICIAL_GENTRY_17_7 = {
-    .key  = { 17,7 },
-    .cell = { .ents={&INICIAL_ENT_136}, .count=1 },
-    .next = NULL,
-};
-static GridEntry INICIAL_GENTRY_3_8 = {
-    .key  = { 3,8 },
-    .cell = { .ents={&INICIAL_ENT_137}, .count=1 },
-    .next = NULL,
-};
-static GridEntry INICIAL_GENTRY_4_8 = {
-    .key  = { 4,8 },
-    .cell = { .ents={&INICIAL_ENT_137}, .count=1 },
-    .next = NULL,
-};
-static GridEntry INICIAL_GENTRY_3_9 = {
-    .key  = { 3,9 },
-    .cell = { .ents={&INICIAL_ENT_137}, .count=1 },
-    .next = NULL,
-};
-static GridEntry INICIAL_GENTRY_4_9 = {
-    .key  = { 4,9 },
-    .cell = { .ents={&INICIAL_ENT_137}, .count=1 },
-    .next = NULL,
-};
-static GridEntry INICIAL_GENTRY_6_8 = {
-    .key  = { 6,8 },
-    .cell = { .ents={&INICIAL_ENT_138}, .count=1 },
-    .next = NULL,
-};
-static GridEntry INICIAL_GENTRY_6_9 = {
-    .key  = { 6,9 },
-    .cell = { .ents={&INICIAL_ENT_138}, .count=1 },
-    .next = NULL,
-};
-static GridEntry INICIAL_GENTRY_15_13 = {
-    .key  = { 15,13 },
-    .cell = { .ents={&INICIAL_ENT_139}, .count=1 },
-    .next = NULL,
-};
 
 static EntityList ENTIDADES_INICIAL = {
-    .ents = { &INICIAL_ENT_132, &INICIAL_ENT_133, &INICIAL_ENT_134, &INICIAL_ENT_135, &INICIAL_ENT_136, &INICIAL_ENT_137, &INICIAL_ENT_138, &INICIAL_ENT_139,  },
-    .count = 8,
+    .ents = {  },
+    .count = 0,
 };
 
 static Grid GRID_INICIAL = {
@@ -2733,50 +2503,6 @@ static void map_init_INICIAL(void) {
     GRID_INICIAL.cells[416] = &INICIAL_GENTRY_18_14;
     INICIAL_GENTRY_19_14.next = GRID_INICIAL.cells[417];
     GRID_INICIAL.cells[417] = &INICIAL_GENTRY_19_14;
-    INICIAL_GENTRY_13_6.next = GRID_INICIAL.cells[183];
-    GRID_INICIAL.cells[183] = &INICIAL_GENTRY_13_6;
-    INICIAL_GENTRY_7_8.next = GRID_INICIAL.cells[255];
-    GRID_INICIAL.cells[255] = &INICIAL_GENTRY_7_8;
-    INICIAL_GENTRY_10_2.next = GRID_INICIAL.cells[52];
-    GRID_INICIAL.cells[52] = &INICIAL_GENTRY_10_2;
-    INICIAL_GENTRY_11_2.next = GRID_INICIAL.cells[53];
-    GRID_INICIAL.cells[53] = &INICIAL_GENTRY_11_2;
-    INICIAL_GENTRY_10_3.next = GRID_INICIAL.cells[87];
-    GRID_INICIAL.cells[87] = &INICIAL_GENTRY_10_3;
-    INICIAL_GENTRY_11_3.next = GRID_INICIAL.cells[86];
-    GRID_INICIAL.cells[86] = &INICIAL_GENTRY_11_3;
-    INICIAL_GENTRY_6_3.next = GRID_INICIAL.cells[91];
-    GRID_INICIAL.cells[91] = &INICIAL_GENTRY_6_3;
-    INICIAL_GENTRY_7_3.next = GRID_INICIAL.cells[90];
-    GRID_INICIAL.cells[90] = &INICIAL_GENTRY_7_3;
-    INICIAL_GENTRY_12_3.next = GRID_INICIAL.cells[81];
-    GRID_INICIAL.cells[81] = &INICIAL_GENTRY_12_3;
-    INICIAL_GENTRY_13_3.next = GRID_INICIAL.cells[80];
-    GRID_INICIAL.cells[80] = &INICIAL_GENTRY_13_3;
-    INICIAL_GENTRY_18_3.next = GRID_INICIAL.cells[79];
-    GRID_INICIAL.cells[79] = &INICIAL_GENTRY_18_3;
-    INICIAL_GENTRY_16_6.next = GRID_INICIAL.cells[170];
-    GRID_INICIAL.cells[170] = &INICIAL_GENTRY_16_6;
-    INICIAL_GENTRY_17_6.next = GRID_INICIAL.cells[171];
-    GRID_INICIAL.cells[171] = &INICIAL_GENTRY_17_6;
-    INICIAL_GENTRY_16_7.next = GRID_INICIAL.cells[201];
-    GRID_INICIAL.cells[201] = &INICIAL_GENTRY_16_7;
-    INICIAL_GENTRY_17_7.next = GRID_INICIAL.cells[200];
-    GRID_INICIAL.cells[200] = &INICIAL_GENTRY_17_7;
-    INICIAL_GENTRY_3_8.next = GRID_INICIAL.cells[251];
-    GRID_INICIAL.cells[251] = &INICIAL_GENTRY_3_8;
-    INICIAL_GENTRY_4_8.next = GRID_INICIAL.cells[252];
-    GRID_INICIAL.cells[252] = &INICIAL_GENTRY_4_8;
-    INICIAL_GENTRY_3_9.next = GRID_INICIAL.cells[276];
-    GRID_INICIAL.cells[276] = &INICIAL_GENTRY_3_9;
-    INICIAL_GENTRY_4_9.next = GRID_INICIAL.cells[275];
-    GRID_INICIAL.cells[275] = &INICIAL_GENTRY_4_9;
-    INICIAL_GENTRY_6_8.next = GRID_INICIAL.cells[254];
-    GRID_INICIAL.cells[254] = &INICIAL_GENTRY_6_8;
-    INICIAL_GENTRY_6_9.next = GRID_INICIAL.cells[273];
-    GRID_INICIAL.cells[273] = &INICIAL_GENTRY_6_9;
-    INICIAL_GENTRY_15_13.next = GRID_INICIAL.cells[412];
-    GRID_INICIAL.cells[412] = &INICIAL_GENTRY_15_13;
 }
 
 typedef enum {
@@ -2793,12 +2519,12 @@ static EntityList *_entidades[] = {
 };
 
 static Grid* get_grid(AreaId id){
-    if(id<0||id>=AREA_COUNT) return nullptr;
+    if(id>=AREA_COUNT) return NULL;
     return _grids[id];
 }
 
 static EntityList* get_entidades(AreaId id){
-    if(id<0||id>=AREA_COUNT) return nullptr;
+    if(id>=AREA_COUNT) return NULL;
     return _entidades[id];
 }
 

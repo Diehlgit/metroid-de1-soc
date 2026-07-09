@@ -25,7 +25,9 @@ struct Grid {
     int cell_size;
 };
 
-int grid_hash(CellCoord c);
+static int grid_hash(CellCoord c) {
+    return ((c.row * 31) ^ c.col) & (MAX_GRID_CELLS - 1);
+}
 
 void grid_add_entity(Grid *g, struct Entity *ent);
 void grid_remove_entity(Grid *g, struct Entity *ent);

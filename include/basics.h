@@ -1,6 +1,7 @@
 #ifndef BASICS_H
 #define BASICS_H
 
+#include <stdlib.h>
 #include <stddef.h>
 #include <stdint.h>
 

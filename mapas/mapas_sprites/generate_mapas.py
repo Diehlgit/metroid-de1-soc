@@ -249,11 +249,11 @@ def main():
 
     lines += ["};","",
               "static Grid* get_grid(AreaId id){",
-              "    if(id<0||id>=AREA_COUNT) return nullptr;",
+              "    if(id>=AREA_COUNT) return NULL;",
               "    return _grids[id];",
               "}","",
               "static EntityList* get_entidades(AreaId id){",
-              "    if(id<0||id>=AREA_COUNT) return nullptr;",
+              "    if(id>=AREA_COUNT) return NULL;",
               "    return _entidades[id];",
               "}","",
               "static void maps_init(void){"]

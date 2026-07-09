@@ -5,13 +5,14 @@
 #include "../include/physics.h"
 #include "../generated/maps.h"
 #include "../include/vga.h"
-#include "../include/uart.h"
+#include <SDL2/SDL.h>
 
 /* ================================================================== */
 /*  GAME LOOP                                                         */
 /* ================================================================== */
 
-#define CELL_SIZE 16
+#define TARGET_FPS 60
+#define FRAME_MS   (1000 / TARGET_FPS)
 
 Grid* game_init(Entity *player_ptr, EntityList *ents_list) {
     maps_init();
@@ -79,12 +80,8 @@ static void game_loop(Grid *g, EntityList *list) {
 
 int main(void) {
     if (vga_init() < 0) return 1;
+    //if (uart_init() < 0) return 1;
 
-    #ifdef RUNNING_LINUX
-        if (uart_init() < 0) return 1;
-    #endif
-
-    uart_print("UART OK\n");
     clear_screen(0x0000);
 
     Entity Samus;
@@ -92,14 +89,22 @@ int main(void) {
     Grid *area = game_init(&Samus, &entidades);
 
     while (1) {
-        clear_screen(0x0000);
+        uint64_t frame_start = SDL_GetTicks64();
 
+
+        clear_screen(0x0000);
         Coordinates samus_pos = entidades.ents[0]->position;
         print_game(tela, area, samus_pos, CELL_SIZE);
-
         swap_buffers();
-
         game_loop(area, &entidades);
+
+
+        uint64_t frame_end  = SDL_GetTicks64();
+        uint64_t frame_time = frame_end - frame_start;
+        if (frame_time < FRAME_MS)
+            SDL_Delay(FRAME_MS - frame_time);  // espera o resto do frame
+
+        float dt = (SDL_GetTicks64() - frame_start) / 1000.0f;
     }
     return 0;
 }

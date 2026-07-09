@@ -44,11 +44,13 @@ typedef struct Intent Intent;
 
 typedef enum {
     RIGHT,
+    H_IDLE,
     LEFT
 } h_directions;
 
 typedef enum {
     UP,
+    V_IDLE,
     DOWN
 } v_directions;
 

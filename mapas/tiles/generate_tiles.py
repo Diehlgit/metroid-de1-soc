@@ -82,11 +82,12 @@ def main():
     ]
 
     # externs de on_collision (cada tile tem seu próprio collision.c)
-    for t in tiles:
-        if t["on_collision"]:
-            lines.append(
-                f"extern void {t['on_collision']}(struct Entity*,struct Entity*);"
-            )
+    # externs de on_collision — usando set para deduplicar
+    callbacks = sorted(set(
+        t["on_collision"] for t in tiles if t["on_collision"]
+    ))
+    for cb in callbacks:
+        lines.append(f"extern void {cb}(struct Entity*,struct Entity*);")
     lines.append("")
 
     # pixels + sprites

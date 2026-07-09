@@ -118,8 +118,7 @@ static void game_init(void)
     int i;
     printf("entrou game init\n");
     #ifdef RUNNING_LINUX
-    *pixel_ctrl_ptr = 0xC8000000;
-    physical_back_buffer = 0xC0000000;
+    *pixel_ctrl_ptr = 0xC0000000;
     tela = (volatile uint16_t (*)[LWIDTH]) vga_mem_virtual_c8;
     #else
     uint32_t current_front_buffer = *pixel_ctrl_ptr;

@@ -1,96 +1,151 @@
-#include <stdio.h>
+#define _GNU_SOURCE
+
 #include "../include/uart.h"
 
-#define UART_BASE   0xFF201000
-#define UART_RVALID (1 << 15)
+#ifdef RUNNING_LINUX
+
+#include <stdio.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <signal.h>
+#include <linux/input.h>
+#include <stdint.h>
+
+#define KEYBOARD_DEVICE "/dev/input/event0"
+
+static int keyboard_fd = -1;
+
 static volatile char last_key = 0;
 
-#ifdef RUNNING_LINUX
-static volatile uint32_t *uart = NULL;
-#else
-static volatile uint32_t * const uart = (volatile uint32_t *) UART_BASE;
-#endif
 
-char uart_read_char(void) {
-#ifdef RUNNING_LINUX
-    char tecla = last_key;
-    last_key = 0;
-    return tecla;
-#else
-    uint32_t d = uart[0];
-    if (d & UART_RVALID)
-        return (char)(d & 0xFF);
+static void keyboard_handler(int sig)
+{
+    struct input_event ev;
+
+
+    while(read(keyboard_fd, &ev, sizeof(ev)) > 0)
+    {
+
+        if(ev.type == EV_KEY && ev.value == 1)
+        {
+
+            switch(ev.code)
+            {
+                case KEY_A:
+                    last_key='a';
+                    break;
+
+                case KEY_D:
+                    last_key='d';
+                    break;
+
+                case KEY_W:
+                    last_key='w';
+                    break;
+
+                case KEY_F:
+                    last_key='f';
+                    break;
+
+                default:
+                    break;
+            }
+        }
+    }
+}
+
+
+int uart_init(void)
+{
+
+    keyboard_fd = open(
+        KEYBOARD_DEVICE,
+        O_RDONLY | O_NONBLOCK
+    );
+
+
+    if(keyboard_fd < 0)
+    {
+        perror("keyboard");
+        return -1;
+    }
+
+
+    struct sigaction sa;
+
+    sa.sa_handler = keyboard_handler;
+    sigemptyset(&sa.sa_mask);
+    sa.sa_flags = 0;
+
+
+    if(sigaction(SIGIO,&sa,NULL)<0)
+    {
+        perror("sigaction");
+        return -1;
+    }
+
+
+    fcntl(
+        keyboard_fd,
+        F_SETOWN,
+        getpid()
+    );
+
+
+    int flags = fcntl(
+        keyboard_fd,
+        F_GETFL
+    );
+
+
+    fcntl(
+        keyboard_fd,
+        F_SETFL,
+        flags | FASYNC | O_NONBLOCK
+    );
+
 
     return 0;
-
-#endif
 }
+
+
+
+char uart_read_char(void)
+{
+    char c = last_key;
+
+    last_key = 0;
+
+    return c;
+}
+
 
 
 void uart_write_char(char c)
 {
-#ifdef RUNNING_LINUX
-
-    printf("%c", c);
+    putchar(c);
     fflush(stdout);
-
-#else
-
-    while ((uart[1] >> 16) == 0);
-
-    uart[0] = (uint32_t)c;
-
-#endif
 }
 
 
 void uart_print(const char *s)
 {
-#ifdef RUNNING_LINUX
-
-    printf("%s", s);
+    printf("%s",s);
     fflush(stdout);
-
-#else
-
-    while (*s)
-        uart_write_char(*s++);
-
-#endif
 }
+
 
 
 void uart_print_int(int n)
 {
-    char buf[12];
-    int i = 10;
-
-    buf[11] = '\0';
-
-    if (n == 0) {
-        uart_write_char('0');
-        return;
-    }
-
-    if (n < 0) {
-        uart_write_char('-');
-        n = -n;
-    }
-
-    while (n > 0 && i >= 0) {
-        buf[i--] = '0' + (n % 10);
-        n /= 10;
-    }
-
-    uart_print(buf + i + 1);
+    printf("%d",n);
+    fflush(stdout);
 }
 
 
-#ifdef RUNNING_LINUX
 
-void uart_set_key(char c)
-{
-    last_key = c;
-}
+#else
+
+// bare metal futuramente
 
 #endif

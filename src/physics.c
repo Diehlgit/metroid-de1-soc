@@ -35,9 +35,9 @@ static int try_move(Grid *g, struct Entity *mover, int new_x, int new_y) {
 
 void physics_step(Grid *g, struct Entity *e, Intent intent)
 {
-    uart_print("antes: x=");
-    uart_print_int(e->position.x);
-    uart_print("\n");
+    //uart_print("antes: x=");
+    //uart_print_int(e->position.x);
+    //uart_print("\n");
 
     if (intent.dx != 0) {
         if (try_move(g, e, e->position.x + intent.dx, e->position.y)) {
@@ -48,16 +48,16 @@ void physics_step(Grid *g, struct Entity *e, Intent intent)
     }
 
 
-    uart_print(" y=");
-    uart_print_int(e->position.y);
-    uart_print("\n");
+    //uart_print(" y=");
+    //uart_print_int(e->position.y);
+    //uart_print("\n");
 
     // gravidade
     intent.dy += GRAVITY;
 
-    uart_print("dy=");
-    uart_print_int(intent.dy);
-    uart_print("\n");
+    //uart_print("dy=");
+    //uart_print_int(intent.dy);
+    //uart_print("\n");
 
     if (intent.dy != 0) {
         if (try_move(g, e,
@@ -71,15 +71,15 @@ void physics_step(Grid *g, struct Entity *e, Intent intent)
             grid_add_entity(g, e);
         }
         else {
-            uart_print("bloqueado\n");
+            //uart_print("bloqueado\n");
         }
     }
 
-    uart_print("depois: x=");
-    uart_print_int(e->position.x);
-    uart_print(" y=");
-    uart_print_int(e->position.y);
-    uart_print("\n");
+    //uart_print("depois: x=");
+    //uart_print_int(e->position.x);
+    //uart_print(" y=");
+    //uart_print_int(e->position.y);
+    //uart_print("\n");
 }
 
 

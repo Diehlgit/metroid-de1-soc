@@ -2,11 +2,9 @@
 
 #include <stdint.h>
 
+int uart_init(void);
+
 char uart_read_char(void);
 void uart_write_char(char c);
 void uart_print(const char *s);
 void uart_print_int(int n);
-
-#ifdef RUNNING_LINUX
-void uart_set_key(char c);
-#endif

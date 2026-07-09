@@ -10,130 +10,154 @@
 #define FRAME_BUFFER0 0xC0000000
 #define FRAME_BUFFER1 0xC0100000
 
+#define PIXEL_CTRL_BASE 0xFF203020
+
 #define HW_REGS_BASE 0xFF200000
-#define HW_REGS_SPAN 0x00005000
-#define HW_REGS_MASK (HW_REGS_SPAN - 1)
+#define HW_REGS_SPAN 0x5000
+#define HW_REGS_MASK (HW_REGS_SPAN-1)
 
-#define VGA_BUFFER_SPAN (512 * 240 * 2)
+#define VGA_BUFFER_SPAN (512*240*2)
 
-static volatile uint32_t *pixel_ctrl_ptr = NULL;
-static void *vga_mem_virtual_c8 = NULL;
-static void *vga_mem_virtual_c0 = NULL;
+static volatile uint32_t *pixel_ctrl_ptr;
 
-#else
-
-static volatile uint32_t *const pixel_ctrl_ptr =
-    (volatile uint32_t *)0xFF203020;
+static void *vga_mem_virtual_c0;
+static void *vga_mem_virtual_c8;
 
 #endif
 
 
 volatile uint16_t (*tela)[LWIDTH];
 
-
-int vga_init(void)
-{
+int vga_init(void) {
 #ifdef RUNNING_LINUX
 
-    int fd = open("/dev/mem", O_RDWR | O_SYNC);
+    int fd=open(
+        "/dev/mem",
+        O_RDWR | O_SYNC
+    );
 
-    if (fd < 0) {
-        perror("open /dev/mem");
+
+    if(fd<0)
+    {
+        perror("/dev/mem");
         return -1;
     }
 
 
-    void *virtual_base =
-        mmap(NULL,
-             HW_REGS_SPAN,
-             PROT_READ | PROT_WRITE,
-             MAP_SHARED,
-             fd,
-             HW_REGS_BASE);
+
+    void *hw=mmap(
+        NULL,
+        HW_REGS_SPAN,
+        PROT_READ|PROT_WRITE,
+        MAP_SHARED,
+        fd,
+        HW_REGS_BASE
+    );
 
 
-    if (virtual_base == MAP_FAILED) {
-        perror("mmap HW");
-        close(fd);
+    if(hw==MAP_FAILED)
+    {
+        perror("hw mmap");
         return -1;
     }
+
 
 
     pixel_ctrl_ptr =
-        (volatile uint32_t *)
-        ((char *)virtual_base +
-        (0xFF203020 & HW_REGS_MASK));
+        (uint32_t*)((char*)hw +
+        (PIXEL_CTRL_BASE & HW_REGS_MASK));
 
 
-    vga_mem_virtual_c8 =
-        mmap(NULL,
-             VGA_BUFFER_SPAN,
-             PROT_READ | PROT_WRITE,
-             MAP_SHARED,
-             fd,
-             FRAME_BUFFER1);
+
+    vga_mem_virtual_c0=mmap(
+        NULL,
+        VGA_BUFFER_SPAN,
+        PROT_READ|PROT_WRITE,
+        MAP_SHARED,
+        fd,
+        FRAME_BUFFER0
+    );
 
 
-    vga_mem_virtual_c0 =
-        mmap(NULL,
-             VGA_BUFFER_SPAN,
-             PROT_READ | PROT_WRITE,
-             MAP_SHARED,
-             fd,
-             FRAME_BUFFER0);
+    vga_mem_virtual_c8=mmap(
+        NULL,
+        VGA_BUFFER_SPAN,
+        PROT_READ|PROT_WRITE,
+        MAP_SHARED,
+        fd,
+        FRAME_BUFFER1
+    );
 
 
-    if (vga_mem_virtual_c8 == MAP_FAILED ||
-        vga_mem_virtual_c0 == MAP_FAILED) {
-
-        perror("mmap framebuffer");
-        close(fd);
+    if(vga_mem_virtual_c0==MAP_FAILED ||
+       vga_mem_virtual_c8==MAP_FAILED)
+    {
+        perror("framebuffer mmap");
         return -1;
     }
 
 
+
     /*
-       Escolhe inicialmente o buffer de desenho
+       Front buffer = C0000000
+       Back buffer  = C0100000
     */
-    tela = (volatile uint16_t (*)[LWIDTH])vga_mem_virtual_c8;
+
+
+    *pixel_ctrl_ptr = FRAME_BUFFER0;
+
+
+    *(pixel_ctrl_ptr+1)=FRAME_BUFFER1;
+
+
+    tela =
+       (volatile uint16_t (*)[LWIDTH])
+       vga_mem_virtual_c8;
+
 
 
     close(fd);
 
 #endif
 
-    return 0;
+
+return 0;
+
 }
 
 
-void swap_buffers(void)
+
+
+void clear_screen(uint16_t color)
 {
+
+    for(int y=0;y<ROWS;y++)
+    {
+        for(int x=0;x<COLS;x++)
+        {
+            tela[y][x]=color;
+        }
+    }
+
+}
+
+static int no_buffer1 = 1;
+
+void swap_buffers(void) {
 #ifdef RUNNING_LINUX
-
     *pixel_ctrl_ptr = 1;
+    while ((*(pixel_ctrl_ptr+3)) & 1);
 
-    while (*(pixel_ctrl_ptr + 3) & 1);
-
-
-    uint32_t back_addr = *(pixel_ctrl_ptr + 1);
-
-
-    tela =
-        (back_addr == FRAME_BUFFER1)
-        ?
-        (volatile uint16_t (*)[LWIDTH])vga_mem_virtual_c8
-        :
-        (volatile uint16_t (*)[LWIDTH])vga_mem_virtual_c0;
-
-
-#else
-
-    *pixel_ctrl_ptr = 1;
-
-    while ((*(pixel_ctrl_ptr + 3) & 1));
-
-    tela =
-        (volatile uint16_t (*)[LWIDTH])*(pixel_ctrl_ptr + 1);
-
+    if (no_buffer1) {
+        // acabou de exibir C8, agora desenha no C0
+        *(pixel_ctrl_ptr+1) = FRAME_BUFFER0;
+        tela = (volatile uint16_t (*)[LWIDTH]) vga_mem_virtual_c0;
+        no_buffer1 = 0;
+    } else {
+        // acabou de exibir C0, agora desenha no C8
+        *(pixel_ctrl_ptr+1) = FRAME_BUFFER1;
+        tela = (volatile uint16_t (*)[LWIDTH]) vga_mem_virtual_c8;
+        no_buffer1 = 1;
+    }
 #endif
 }

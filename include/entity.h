@@ -42,6 +42,16 @@ typedef struct {
 typedef struct Grid Grid;
 typedef struct Intent Intent;
 
+typedef enum {
+    RIGHT,
+    LEFT
+} h_directions;
+
+typedef enum {
+    UP,
+    DOWN
+} v_directions;
+
 struct Entity {
   Coordinates position;
   EntityType type;

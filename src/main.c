@@ -5,17 +5,51 @@
 #include "../include/physics.h"
 #include "../generated/maps.h"
 #include "../include/vga.h"
-#ifdef RUNNING_LINUX
-#include "../include/input_linux.h"
-#endif
-
-#include <stdlib.h>   /* rand() */
+#include "../include/uart.h"
 
 /* ================================================================== */
 /*  GAME LOOP                                                         */
 /* ================================================================== */
 
 #define CELL_SIZE 16
+
+Grid* game_init(Entity *player_ptr, EntityList *ents_list) {
+    maps_init();
+
+    // 1. Busca a área e o mapa
+    Grid *area = get_grid(AREA_INICIAL);
+    EntityList *ents_area = get_entidades(AREA_INICIAL);
+
+    // 2. Configura os dados do Player diretamente no ponteiro seguro que veio do main
+    *player_ptr = (Entity){
+        .position       = { 16, 16 },
+        .type           = ENTITY_PLAYER,
+        .hitbox         = {
+            .type      = HITBOX_RECTANGLE,
+            .data      = { .rectangle = { 16, 32 } },
+            .get_cells = get_rectangle_cells,
+        },
+        .current_sprite = &SPRITE_SAMUS,
+        .think          = player_input,
+        .on_collision   = samus_collision,
+    };
+
+    // 3. Adiciona o player no grid físico
+    grid_add_entity(area, player_ptr);
+
+    // 4. Inicializa a lista de entidades do loop limpando o contador
+    ents_list->count = 0;
+    ents_list->ents[ents_list->count++] = player_ptr;
+
+    // 5. Copia as demais entidades do mapa
+    for (int i = 0; i < ents_area->count; i++) {
+        if (ents_list->count < 256) { // Proteção contra estouro de array
+            ents_list->ents[ents_list->count++] = ents_area->ents[i];
+        }
+    }
+
+    return area; // Retorna o ponteiro correto para o main salvar
+}
 
 static void game_loop(Grid *g, EntityList *list) {
     Intent intents[256];
@@ -24,7 +58,6 @@ static void game_loop(Grid *g, EntityList *list) {
         intents[i] = e->think ? e->think(g, e) : (Intent){0};
     }
 
-    // aplica tudo depois
     for (int i = 0; i < list->count; i++) {
         struct Entity *e  = list->ents[i];
         Intent        *it = &intents[i];
@@ -38,58 +71,35 @@ static void game_loop(Grid *g, EntityList *list) {
 
         if (it->destroy_self) {
             grid_remove_entity(g, e);
-            // swap com o último para remover da lista
             list->ents[i] = list->ents[--list->count];
-            i--;  // revisita essa posição
+            i--;
         }
     }
 }
 
 int main(void) {
+    if (vga_init() < 0) return 1;
+
     #ifdef RUNNING_LINUX
-        if (input_init() < 0)
-            return 1;
+        if (uart_init() < 0) return 1;
     #endif
 
-    if (vga_init() < 0)
-        return 1;
+    uart_print("UART OK\n");
+    clear_screen(0x0000);
 
-    // Cria a entidade Player
-    Entity Samus = {
-        .position       = { 16,16 },
-        .type           = ENTITY_PLAYER,
-        .hitbox         = {
-            .type      = HITBOX_RECTANGLE,
-            .data      = { .rectangle={ 16, 32 } },
-            .get_cells = get_rectangle_cells,
-        },
-        .current_sprite = &SPRITE_SAMUS,
-        .think          = player_input,
-        .on_collision   = samus_collision,
-    };
-
-    maps_init();
-    Grid *area = get_grid(AREA_INICIAL);
-    EntityList *ents_area   = get_entidades(AREA_INICIAL);
-
-    EntityList entidades = { .ents = {&Samus}, .count = 1 };
-    for (int i = 0; i < ents_area->count; i++) {
-        entidades.ents[entidades.count++] = ents_area->ents[i];
-    }
-
-    grid_add_entity(area, &Samus);
-    swap_buffers();
+    Entity Samus;
+    EntityList entidades;
+    Grid *area = game_init(&Samus, &entidades);
 
     while (1) {
-        // desenha sempre no buffer invisível
+        clear_screen(0x0000);
+
         Coordinates samus_pos = entidades.ents[0]->position;
         print_game(tela, area, samus_pos, CELL_SIZE);
 
-        // lógica
-        game_loop(area, &entidades);
-
-        // exibe o que foi desenhado e libera o outro buffer para o próximo frame
         swap_buffers();
+
+        game_loop(area, &entidades);
     }
     return 0;
 }

@@ -2,6 +2,7 @@
 #include "../include/entity.h"
 #include "../include/grid.h"
 #include "../include/physics.h"
+#include "../include/uart.h"
 
 #define GRAVITY 2
 
@@ -32,7 +33,58 @@ static int try_move(Grid *g, struct Entity *mover, int new_x, int new_y) {
     return !blocked;
 }
 
-void physics_step(Grid *g, struct Entity *e, Intent intent) {
+void physics_step(Grid *g, struct Entity *e, Intent intent)
+{
+    uart_print("antes: x=");
+    uart_print_int(e->position.x);
+    uart_print("\n");
+
+    if (intent.dx != 0) {
+        if (try_move(g, e, e->position.x + intent.dx, e->position.y)) {
+            grid_remove_entity(g, e);
+            e->position.x += intent.dx;
+            grid_add_entity(g, e);
+        }
+    }
+
+
+    uart_print(" y=");
+    uart_print_int(e->position.y);
+    uart_print("\n");
+
+    // gravidade
+    intent.dy += GRAVITY;
+
+    uart_print("dy=");
+    uart_print_int(intent.dy);
+    uart_print("\n");
+
+    if (intent.dy != 0) {
+        if (try_move(g, e,
+                     e->position.x,
+                     e->position.y + intent.dy))
+        {
+            grid_remove_entity(g, e);
+
+            e->position.y += intent.dy;
+
+            grid_add_entity(g, e);
+        }
+        else {
+            uart_print("bloqueado\n");
+        }
+    }
+
+    uart_print("depois: x=");
+    uart_print_int(e->position.x);
+    uart_print(" y=");
+    uart_print_int(e->position.y);
+    uart_print("\n");
+}
+
+
+
+/* void physics_step(Grid *g, struct Entity *e, Intent intent) {
     // 1. Movimento horizontal
     if (intent.dx != 0) {
         if (try_move(g, e, e->position.x + intent.dx, e->position.y)) {
@@ -53,4 +105,4 @@ void physics_step(Grid *g, struct Entity *e, Intent intent) {
             grid_add_entity(g, e);
         }
     }
-}
+    }*/

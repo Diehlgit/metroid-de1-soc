@@ -5,6 +5,9 @@
 #include "../include/physics.h"
 #include "../generated/maps.h"
 #include "../include/vga.h"
+#ifdef RUNNING_LINUX
+#include "../include/input_linux.h"
+#endif
 
 #include <stdlib.h>   /* rand() */
 
@@ -25,9 +28,7 @@ static void game_loop(Grid *g, EntityList *list) {
     for (int i = 0; i < list->count; i++) {
         struct Entity *e  = list->ents[i];
         Intent        *it = &intents[i];
-
-        if (it->dx || it->dy)
-            physics_step(g, e, *it);
+        physics_step(g, e, *it);
 
         for (int s = 0; s < it->spawn_count; s++) {
             grid_add_entity(g, it->spawns[s]);
@@ -45,6 +46,11 @@ static void game_loop(Grid *g, EntityList *list) {
 }
 
 int main(void) {
+    #ifdef RUNNING_LINUX
+        if (input_init() < 0)
+            return 1;
+    #endif
+
     if (vga_init() < 0)
         return 1;
 

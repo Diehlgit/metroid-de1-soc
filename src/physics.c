@@ -33,9 +33,11 @@ static int try_move(Grid *g, struct Entity *mover, int new_x, int new_y) {
         struct Entity *other = hit.ents[i];
         if (other == mover) continue;
         if (is_solid(other)) {
+            if (mover->type == ENTITY_PROJECTILE) {
+                mover->should_destroy = 1;
+            }
             blocked = 1;
         } else {
-            // não bloqueia, mas dispara callbacks
             if (other->on_collision) other->on_collision(other, mover);
             if (mover->on_collision) mover->on_collision(mover, other);
         }
@@ -45,6 +47,12 @@ static int try_move(Grid *g, struct Entity *mover, int new_x, int new_y) {
 
 void physics_step(Grid *g, struct Entity *e, Intent intent)
 {
+
+    if (e->should_destroy) {
+        grid_remove_entity(g, e);
+        return;
+    }
+
 	// ajustamos a velocidade da entidade de acordo com a aceleração da intenção
 	// na coordenada x o que mata a velocidade é a fricção
 	e->velocity.x = clampi(e->velocity.x + intent.ax, -MAX_VEL, MAX_VEL);	
@@ -54,12 +62,19 @@ void physics_step(Grid *g, struct Entity *e, Intent intent)
     //uart_print("\n");
 
 	if (try_move(g, e, e->position.x + e->velocity.x, e->position.y)) {
-		grid_remove_entity(g, e);
+        grid_remove_entity(g, e);
     	e->position.x += e->velocity.x;
-        grid_add_entity(g, e);
+        if (!e->should_destroy) {
+            grid_add_entity(g, e);
+        }
     } else {
 		e->velocity.x = 0;
 	}
+
+    if (e->should_destroy) {
+        grid_remove_entity(g, e);
+        return;
+    }
     
     //uart_print(" y=");
     //uart_print_int(e->position.y);
@@ -78,11 +93,18 @@ void physics_step(Grid *g, struct Entity *e, Intent intent)
 	if (try_move(g, e, e->position.x, e->position.y + e->velocity.y)) {
     	grid_remove_entity(g, e);
         e->position.y += e->velocity.y;
-        grid_add_entity(g, e);
+        if (!e->should_destroy) {
+            grid_add_entity(g, e);
+        }
     } else {
 		if (e->velocity.y > 0) on_ground = 1;
 		e->velocity.y = 0;
 	}
+
+    if (e->should_destroy) {
+        grid_remove_entity(g, e);
+        return;
+    }
 
 	if (on_ground) {
 		if (e->velocity.x > 0) e->velocity.x -= FRICTION;

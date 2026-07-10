@@ -57,7 +57,7 @@ Grid* game_init(Entity *player_ptr, EntityList *ents_list) {
 
 static void game_loop(Grid *g, EntityList *list) {
     Intent intents[256];
-	for (int i = 0; i < list->count; i++) {
+    for (int i = 0; i < list->count; i++) {
         struct Entity *e = list->ents[i];
         intents[i] = e->think ? e->think(g, e) : (Intent){0};
     }
@@ -69,14 +69,16 @@ static void game_loop(Grid *g, EntityList *list) {
 
         for (int s = 0; s < it->spawn_count; s++) {
             grid_add_entity(g, it->spawns[s]);
-            if (list->count < 256)
+            if (list->count < 256) {
                 list->ents[list->count++] = it->spawns[s];
+            }
         }
 
-        if (it->destroy_self) {
+        if (it->destroy_self || e->should_destroy) {
             grid_remove_entity(g, e);
             list->ents[i] = list->ents[--list->count];
             i--;
+            continue;
         }
     }
 }

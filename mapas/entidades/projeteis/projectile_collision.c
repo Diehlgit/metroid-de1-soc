@@ -1,9 +1,12 @@
 #include "../../../include/entity.h"
+#include "stdio.h"
 
 void projectile_collision(Entity *self, Entity *others) {
     if (others->type == ENTITY_WALL
      || others->type == ENTITY_ENEMY
-     || others->type == ENTITY_TILE){
+     || others->type == ENTITY_TILE
+     || others->type == ENTITY_PROJECTILE){
+        printf("tocando parede\n");
         self->should_destroy = 1;
     }
 }

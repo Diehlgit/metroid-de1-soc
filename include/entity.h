@@ -44,13 +44,11 @@ typedef struct Intent Intent;
 
 typedef enum {
     RIGHT,
-    H_IDLE,
     LEFT
 } h_directions;
 
 typedef enum {
     UP,
-    V_IDLE,
     DOWN
 } v_directions;
 
@@ -60,6 +58,8 @@ struct Entity {
   EntityType type;
   Hitbox hitbox;
   Sprite *current_sprite;
+  h_directions facing;
+  int should_destroy;
   Intent (*think)(Grid *grid, struct Entity *self);
   void (*on_collision)(struct Entity *self, struct Entity *other);
 };

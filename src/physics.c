@@ -3,6 +3,7 @@
 #include "../include/grid.h"
 #include "../include/physics.h"
 #include "../include/uart.h"
+#include <stdio.h>
 
 #define GRAVITY 1
 #define FRICTION 1 
@@ -65,7 +66,8 @@ void physics_step(Grid *g, struct Entity *e, Intent intent)
     //uart_print("\n");
 
     // aceleração vertical 
-    e->velocity.y = clampi(e->velocity.y + GRAVITY + intent.ay, -MAX_VEL, MAX_VEL);
+    if (e->type != ENTITY_PROJECTILE)
+        e->velocity.y = clampi(e->velocity.y + GRAVITY + intent.ay, -MAX_VEL, MAX_VEL);
 
     //uart_print("dy=");
     //uart_print_int(intent.dy);

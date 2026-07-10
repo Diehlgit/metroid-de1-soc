@@ -26,6 +26,8 @@ Grid* game_init(Entity *player_ptr, EntityList *ents_list) {
         .position       = { 16, 16 },
 		.velocity 		= { 0, 0 },
 		.type           = ENTITY_PLAYER,
+        .facing         = RIGHT,
+        .should_destroy = 0,
         .hitbox         = {
             .type      = HITBOX_RECTANGLE,
             .data      = { .rectangle = { 16, 32 } },

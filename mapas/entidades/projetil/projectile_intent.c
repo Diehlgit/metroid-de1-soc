@@ -1,0 +1,14 @@
+#include "../../../include/physics.h"
+#include "../../../generated/entidades.h"
+#include <stdio.h>
+
+Intent projectile_intent(Grid *grid, Entity *self) {
+    Intent intent = {0};
+
+    if (self->should_destroy) {
+        intent.destroy_self = 1;
+        printf("PENSOU EM DESTRUIÇÃO\n");
+    }
+
+    return intent;
+}

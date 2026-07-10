@@ -10,6 +10,8 @@ extern CellList get_triangle_cells (Hitbox*,Coordinates,int);
 
 extern void samus_collision(struct Entity*,struct Entity*);
 extern Intent player_input(Grid *grid, struct Entity *self);
+extern void projectile_collision(struct Entity*,struct Entity*);
+extern Intent projectile_intent(Grid *grid, struct Entity *self);
 
 static const uint16_t SAMUS_PIXELS[512] = {
     0x8001, 0x8001, 0x8001, 0x8001, 0x8001, 0x7BEF, 0x7BEF, 0x7BEF, 0x8001, 0x8001, 0x8001, 0x8001, 0x8001, 0x8001, 0x8001, 0x8001,
@@ -50,6 +52,17 @@ static Sprite SPRITE_SAMUS = {
     .pixels=(uint16_t*)SAMUS_PIXELS,
 };
 
+static const uint16_t SAMUS_PROJECTILE_PIXELS[16] = {
+    0x8001, 0xF880, 0xF880, 0x8001,
+    0xF880, 0xFEE0, 0xFEE0, 0xF880,
+    0xF880, 0xFEE0, 0xFEE0, 0xF880,
+    0x8001, 0xF880, 0xF880, 0x8001,
+};
+static Sprite SPRITE_SAMUS_PROJECTILE = {
+    .height=4, .width=4,
+    .pixels=(uint16_t*)SAMUS_PROJECTILE_PIXELS,
+};
+
 typedef struct {
     const char *name;
     EntityType  type;
@@ -72,8 +85,20 @@ static EntidadeInfo ENTIDADE_REGISTRY[] = {
         .on_collision=samus_collision,
         .think=player_input,
     },
+    { /* samus_projectile */
+        .name           = "samus_projectile",
+        .type           = ENTITY_PROJECTILE,
+        .default_sprite = &SPRITE_SAMUS_PROJECTILE,
+        .hitbox={
+            .type      = HITBOX_CIRCLE,
+            .data      = { .circle    = { 16 } },
+            .get_cells = get_circle_cells,
+        },
+        .on_collision=projectile_collision,
+        .think=projectile_intent,
+    },
 };
-static int ENTIDADE_REGISTRY_SIZE=1;
+static int ENTIDADE_REGISTRY_SIZE=2;
 
 static EntidadeInfo* entidade_info_by_name(const char *name){
     for(int i=0;i<ENTIDADE_REGISTRY_SIZE;i++)

@@ -33,5 +33,12 @@
     "entity_type": "ENTITY_PROJECTILE",
     "sm_starting_state": "moving",
     "sm_transition_func": "generic_transition"
+  },
+  "samus_projectile": {
+    "color": [255, 0, 0],
+    "hitbox" : {"type" : "circle", "radius": 16},
+    "entity_type" : "ENTITY_PROJECTILE",
+    "sm_starting_state": "moving",
+    "sm_transition_func": "generic_transition"
   }
 }

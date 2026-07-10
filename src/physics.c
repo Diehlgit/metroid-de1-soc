@@ -4,7 +4,16 @@
 #include "../include/physics.h"
 #include "../include/uart.h"
 
-#define GRAVITY 2
+#define GRAVITY 1
+#define FRICTION 1 
+#define MAX_VEL 8
+
+
+static int clampi(int v, int lo, int hi) {
+    if (v < lo) return lo;
+    if (v > hi) return hi;
+    return v;
+}
 
 static int is_solid(struct Entity *e) {
     return e->type == ENTITY_TILE  ||
@@ -35,45 +44,48 @@ static int try_move(Grid *g, struct Entity *mover, int new_x, int new_y) {
 
 void physics_step(Grid *g, struct Entity *e, Intent intent)
 {
-    //uart_print("antes: x=");
+	// ajustamos a velocidade da entidade de acordo com a aceleração da intenção
+	// na coordenada x o que mata a velocidade é a fricção
+	e->velocity.x = clampi(e->velocity.x + intent.ax, -MAX_VEL, MAX_VEL);	
+	
+	//uart_print("antes: x=");
     //uart_print_int(e->position.x);
     //uart_print("\n");
 
-    if (intent.dx != 0) {
-        if (try_move(g, e, e->position.x + intent.dx, e->position.y)) {
-            grid_remove_entity(g, e);
-            e->position.x += intent.dx;
-            grid_add_entity(g, e);
-        }
-    }
-
-
+	if (try_move(g, e, e->position.x + e->velocity.x, e->position.y)) {
+		grid_remove_entity(g, e);
+    	e->position.x += e->velocity.x;
+        grid_add_entity(g, e);
+    } else {
+		e->velocity.x = 0;
+	}
+    
     //uart_print(" y=");
     //uart_print_int(e->position.y);
     //uart_print("\n");
 
-    // gravidade
-    intent.dy += GRAVITY;
+    // aceleração vertical 
+    e->velocity.y = clampi(e->velocity.y + GRAVITY + intent.ay, -MAX_VEL, MAX_VEL);
 
     //uart_print("dy=");
     //uart_print_int(intent.dy);
     //uart_print("\n");
 
-    if (intent.dy != 0) {
-        if (try_move(g, e,
-                     e->position.x,
-                     e->position.y + intent.dy))
-        {
-            grid_remove_entity(g, e);
+	int on_ground = 0;
 
-            e->position.y += intent.dy;
+	if (try_move(g, e, e->position.x, e->position.y + e->velocity.y)) {
+    	grid_remove_entity(g, e);
+        e->position.y += e->velocity.y;
+        grid_add_entity(g, e);
+    } else {
+		if (e->velocity.y > 0) on_ground = 1;
+		e->velocity.y = 0;
+	}
 
-            grid_add_entity(g, e);
-        }
-        else {
-            //uart_print("bloqueado\n");
-        }
-    }
+	if (on_ground) {
+		if (e->velocity.x > 0) e->velocity.x -= FRICTION;
+		if (e->velocity.x < 0) e->velocity.x += FRICTION;
+	}
 
     //uart_print("depois: x=");
     //uart_print_int(e->position.x);

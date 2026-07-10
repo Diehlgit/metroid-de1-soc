@@ -24,7 +24,8 @@ Grid* game_init(Entity *player_ptr, EntityList *ents_list) {
     // 2. Configura os dados do Player diretamente no ponteiro seguro que veio do main
     *player_ptr = (Entity){
         .position       = { 16, 16 },
-        .type           = ENTITY_PLAYER,
+		.velocity 		= { 0, 0 },
+		.type           = ENTITY_PLAYER,
         .hitbox         = {
             .type      = HITBOX_RECTANGLE,
             .data      = { .rectangle = { 16, 32 } },
@@ -54,7 +55,7 @@ Grid* game_init(Entity *player_ptr, EntityList *ents_list) {
 
 static void game_loop(Grid *g, EntityList *list) {
     Intent intents[256];
-    for (int i = 0; i < list->count; i++) {
+	for (int i = 0; i < list->count; i++) {
         struct Entity *e = list->ents[i];
         intents[i] = e->think ? e->think(g, e) : (Intent){0};
     }
@@ -88,7 +89,7 @@ int main(void) {
     EntityList entidades;
     Grid *area = game_init(&Samus, &entidades);
 
-    while (1) {
+	while (1) {
         uint64_t frame_start = SDL_GetTicks64();
 
 

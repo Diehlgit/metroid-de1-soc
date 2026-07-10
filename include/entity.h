@@ -56,6 +56,7 @@ typedef enum {
 
 struct Entity {
   Coordinates position;
+  Coordinates velocity;
   EntityType type;
   Hitbox hitbox;
   Sprite *current_sprite;

@@ -6,11 +6,13 @@
 #include "../generated/maps.h"
 #include "../include/vga.h"
 #include "../include/uart.h"
+#include <time.h>
 
 /* ================================================================== */
 /*  GAME LOOP                                                         */
 /* ================================================================== */
 
+#define TARGET_NS (1000000000L / 60)
 #define CELL_SIZE 16
 
 Grid* game_init(Entity *player_ptr, EntityList *ents_list) {
@@ -79,12 +81,8 @@ static void game_loop(Grid *g, EntityList *list) {
 
 int main(void) {
     if (vga_init() < 0) return 1;
+    if (uart_init() < 0) return 1;
 
-    #ifdef RUNNING_LINUX
-        if (uart_init() < 0) return 1;
-    #endif
-
-    uart_print("UART OK\n");
     clear_screen(0x0000);
 
     Entity Samus;
@@ -92,14 +90,27 @@ int main(void) {
     Grid *area = game_init(&Samus, &entidades);
 
     while (1) {
-        clear_screen(0x0000);
+        struct timespec frame_start, frame_end;
+        clock_gettime(CLOCK_MONOTONIC, &frame_start);
 
+
+        clear_screen(0x0000);
         Coordinates samus_pos = entidades.ents[0]->position;
         print_game(tela, area, samus_pos, CELL_SIZE);
-
         swap_buffers();
-
         game_loop(area, &entidades);
+
+
+        clock_gettime(CLOCK_MONOTONIC, &frame_end);
+        long elapsed = (frame_end.tv_sec  - frame_start.tv_sec)  * 1000000000L + (frame_end.tv_nsec - frame_start.tv_nsec);
+
+        if (elapsed < TARGET_NS) {
+            struct timespec sleep_time = {
+                .tv_sec  = 0,
+                .tv_nsec = TARGET_NS - elapsed
+            };
+            nanosleep(&sleep_time, NULL);
+        }
     }
     return 0;
 }

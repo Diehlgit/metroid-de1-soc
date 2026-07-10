@@ -1,8 +1,4 @@
 #include "../include/vga.h"
-
-#ifdef RUNNING_LINUX
-
-#include <stdio.h>
 #include <fcntl.h>
 #include <sys/mman.h>
 #include <unistd.h>
@@ -23,27 +19,16 @@ static volatile uint32_t *pixel_ctrl_ptr;
 static void *vga_mem_virtual_c0;
 static void *vga_mem_virtual_c8;
 
-#endif
-
 
 volatile uint16_t (*tela)[LWIDTH];
 
 int vga_init(void) {
-#ifdef RUNNING_LINUX
+    int fd=open("/dev/mem", O_RDWR | O_SYNC);
 
-    int fd=open(
-        "/dev/mem",
-        O_RDWR | O_SYNC
-    );
-
-
-    if(fd<0)
-    {
+    if(fd < 0) {
         perror("/dev/mem");
         return -1;
     }
-
-
 
     void *hw=mmap(
         NULL,
@@ -54,20 +39,12 @@ int vga_init(void) {
         HW_REGS_BASE
     );
 
-
-    if(hw==MAP_FAILED)
-    {
+    if(hw == MAP_FAILED) {
         perror("hw mmap");
         return -1;
     }
 
-
-
-    pixel_ctrl_ptr =
-        (uint32_t*)((char*)hw +
-        (PIXEL_CTRL_BASE & HW_REGS_MASK));
-
-
+    pixel_ctrl_ptr = (uint32_t*)((char*)hw + (PIXEL_CTRL_BASE & HW_REGS_MASK));
 
     vga_mem_virtual_c0=mmap(
         NULL,
@@ -89,62 +66,32 @@ int vga_init(void) {
     );
 
 
-    if(vga_mem_virtual_c0==MAP_FAILED ||
-       vga_mem_virtual_c8==MAP_FAILED)
-    {
+    if(vga_mem_virtual_c0==MAP_FAILED ||vga_mem_virtual_c8==MAP_FAILED) {
         perror("framebuffer mmap");
         return -1;
     }
 
-
-
-    /*
-       Front buffer = C0000000
-       Back buffer  = C0100000
-    */
-
-
     *pixel_ctrl_ptr = FRAME_BUFFER0;
-
-
     *(pixel_ctrl_ptr+1)=FRAME_BUFFER1;
 
 
-    tela =
-       (volatile uint16_t (*)[LWIDTH])
-       vga_mem_virtual_c8;
-
-
-
+    tela = (volatile uint16_t (*)[LWIDTH]) vga_mem_virtual_c8;
     close(fd);
 
-#endif
-
-
-return 0;
-
+    return 0;
 }
 
-
-
-
-void clear_screen(uint16_t color)
-{
-
-    for(int y=0;y<ROWS;y++)
-    {
-        for(int x=0;x<COLS;x++)
-        {
+void clear_screen(uint16_t color) {
+    for(int y=0;y<ROWS;y++) {
+        for(int x=0;x<COLS;x++) {
             tela[y][x]=color;
         }
     }
-
 }
 
 static int no_buffer1 = 1;
 
 void swap_buffers(void) {
-#ifdef RUNNING_LINUX
     *pixel_ctrl_ptr = 1;
     while ((*(pixel_ctrl_ptr+3)) & 1);
 
@@ -159,5 +106,4 @@ void swap_buffers(void) {
         tela = (volatile uint16_t (*)[LWIDTH]) vga_mem_virtual_c8;
         no_buffer1 = 1;
     }
-#endif
 }

@@ -2,8 +2,6 @@
 
 #include "../include/uart.h"
 
-#ifdef RUNNING_LINUX
-
 #include <stdio.h>
 #include <fcntl.h>
 #include <unistd.h>
@@ -18,19 +16,14 @@ static int keyboard_fd = -1;
 static volatile char last_key = 0;
 
 
-static void keyboard_handler(int sig)
-{
+static void keyboard_handler(int sig) {
     struct input_event ev;
 
+    while(read(keyboard_fd, &ev, sizeof(ev)) > 0) {
 
-    while(read(keyboard_fd, &ev, sizeof(ev)) > 0)
-    {
+        if(ev.type == EV_KEY && ev.value == 1) {
 
-        if(ev.type == EV_KEY && ev.value == 1)
-        {
-
-            switch(ev.code)
-            {
+            switch(ev.code) {
                 case KEY_A:
                     last_key='a';
                     break;
@@ -55,21 +48,16 @@ static void keyboard_handler(int sig)
 }
 
 
-int uart_init(void)
-{
-
+int uart_init(void) {
     keyboard_fd = open(
         KEYBOARD_DEVICE,
         O_RDONLY | O_NONBLOCK
     );
 
-
-    if(keyboard_fd < 0)
-    {
+    if(keyboard_fd < 0) {
         perror("keyboard");
         return -1;
     }
-
 
     struct sigaction sa;
 
@@ -78,12 +66,10 @@ int uart_init(void)
     sa.sa_flags = 0;
 
 
-    if(sigaction(SIGIO,&sa,NULL)<0)
-    {
+    if(sigaction(SIGIO,&sa,NULL)<0) {
         perror("sigaction");
         return -1;
     }
-
 
     fcntl(
         keyboard_fd,
@@ -91,12 +77,10 @@ int uart_init(void)
         getpid()
     );
 
-
     int flags = fcntl(
         keyboard_fd,
         F_GETFL
     );
-
 
     fcntl(
         keyboard_fd,
@@ -104,48 +88,29 @@ int uart_init(void)
         flags | FASYNC | O_NONBLOCK
     );
 
-
     return 0;
 }
 
 
 
-char uart_read_char(void)
-{
+char uart_read_char(void) {
     char c = last_key;
-
     last_key = 0;
-
     return c;
 }
 
-
-
-void uart_write_char(char c)
-{
+void uart_write_char(char c) {
     putchar(c);
     fflush(stdout);
 }
 
 
-void uart_print(const char *s)
-{
+void uart_print(const char *s) {
     printf("%s",s);
     fflush(stdout);
 }
 
-
-
-void uart_print_int(int n)
-{
+void uart_print_int(int n) {
     printf("%d",n);
     fflush(stdout);
 }
-
-
-
-#else
-
-// bare metal futuramente
-
-#endif

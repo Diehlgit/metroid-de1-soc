@@ -2,6 +2,8 @@
 #include "../../../include/physics.h"
 #include "scorpion.h"
 
+void scorpion_collision(Entity *self, Entity *others){}
+
 typedef enum {
     IDLE,
     SHOOTING,
@@ -12,30 +14,30 @@ static State idle;
 static State shooting;
 static State walking;
 
-static bool idle_evaluate_entry(Entity *self, State *current, State *next) {}
-static bool idle_evaluate_exit(Entity *self, State *current, State *next) {}
+static bool idle_evaluate_entry(Entity *self, State *next) {}
+static bool idle_evaluate_exit(Entity *self, State *next) {}
 
-static bool shooting_evaluate_entry(Entity *self, State *current, State *next) {}
-static bool shooting_evaluate_exit(Entity *self, State *current, State *next) {}
+static bool shooting_evaluate_entry(Entity *self, State *next) {}
+static bool shooting_evaluate_exit(Entity *self, State *next) {}
 
-static bool walking_evaluate_entry(Entity *self, State *current, State *next) {}
-static bool walking_evaluate_exit(Entity *self, State *current, State *next) {}
+static bool walking_evaluate_entry(Entity *self, State *next) {}
+static bool walking_evaluate_exit(Entity *self, State *next) {}
 
 
-static Intent default_input(Entity *self, char key) {
+static Intent default_input(Grid *grid, Entity *self) {
     Intent intent = {0};
     return intent;
 }
 
-static Intent idle_input(Entity *self, char key) {
+static Intent idle_input(Grid *grid, Entity *self) {
     Intent intent = {0};
     return intent;
 }
-static Intent shooting_input(Entity *self, char key) {
+static Intent shooting_input(Grid *grid, Entity *self) {
     Intent intent = {0};
     return intent;
 }
-static Intent walking_input(Entity *self, char key) {
+static Intent walking_input(Grid *grid, Entity *self) {
     Intent intent = {0};
     return intent;
 }
@@ -47,6 +49,7 @@ static State idle = {
     .animation            = &anim_idle,
     .evaluate_entry       = NULL,
     .evaluate_exit        = NULL,
+    .decide_input         = NULL,
 };
 static State shooting = {
     .id                    = SHOOTING,
@@ -55,6 +58,7 @@ static State shooting = {
     .animation            = &anim_shooting,
     .evaluate_entry       = NULL,
     .evaluate_exit        = NULL,
+    .decide_input         = NULL,
 };
 static State walking = {
     .id                    = WALKING,
@@ -63,13 +67,29 @@ static State walking = {
     .animation            = &anim_walking,
     .evaluate_entry       = NULL,
     .evaluate_exit        = NULL,
+    .decide_input         = NULL,
 };
 
 Intent scorpion_ai(Grid *grid, Entity *self) {
-
     State *s = self->sm.current_state;
-    if (s->handle_input)
-        return s->handle_input(self);
+    if (s->decide_input)
+        return s->decide_input(grid, self);
     return (Intent){0};
 }
-void scorpion_collision(Entity *self, Entity *others){}
+
+const Entity *scorpion_create(int x, int y, int h_dir, int v_dir){
+    Entity *e = entity_alloc();
+    e->position     = (Coordinates){y, x};
+    e->velocity     = (Coordinates){0, 0};
+    e->type         = ENTITY_ENEMY;
+    e->orientation  = (Orientation){ h_dir, v_dir};
+    e->hitbox       = (Hitbox){
+        .type       = HITBOX_RECTANGLE,
+        .data       = { .rectangle={ 32, 16 } },
+        .get_cells  = get_rectangle_cells,
+    };
+    e->sm.current_state = &idle;
+    e->sm.transition    = generic_transition;
+    e->on_collision     = scorpion_collision;
+    return e;
+};

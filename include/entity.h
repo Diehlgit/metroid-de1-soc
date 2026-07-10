@@ -21,7 +21,7 @@ typedef enum {
 typedef struct {
     h_directions h_direction;
     v_directions v_direction;
-} orientation;
+} Orientation;
 
 typedef enum {
     ENTITY_PLAYER,
@@ -45,10 +45,10 @@ typedef struct {
 } Sprite;
 
 typedef struct {
-    Sprite **frames;       // array de frames
+    Sprite **frames;       // array de sprites
     int      frame_count;
-    int      frame_duration; // frames de jogo por frame de animação
-    int      loops;          // 0 = loop infinito, 1 = toca uma vez
+    int      frame_duration;
+    int      loops;          // 0 = em loop, 1 = toca uma vez
 } Animation;
 
 
@@ -60,7 +60,7 @@ typedef struct State State;
 typedef struct Grid Grid;
 typedef struct Intent Intent;
 
-typedef bool (*StateGuard)(Entity *self, State *current, State *next);
+typedef bool (*StateGuard)(Entity *self, State *next);
 
 typedef struct State {
     int                id;
@@ -73,7 +73,7 @@ typedef struct State {
     StateGuard evaluate_entry;
     StateGuard evaluate_exit;
 
-    Intent (*handle_input)(Entity *self, char key);
+    Intent (*decide_input)(Grid *grid, Entity *self);
 } State;
 
 typedef struct {
@@ -83,10 +83,10 @@ typedef struct {
 
 struct Entity {
   Coordinates position;
+  Coordinates velocity;
   EntityType type;
+  Orientation orientation;
   Hitbox hitbox;
-  Sprite *current_sprite;
-  orientation orientation;
 
   void *data;
   StateMachine sm;
@@ -113,11 +113,14 @@ static void generic_transition(Entity *self, State *next) {
     if (!found) return;
 
     // avalia guards
-    if (current->evaluate_exit  && !current->evaluate_exit(self, current, next))  return;
-    if (next->evaluate_entry    && !next->evaluate_entry(self, current, next))    return;
+    if (current->evaluate_exit  && !current->evaluate_exit(self, next))  return;
+    if (next->evaluate_entry    && !next->evaluate_entry(self, next))    return;
 
     self->sm.current_state = next;
     // animação será atualizada pelo animation_tick no próximo frame
 }
+
+Entity *entity_alloc(void);
+void entity_pool_reset(void);
 
 #endif

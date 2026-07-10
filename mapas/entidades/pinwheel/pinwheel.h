@@ -220,3 +220,4 @@ static Animation anim_walking = {
     .loops           = 0,
 };
 
+extern const Entity PINWHEEL_TEMPLATE;

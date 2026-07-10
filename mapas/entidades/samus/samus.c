@@ -2,6 +2,8 @@
 #include "../../../include/physics.h"
 #include "samus.h"
 
+void samus_collision(Entity *self, Entity *others){}
+
 typedef enum {
     BALLING,
     HIT,
@@ -18,51 +20,51 @@ static State jumping;
 static State kneeling;
 static State walking;
 
-static bool balling_evaluate_entry(Entity *self, State *current, State *next) {}
-static bool balling_evaluate_exit(Entity *self, State *current, State *next) {}
+static bool balling_evaluate_entry(Entity *self, State *next) {}
+static bool balling_evaluate_exit(Entity *self, State *next) {}
 
-static bool hit_evaluate_entry(Entity *self, State *current, State *next) {}
-static bool hit_evaluate_exit(Entity *self, State *current, State *next) {}
+static bool hit_evaluate_entry(Entity *self, State *next) {}
+static bool hit_evaluate_exit(Entity *self, State *next) {}
 
-static bool idle_evaluate_entry(Entity *self, State *current, State *next) {}
-static bool idle_evaluate_exit(Entity *self, State *current, State *next) {}
+static bool idle_evaluate_entry(Entity *self, State *next) {}
+static bool idle_evaluate_exit(Entity *self, State *next) {}
 
-static bool jumping_evaluate_entry(Entity *self, State *current, State *next) {}
-static bool jumping_evaluate_exit(Entity *self, State *current, State *next) {}
+static bool jumping_evaluate_entry(Entity *self, State *next) {}
+static bool jumping_evaluate_exit(Entity *self, State *next) {}
 
-static bool kneeling_evaluate_entry(Entity *self, State *current, State *next) {}
-static bool kneeling_evaluate_exit(Entity *self, State *current, State *next) {}
+static bool kneeling_evaluate_entry(Entity *self, State *next) {}
+static bool kneeling_evaluate_exit(Entity *self, State *next) {}
 
-static bool walking_evaluate_entry(Entity *self, State *current, State *next) {}
-static bool walking_evaluate_exit(Entity *self, State *current, State *next) {}
+static bool walking_evaluate_entry(Entity *self, State *next) {}
+static bool walking_evaluate_exit(Entity *self, State *next) {}
 
 
-static Intent default_input(Entity *self, char key) {
+static Intent default_input(Grid *grid, Entity *self) {
     Intent intent = {0};
     return intent;
 }
 
-static Intent balling_input(Entity *self, char key) {
+static Intent balling_input(Grid *grid, Entity *self) {
     Intent intent = {0};
     return intent;
 }
-static Intent hit_input(Entity *self, char key) {
+static Intent hit_input(Grid *grid, Entity *self) {
     Intent intent = {0};
     return intent;
 }
-static Intent idle_input(Entity *self, char key) {
+static Intent idle_input(Grid *grid, Entity *self) {
     Intent intent = {0};
     return intent;
 }
-static Intent jumping_input(Entity *self, char key) {
+static Intent jumping_input(Grid *grid, Entity *self) {
     Intent intent = {0};
     return intent;
 }
-static Intent kneeling_input(Entity *self, char key) {
+static Intent kneeling_input(Grid *grid, Entity *self) {
     Intent intent = {0};
     return intent;
 }
-static Intent walking_input(Entity *self, char key) {
+static Intent walking_input(Grid *grid, Entity *self) {
     Intent intent = {0};
     return intent;
 }
@@ -74,6 +76,7 @@ static State balling = {
     .animation            = &anim_balling,
     .evaluate_entry       = NULL,
     .evaluate_exit        = NULL,
+    .decide_input         = NULL,
 };
 static State hit = {
     .id                    = HIT,
@@ -82,6 +85,7 @@ static State hit = {
     .animation            = &anim_hit,
     .evaluate_entry       = NULL,
     .evaluate_exit        = NULL,
+    .decide_input         = NULL,
 };
 static State idle = {
     .id                    = IDLE,
@@ -90,6 +94,7 @@ static State idle = {
     .animation            = &anim_idle,
     .evaluate_entry       = NULL,
     .evaluate_exit        = NULL,
+    .decide_input         = NULL,
 };
 static State jumping = {
     .id                    = JUMPING,
@@ -98,6 +103,7 @@ static State jumping = {
     .animation            = &anim_jumping,
     .evaluate_entry       = NULL,
     .evaluate_exit        = NULL,
+    .decide_input         = NULL,
 };
 static State kneeling = {
     .id                    = KNEELING,
@@ -106,6 +112,7 @@ static State kneeling = {
     .animation            = &anim_kneeling,
     .evaluate_entry       = NULL,
     .evaluate_exit        = NULL,
+    .decide_input         = NULL,
 };
 static State walking = {
     .id                    = WALKING,
@@ -114,13 +121,29 @@ static State walking = {
     .animation            = &anim_walking,
     .evaluate_entry       = NULL,
     .evaluate_exit        = NULL,
+    .decide_input         = NULL,
 };
 
 Intent samus_ai(Grid *grid, Entity *self) {
-
     State *s = self->sm.current_state;
-    if (s->handle_input)
-        return s->handle_input(self);
+    if (s->decide_input)
+        return s->decide_input(grid, self);
     return (Intent){0};
 }
-void samus_collision(Entity *self, Entity *others){}
+
+const Entity *samus_create(int x, int y, int h_dir, int v_dir){
+    Entity *e = entity_alloc();
+    e->position     = (Coordinates){y, x};
+    e->velocity     = (Coordinates){0, 0};
+    e->type         = ENTITY_PLAYER;
+    e->orientation  = (Orientation){ h_dir, v_dir};
+    e->hitbox       = (Hitbox){
+        .type       = HITBOX_RECTANGLE,
+        .data       = { .rectangle={ 16, 32 } },
+        .get_cells  = get_rectangle_cells,
+    };
+    e->sm.current_state = &idle;
+    e->sm.transition    = generic_transition;
+    e->on_collision     = samus_collision;
+    return e;
+};

@@ -30,15 +30,16 @@ static Sprite IDLE_01 = {
     .pixels=(uint16_t*)IDLE_01_PIXELS
 };
 
-static Sprite *voador_idle_frames[] = {
+static Sprite *morcego_idle_frames[] = {
     &IDLE_00,
     &IDLE_01,
 };
 
 static Animation anim_idle = {
-    .frames          = voador_idle_frames,
+    .frames          = morcego_idle_frames,
     .frame_count     = 2,
     .frame_duration  = 1,
     .loops           = 0,
 };
 
+extern const Entity MORCEGO_TEMPLATE;

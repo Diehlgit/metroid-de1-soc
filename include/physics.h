@@ -2,10 +2,11 @@
 #define MAX_SPAWNS 8
 
 struct Intent {
-    // intenção de movimento — (0,0) = sem movimento
-    int dx;
-    int dy;
-
+	// intenção de movimento (aceleração) — (0,0) = sem movimento
+	// velocidade (dx, dy) agora é uma propriedade da struct Entity
+	int ax;
+ 	int ay;	
+	   
     // entidades a criar nesse frame
     struct Entity *spawns[MAX_SPAWNS];
     int spawn_count;

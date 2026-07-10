@@ -20,7 +20,7 @@ import json, sys
 T_CONFIG = Path("../tiles/tile_config.json")
 I_CONFIG = Path("../itens/itens_config.json")
 E_CONFIG = Path("../entidades/entidades_config.json")
-MAPS_DIR = Path(".")          # rodar de dentro de mapas_sprites/
+MAPS_DIR = Path(".")
 OUTPUT   = Path("../../generated/maps.h")
 
 CELL_SIZE         = 16

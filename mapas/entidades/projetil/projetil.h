@@ -9,5 +9,5 @@ static State normal;
 static State super;
 static State veneno;
 
-Entity *projetil_create(Entity *shooter, int damage, State *state);
+Entity *projetil_create(Entity *shooter, State *state);
 void projetil_collision(Entity *self, Entity *other, Grid *g, EntityList *l);

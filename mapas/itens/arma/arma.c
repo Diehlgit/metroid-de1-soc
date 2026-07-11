@@ -1,6 +1,7 @@
 #include "../../../include/entity.h"
 #include "../../../include/physics.h"
 #include "../../entidades/samus/samus.h"
+#include "../../entidades/projetil/projetil.h"
 #include "arma_sprites.h"
 #include "arma.h"
 
@@ -8,7 +9,7 @@ void arma_collision(Entity *self, Entity *other, Grid *g, EntityList *l){
     switch(other->type){
         case(ENTITY_PLAYER):
             samus_data *d = (samus_data *)other->data;
-            d->item_arma = true;
+            d->tipo_arma = &super;
             break;
         default:
             break;

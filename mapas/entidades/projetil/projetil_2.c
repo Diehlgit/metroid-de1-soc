@@ -11,10 +11,6 @@ typedef enum {
     VENENO,
 } projetil_state;
 
-static State normal;
-static State super;
-static State veneno;
-
 static bool normal_evaluate_entry(Entity *self, State *next) {}
 static bool normal_evaluate_exit(Entity *self, State *next) {}
 
@@ -73,13 +69,26 @@ Intent projetil_ai(Grid *grid, Entity *self) {
 static projetil_data _projetil_data_pool[32];
 static int _projetil_data_count = 0;
 
-Entity *projetil_create(Entity *shooter, int damage, State *state){
+Entity *projetil_create(Entity *shooter, State *state){
     Entity *e = entity_alloc();
     projetil_data *d = &_projetil_data_pool[_projetil_data_count++];
 
-    *d = (projetil_data){
-        .dano = damage
-    };
+    *d = (projetil_data){};
+
+    switch(state->id){
+        case NORMAL:
+            d->dano = 2;
+            break;
+        case SUPER:
+            d->dano = 4;
+            break;
+        case VENENO:
+            d->dano = 3;
+            break;
+        default:
+            d->dano = 2;
+            break;
+    }
 
     int shot_x;
     if(shooter->orientation.h_direction == RIGHT){

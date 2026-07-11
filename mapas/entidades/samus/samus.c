@@ -14,13 +14,6 @@ typedef enum {
     WALKING,
 } samus_state;
 
-static State balling;
-static State hit;
-static State idle;
-static State jumping;
-static State kneeling;
-static State walking;
-
 static bool balling_evaluate_entry(Entity *self, State *next) {}
 static bool balling_evaluate_exit(Entity *self, State *next) {}
 

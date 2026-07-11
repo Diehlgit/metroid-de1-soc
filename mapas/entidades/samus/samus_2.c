@@ -66,6 +66,7 @@ static bool balling_evaluate_exit(Entity *self, State *next) {
 static bool hit_evaluate_entry(Entity *self, State *next) {
     samus_data *d = (samus_data *)self->data;
     d->item_bola = false;
+    d->tipo_arma = &normal;
     d->invulnerable = true;
     return true;
 }
@@ -86,7 +87,7 @@ static bool jumping_evaluate_entry(Entity *self, State *next) {
 }
 static bool jumping_evaluate_exit(Entity *self, State *next) {
     samus_data *d = (samus_data *)self->data;
-    d->jumps_remaining = 1;
+    d->jumps_remaining = d->max_jumps;
     return true;
 }
 
@@ -115,10 +116,7 @@ static Intent default_input(Grid *grid, Entity *self) {
     if (key == 'e') { self->sm.transition(self, &balling); }
     if (key == 'f') {
         samus_data *d = (samus_data *)self->data;
-        if (d->item_arma)
-            intent.spawns[intent.spawn_count++] = projetil_create(self, 25, &super);
-        else
-            intent.spawns[intent.spawn_count++] = projetil_create(self, 10, &normal);
+        intent.spawns[intent.spawn_count++] = projetil_create(self, d->tipo_arma);
     }
     if (!key)        self->sm.transition(self, &idle);
     return intent;
@@ -147,10 +145,7 @@ static Intent jumping_input(Grid *grid, Entity *self) {
     if (key == 'e') { self->sm.transition(self, &balling); }
     if (key == 'f') {
         samus_data *d = (samus_data *)self->data;
-        if (d->item_arma)
-            intent.spawns[intent.spawn_count++] = projetil_create(self, 25, &super);
-        else
-            intent.spawns[intent.spawn_count++] = projetil_create(self, 10, &normal);
+        intent.spawns[intent.spawn_count++] = projetil_create(self, d->tipo_arma);
     }
     return intent;
 }
@@ -159,10 +154,7 @@ static Intent kneeling_input(Grid *grid, Entity *self) {
     char key = uart_read_char();
     if (key == 'f') {
         samus_data *d = (samus_data *)self->data;
-        if (d->item_arma)
-            intent.spawns[intent.spawn_count++] = projetil_create(self, 25, &super);
-        else
-            intent.spawns[intent.spawn_count++] = projetil_create(self, 10, &normal);
+        intent.spawns[intent.spawn_count++] = projetil_create(self, d->tipo_arma);
     }
     if (key == 's') { self->sm.transition(self, &idle); }
     return intent;
@@ -176,10 +168,7 @@ static Intent walking_input(Grid *grid, Entity *self) {
     if (key == 'e') { self->sm.transition(self, &balling); }
     if (key == 'f') {
         samus_data *d = (samus_data *)self->data;
-        if (d->item_arma)
-            intent.spawns[intent.spawn_count++] = projetil_create(self, 25, &super);
-        else
-            intent.spawns[intent.spawn_count++] = projetil_create(self, 10, &normal);
+        intent.spawns[intent.spawn_count++] = projetil_create(self, d->tipo_arma);
     }
     if (!key)        self->sm.transition(self, &idle);
     return intent;
@@ -259,9 +248,8 @@ Entity *samus_create(int x, int y, int h_dir, int v_dir){
         .hp              = 100,
         .max_jumps       = 2,
         .jumps_remaining = 2,
-        .dano_arma       = 10,
         .item_bola       = false,
-        .item_arma       = false,
+        .tipo_arma       = &normal,
         .invulnerable    = false,
     };
 

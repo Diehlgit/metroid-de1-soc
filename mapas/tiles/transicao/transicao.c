@@ -1,38 +1,38 @@
 #include "../../../include/entity.h"
 #include "../../../include/physics.h"
-#include "metal_sprites.h"
-#include "metal.h"
+#include "transicao_sprites.h"
+#include "transicao.h"
 
-void metal_collision(Entity *self, Entity *other, Grid *g, EntityList *l){}
+void transicao_collision(Entity *self, Entity *other, Grid *g, EntityList *l){}
 
 typedef enum {
-    IDLE,
-} metal_state;
+    OPEN,
+} transicao_state;
 
-static State idle = {
-    .id                    = IDLE,
+static State open = {
+    .id                    = OPEN,
     .allowed_transitions  = {},
     .count                = 0,
-    .animation            = &anim_idle,
+    .animation            = &anim_open,
     .evaluate_entry       = NULL,
     .evaluate_exit        = NULL,
     .decide_input         = NULL,
 };
 
-static metal_data _metal_data_pool[];
-static int _metal_data_count = 0;
+static transicao_data _transicao_data_pool[16];
+static int _transicao_data_count = 0;
 
-Entity *metal_create(int x, int y){
+Entity *transicao_create(int x, int y){
     Entity *e = entity_alloc();
-    metal_data *d = &_metal_data_pool[_metal_data_count++];
+    transicao_data *d = &_transicao_data_pool[_transicao_data_count++];
 
-    *d = (metal_data){
+    *d = (transicao_data){
 
     };
 
     e->position     = (Coordinates){y, x};
     e->velocity     = (Coordinates){0, 0};
-    e->type         = ENTITY_TILE;
+    e->type         = ENTITY_DOOR;
     e->orientation  = (Orientation){ RIGHT, UP};
     e->hitbox       = (Hitbox){
         .type       = HITBOX_RECTANGLE,
@@ -40,8 +40,8 @@ Entity *metal_create(int x, int y){
         .get_cells  = get_rectangle_cells,
     };
     e->data           = d;
-    e->sm.current_state = &idle;
+    e->sm.current_state = &open;
     e->sm.transition    = NULL;
-    e->on_collision     = metal_collision;
+    e->on_collision     = transicao_collision;
     return e;
 };

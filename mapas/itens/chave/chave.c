@@ -1,7 +1,9 @@
 #include "../../../include/entity.h"
+#include "../../../include/physics.h"
+#include "chave_sprites.h"
 #include "chave.h"
 
-void chave_collision(Entity *self, Entity *others){}
+void chave_collision(Entity *self, Entity *other, Grid *g, EntityList *l){}
 
 typedef enum {
     IDLE,
@@ -17,8 +19,17 @@ static State idle = {
     .decide_input         = NULL,
 };
 
-const Entity *chave_create(int x, int y){
+static chave_data _chave_data_pool[];
+static int _chave_data_count = 0;
+
+Entity *chave_create(int x, int y){
     Entity *e = entity_alloc();
+    chave_data *d = &_chave_data_pool[_chave_data_count++];
+
+    *d = (chave_data){
+
+    };
+
     e->position     = (Coordinates){y, x};
     e->velocity     = (Coordinates){0, 0};
     e->type         = ENTITY_ITEM;
@@ -28,6 +39,7 @@ const Entity *chave_create(int x, int y){
         .data       = { .rectangle={ 16, 32 } },
         .get_cells  = get_rectangle_cells,
     };
+    e->data           = d;
     e->sm.current_state = &idle;
     e->sm.transition    = NULL;
     e->on_collision     = chave_collision;

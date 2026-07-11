@@ -11,6 +11,10 @@ typedef enum {
     VENENO,
 } projetil_state;
 
+static State normal;
+static State super;
+static State veneno;
+
 static bool normal_evaluate_entry(Entity *self, State *next) {}
 static bool normal_evaluate_exit(Entity *self, State *next) {}
 

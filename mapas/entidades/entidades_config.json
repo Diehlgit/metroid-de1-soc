@@ -31,7 +31,7 @@
     "color": [40, 117, 74],
     "hitbox": { "type": "rectangle", "width": 4, "height": 4},
     "entity_type": "ENTITY_PROJECTILE",
-    "sm_starting_state": "moving",
+    "sm_starting_state": "normal",
     "sm_transition_func": "generic_transition"
   },
   "samus_projectile": {

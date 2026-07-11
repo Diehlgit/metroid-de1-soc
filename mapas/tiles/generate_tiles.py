@@ -12,7 +12,7 @@ from PIL import Image
 
 E_CONFIG = Path("tile_config.json")
 ENTS_DIR = Path(".")
-OUTPUT = Path("../../generated/tiles.h")
+OUTPUT = Path("../../generated/itens.h")
 
 def to_rgb565(r, g, b):
     return ((r & 0xF8) << 8) | ((g & 0xFC) << 3) | (b >> 3)
@@ -68,16 +68,22 @@ def main():
     ents = sorted(e for e in ENTS_DIR.iterdir() if e.is_dir() and not e.name.startswith("."))
     if not ents: print("Nenhuma área encontrada"); sys.exit(1)
 
-    generated_h_lines = ["#pragma once", '#include "../include/entity.h"', ""]
+    itens_h_lihas = ["#pragma once", '#include "../include/entity.h"']
     for e in ents:
-        generated_h_lines += [f"Entity *{e.name}_create(int x, int y);"]
-        import_lines = ['#include "../../../include/entity.h"', f'#include "{e.name}.h"', ""]
-        enum_lines = [f"typedef enum {{"]
-        states_lines = []
-
+        name = e.name
+        itens_h_lihas += [f"Entity *{name}_create(int x, int y);"]
         functions_output = e/f"{e.name}.c"
-        animation_output = e/f"{e.name}.h"
-        animation_lines = ['#include "../../../include/entity.h"', ""]
+        dados_output     = e/f"{e.name}.h"
+        animation_output = e/f"{e.name}_sprites.h"
+
+        dados_linhas = ["#pragma once", '#include "../../../include/entity.h"', "", "typedef struct {", "", f"}} {name}_data;", "", f"Entity *{name}_create(int x, int y);", f"void {name}_collision(Entity *self, Entity *other, Grid *g, EntityList *l);"]
+        dados_output.write_text("\n".join(dados_linhas)+"\n")
+
+        function_lines = ['#include "../../../include/entity.h"', '#include "../../../include/physics.h"', f'#include "{e.name}_sprites.h"', f'#include "{name}.h"', "", f"void {name}_collision(Entity *self, Entity *other, Grid *g, EntityList *l){{}}", "", f"typedef enum {{"]
+        animation_lines = ["#pragma once", '#include "../../../include/entity.h"', ""]
+
+        enum_lines = []
+        states_lines = []
 
         states_path = e / "states"
         states = sorted(s for s in states_path.iterdir() if s.is_dir() and not s.name.startswith("."))
@@ -122,33 +128,40 @@ def main():
 
         animation_output.write_text("\n".join(animation_lines)+"\n")
 
-        lines = []
-        lines.extend(import_lines)
-        lines.extend([f"void {e.name}_collision(Entity *self, Entity *others){{}}", ""])
-        enum_lines.extend([f"}} {e.name}_state;"])
-        lines.extend(enum_lines + [""])
-        lines.extend(states_lines  + [""])
+        function_lines += enum_lines;
+        function_lines.extend([f"}} {e.name}_state;", ""])
+        function_lines.extend(states_lines + [""])
 
         hitbox_lines = get_hitbox_lines(json_data[e.name]["hitbox"])
-        lines += [
-            f"const Entity *{e.name}_create(int x, int y){{",
+        function_lines += [
+            f"static {e.name}_data _{e.name}_data_pool[];",
+            f"static int _{e.name}_data_count = 0;",
+            "",
+            f"Entity *{e.name}_create(int x, int y){{",
             f"    Entity *e = entity_alloc();",
+            f"    {e.name}_data *d = &_{e.name}_data_pool[_{e.name}_data_count++];",
+            f"",
+            f"    *d = ({e.name}_data){{",
+            f"",
+            f"    }};", "",
             f"    e->position     = (Coordinates){{y, x}};",
             f"    e->velocity     = (Coordinates){{0, 0}};",
             f"    e->type         = {json_data[e.name]["entity_type"] or "ENTITY_ENEMY"};",
             f"    e->orientation  = (Orientation){{ RIGHT, UP}};",
             f"    e->hitbox       = (Hitbox){{",
         ]
-        lines += hitbox_lines
-        lines += [
+        function_lines += hitbox_lines
+        function_lines += [
+            f"    e->data           = d;",
             f"    e->sm.current_state = &{json_data[e.name]["sm_starting_state"]};",
             f"    e->sm.transition    = {json_data[e.name]["sm_transition_func"]};",
             f"    e->on_collision     = {e.name}_collision;",
             f"    return e;",
             "};",
         ]
-        functions_output.write_text("\n".join(lines)+"\n")
-        OUTPUT.write_text("\n".join(generated_h_lines)+"\n")
+        functions_output.write_text("\n".join(function_lines)+"\n")
+
+        OUTPUT.write_text("\n".join(itens_h_lihas)+"\n")
 
 if __name__ == "__main__":
     main()

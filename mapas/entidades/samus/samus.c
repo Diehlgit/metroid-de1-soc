@@ -1,8 +1,9 @@
 #include "../../../include/entity.h"
 #include "../../../include/physics.h"
+#include "samus_sprites.h"
 #include "samus.h"
 
-void samus_collision(Entity *self, Entity *others){}
+void samus_collision(Entity *self, Entity *other, Grid *g, EntityList *l){}
 
 typedef enum {
     BALLING,
@@ -38,12 +39,6 @@ static bool kneeling_evaluate_exit(Entity *self, State *next) {}
 static bool walking_evaluate_entry(Entity *self, State *next) {}
 static bool walking_evaluate_exit(Entity *self, State *next) {}
 
-
-static Intent default_input(Grid *grid, Entity *self) {
-    Intent intent = {0};
-    return intent;
-}
-
 static Intent balling_input(Grid *grid, Entity *self) {
     Intent intent = {0};
     return intent;
@@ -68,7 +63,6 @@ static Intent walking_input(Grid *grid, Entity *self) {
     Intent intent = {0};
     return intent;
 }
-
 static State balling = {
     .id                    = BALLING,
     .allowed_transitions  = {},
@@ -123,7 +117,6 @@ static State walking = {
     .evaluate_exit        = NULL,
     .decide_input         = NULL,
 };
-
 Intent samus_ai(Grid *grid, Entity *self) {
     State *s = self->sm.current_state;
     if (s->decide_input)
@@ -131,8 +124,17 @@ Intent samus_ai(Grid *grid, Entity *self) {
     return (Intent){0};
 }
 
-const Entity *samus_create(int x, int y, int h_dir, int v_dir){
+static samus_data _samus_data_pool[];
+static int _samus_data_count = 0;
+
+Entity *samus_create(int x, int y, int h_dir, int v_dir){
     Entity *e = entity_alloc();
+    samus_data *d = &_samus_data_pool[_samus_data_count++];
+
+    *d = (samus_data){
+
+    };
+
     e->position     = (Coordinates){y, x};
     e->velocity     = (Coordinates){0, 0};
     e->type         = ENTITY_PLAYER;
@@ -142,6 +144,7 @@ const Entity *samus_create(int x, int y, int h_dir, int v_dir){
         .data       = { .rectangle={ 16, 32 } },
         .get_cells  = get_rectangle_cells,
     };
+    e->data           = d;
     e->sm.current_state = &idle;
     e->sm.transition    = generic_transition;
     e->on_collision     = samus_collision;

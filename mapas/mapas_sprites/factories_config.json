@@ -1,9 +1,0 @@
-{
-  "255 0 0":     "tijolos_create",
-  "0 216 255":   "metal_create",
-  "255, 129, 0": "porta_create",
-  "156, 255, 0": "bola_create",
-  "0 255 69":    "arma_create",
-  "178, 0, 255": "scorpion_create",
-  "0 255 2":     "pinwheel_create"
-}

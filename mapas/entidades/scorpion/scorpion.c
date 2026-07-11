@@ -1,8 +1,9 @@
 #include "../../../include/entity.h"
 #include "../../../include/physics.h"
+#include "scorpion_sprites.h"
 #include "scorpion.h"
 
-void scorpion_collision(Entity *self, Entity *others){}
+void scorpion_collision(Entity *self, Entity *other, Grid *g, EntityList *l){}
 
 typedef enum {
     IDLE,
@@ -23,12 +24,6 @@ static bool shooting_evaluate_exit(Entity *self, State *next) {}
 static bool walking_evaluate_entry(Entity *self, State *next) {}
 static bool walking_evaluate_exit(Entity *self, State *next) {}
 
-
-static Intent default_input(Grid *grid, Entity *self) {
-    Intent intent = {0};
-    return intent;
-}
-
 static Intent idle_input(Grid *grid, Entity *self) {
     Intent intent = {0};
     return intent;
@@ -41,7 +36,6 @@ static Intent walking_input(Grid *grid, Entity *self) {
     Intent intent = {0};
     return intent;
 }
-
 static State idle = {
     .id                    = IDLE,
     .allowed_transitions  = {},
@@ -69,7 +63,6 @@ static State walking = {
     .evaluate_exit        = NULL,
     .decide_input         = NULL,
 };
-
 Intent scorpion_ai(Grid *grid, Entity *self) {
     State *s = self->sm.current_state;
     if (s->decide_input)
@@ -77,8 +70,17 @@ Intent scorpion_ai(Grid *grid, Entity *self) {
     return (Intent){0};
 }
 
-const Entity *scorpion_create(int x, int y, int h_dir, int v_dir){
+static scorpion_data _scorpion_data_pool[];
+static int _scorpion_data_count = 0;
+
+Entity *scorpion_create(int x, int y, int h_dir, int v_dir){
     Entity *e = entity_alloc();
+    scorpion_data *d = &_scorpion_data_pool[_scorpion_data_count++];
+
+    *d = (scorpion_data){
+
+    };
+
     e->position     = (Coordinates){y, x};
     e->velocity     = (Coordinates){0, 0};
     e->type         = ENTITY_ENEMY;
@@ -88,6 +90,7 @@ const Entity *scorpion_create(int x, int y, int h_dir, int v_dir){
         .data       = { .rectangle={ 32, 16 } },
         .get_cells  = get_rectangle_cells,
     };
+    e->data           = d;
     e->sm.current_state = &idle;
     e->sm.transition    = generic_transition;
     e->on_collision     = scorpion_collision;

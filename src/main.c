@@ -5,6 +5,7 @@
 #include "../include/physics.h"
 #include "../generated/maps.h"
 #include "../include/vga.h"
+#include "../include/switch.h"
 #include <SDL2/SDL.h>
 
 /* ================================================================== */
@@ -13,7 +14,8 @@
 
 #define TARGET_FPS 60
 #define FRAME_MS   (1000 / TARGET_FPS)
-static AreaId area_atual = AREA_PUZZLE;
+static AreaId area_atual = AREA_INICIAL;
+
 
 Grid* switch_area(AreaId id, Entity *player, EntityList *ents_list) {
     // 1. reseta o grid da área anterior se houver
@@ -46,16 +48,20 @@ Grid* switch_area(AreaId id, Entity *player, EntityList *ents_list) {
 }
 
 static void game_loop(Grid *g, EntityList *list) {
+    // FASE 1: coleta intents — nenhuma modificação na lista
     Intent intents[256];
     for (int i = 0; i < list->count; i++) {
         struct Entity *e = list->ents[i];
         intents[i] = e->sm.current_state->decide_input ? e->sm.current_state->decide_input(g, e) : (Intent){0};
     }
 
+    // FASE 2: aplica física e spawns — pode setar should_destroy, não remove ainda
     for (int i = 0; i < list->count; i++) {
         struct Entity *e  = list->ents[i];
-        Intent        *it = &intents[i];
-        physics_step(g, e, *it);
+        if(e->should_destroy) continue;
+
+        Intent *it = &intents[i];
+        physics_step(e, *it, g, list);
 
         // no game_loop, após physics_step
         if (!e->should_destroy) {
@@ -67,19 +73,23 @@ static void game_loop(Grid *g, EntityList *list) {
             }
         }
 
+        // adiciona spawns ao final da lista — fora do range atual, não afeta iteração
         for (int s = 0; s < it->spawn_count; s++) {
-            grid_add_entity(g, it->spawns[s]);
             if (list->count < 256) {
                 list->ents[list->count++] = it->spawns[s];
+                grid_add_entity(g, it->spawns[s]);
             }
         }
+    }
 
-        if (it->destroy_self || e->should_destroy) {
-            grid_remove_entity(g, e);
-            list->ents[i] = list->ents[--list->count];
-            i--;
-            continue;
-        }
+    // FASE 3: remove todos os should_destroy de uma vez, iterando de trás para frente
+    for (int i = list->count - 1; i >= 0; i--) {
+        Entity *e = list->ents[i];
+        if (!e->should_destroy) continue;
+        grid_remove_entity(g, e);
+        // swap com o último — não desloca tudo, O(1)
+        list->ents[i] = list->ents[--list->count];
+        list->ents[list->count] = NULL;
     }
 }
 

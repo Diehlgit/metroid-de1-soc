@@ -1,4 +1,4 @@
-#include "../../../include/physics.h"
+/*#include "../../../include/physics.h"
 #include "../../../include/uart.h"
 #include "../../../generated/entidades.h"
 #include <stdio.h>
@@ -61,3 +61,4 @@ Intent player_input(Grid *grid, Entity *self) {
 
     return intent;
 }
+*/

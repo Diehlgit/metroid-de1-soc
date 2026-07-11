@@ -1,7 +1,19 @@
 #include "../../../include/entity.h"
+#include "../../../include/physics.h"
+#include "../../entidades/samus/samus.h"
+#include "arma_sprites.h"
 #include "arma.h"
 
-void arma_collision(Entity *self, Entity *others){}
+void arma_collision(Entity *self, Entity *other, Grid *g, EntityList *l){
+    switch(other->type){
+        case(ENTITY_PLAYER):
+            samus_data *d = (samus_data *)other->data;
+            d->item_arma = true;
+            break;
+        default:
+            break;
+    }
+}
 
 typedef enum {
     IDLE,
@@ -17,8 +29,17 @@ static State idle = {
     .decide_input         = NULL,
 };
 
-const Entity *arma_create(int x, int y){
+static arma_data _arma_data_pool[2];
+static int _arma_data_count = 0;
+
+Entity *arma_create(int x, int y){
     Entity *e = entity_alloc();
+    arma_data *d = &_arma_data_pool[_arma_data_count++];
+
+    *d = (arma_data){
+
+    };
+
     e->position     = (Coordinates){y, x};
     e->velocity     = (Coordinates){0, 0};
     e->type         = ENTITY_ITEM;
@@ -28,6 +49,7 @@ const Entity *arma_create(int x, int y){
         .data       = { .rectangle={ 16, 32 } },
         .get_cells  = get_rectangle_cells,
     };
+    e->data           = d;
     e->sm.current_state = &idle;
     e->sm.transition    = NULL;
     e->on_collision     = arma_collision;

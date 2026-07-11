@@ -28,9 +28,9 @@ typedef enum {
     ENTITY_TILE,
     ENTITY_ENEMY,
     ENTITY_PROJECTILE,
-    ENTITY_WALL,
     ENTITY_MINE,
     ENTITY_ITEM,
+    ENTITY_TRANSITION,
     ENTITY_DOOR
 } EntityType;
 
@@ -60,6 +60,11 @@ typedef struct State State;
 typedef struct Grid Grid;
 typedef struct Intent Intent;
 
+typedef struct {
+    struct Entity *ents[256];
+    int count;
+} EntityList;
+
 typedef bool (*StateGuard)(Entity *self, State *next);
 
 typedef struct State {
@@ -73,12 +78,12 @@ typedef struct State {
     StateGuard evaluate_entry;
     StateGuard evaluate_exit;
 
-    Intent (*decide_input)(Grid *grid, Entity *self);
+    Intent (*decide_input)(Grid *g, Entity *self);
 } State;
 
 typedef struct {
     State *current_state;
-    void (*transition)(struct Entity *self, State *next);
+    bool (*transition)(struct Entity *self, State *next);
 } StateMachine;
 
 struct Entity {
@@ -91,17 +96,12 @@ struct Entity {
   int should_destroy;
   void *data;
   StateMachine sm;
-  void (*on_collision)(struct Entity *self, struct Entity *other);
+  void (*on_collision)(struct Entity *self, struct Entity *other, Grid *g, EntityList *l);
 };
 
-typedef struct {
-    struct Entity *ents[256];
-    int count;
-} EntityList;
-
-static void generic_transition(Entity *self, State *next) {
+static bool generic_transition(Entity *self, State *next) {
     State *current = self->sm.current_state;
-    if (!current || !next) return;
+    if (!current || !next) return false;
 
     // verifica se next está na lista de transições permitidas
     bool found = false;
@@ -111,16 +111,17 @@ static void generic_transition(Entity *self, State *next) {
             break;
         }
     }
-    if (!found) return;
+    if (!found) return false;
 
     // avalia guards
-    if (current->evaluate_exit  && !current->evaluate_exit(self, next))  return;
-    if (next->evaluate_entry    && !next->evaluate_entry(self, next))    return;
+    if (current->evaluate_exit  && !current->evaluate_exit(self, next))  return false;
+    if (next->evaluate_entry    && !next->evaluate_entry(self, next))    return false;
 
     self->sm.current_state = next;
-    // animação será atualizada pelo animation_tick no próximo frame
+    return true;
 }
 
+void remove_entity(Entity *e, EntityList*);
 Entity *entity_alloc(void);
 void entity_pool_reset(void);
 

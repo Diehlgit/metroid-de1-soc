@@ -1,7 +1,9 @@
 #include "../../../include/entity.h"
+#include "../../../include/physics.h"
+#include "tijolos_sprites.h"
 #include "tijolos.h"
 
-void tijolos_collision(Entity *self, Entity *others){}
+void tijolos_collision(Entity *self, Entity *other, Grid *g, EntityList *l){}
 
 typedef enum {
     IDLE,
@@ -17,8 +19,17 @@ static State idle = {
     .decide_input         = NULL,
 };
 
-const Entity *tijolos_create(int x, int y){
+static tijolos_data _tijolos_data_pool[];
+static int _tijolos_data_count = 0;
+
+Entity *tijolos_create(int x, int y){
     Entity *e = entity_alloc();
+    tijolos_data *d = &_tijolos_data_pool[_tijolos_data_count++];
+
+    *d = (tijolos_data){
+
+    };
+
     e->position     = (Coordinates){y, x};
     e->velocity     = (Coordinates){0, 0};
     e->type         = ENTITY_TILE;
@@ -28,6 +39,7 @@ const Entity *tijolos_create(int x, int y){
         .data       = { .rectangle={ 16, 16 } },
         .get_cells  = get_rectangle_cells,
     };
+    e->data           = d;
     e->sm.current_state = &idle;
     e->sm.transition    = NULL;
     e->on_collision     = tijolos_collision;

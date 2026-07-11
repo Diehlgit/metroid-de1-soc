@@ -9,7 +9,7 @@
   "porta": {
     "color": [255, 129, 0],
     "hitbox": { "type": "rectangle", "width": 16, "height": 16 },
-    "entity_type": "ENTITY_TILE",
+    "entity_type": "ENTITY_DOOR",
     "sm_starting_state": "idle",
     "sm_transition_func": "NULL"
   },
@@ -18,6 +18,13 @@
     "hitbox": { "type": "rectangle", "width": 16, "height": 16 },
     "entity_type": "ENTITY_TILE",
     "sm_starting_state": "idle",
+    "sm_transition_func": "NULL"
+  },
+  "transicao": {
+    "color": [255, 208, 0],
+    "hitbox": { "type": "rectangle", "width": 16, "height": 16 },
+    "entity_type": "ENTITY_DOOR",
+    "sm_starting_state": "open",
     "sm_transition_func": "NULL"
   }
 }

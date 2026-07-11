@@ -19,7 +19,7 @@ static State idle = {
     .decide_input         = NULL,
 };
 
-static tijolos_data _tijolos_data_pool[];
+static tijolos_data _tijolos_data_pool[16];
 static int _tijolos_data_count = 0;
 
 Entity *tijolos_create(int x, int y){

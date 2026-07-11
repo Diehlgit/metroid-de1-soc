@@ -1,4 +1,4 @@
-#include "../../../include/physics.h"
+/*#include "../../../include/physics.h"
 #include "../../../generated/entidades.h"
 #include <stdio.h>
 
@@ -12,3 +12,4 @@ Intent projectile_intent(Grid *grid, Entity *self) {
 
     return intent;
 }
+*/

@@ -2,7 +2,7 @@
 #include "../../../include/entity.h"
 #include "../../../include/grid.h"
 
-Intent ia_scorpion(Grid *grid, Entity *self) {
+Intent lalala_ia_scorpion(Grid *grid, Entity *self) {
     Intent intent = {0};
 
     // O Escorpião sempre busca 4 células à sua frente

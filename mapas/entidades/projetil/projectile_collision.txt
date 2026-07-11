@@ -1,8 +1,8 @@
-#include "../../../include/entity.h"
+/*#include "../../../include/entity.h"
 #include "stdio.h"
 
 void projectile_collision(Entity *self, Entity *others) {
-    if (others->type == ENTITY_WALL
+    if (others->type == ENTITY_PLAYER
      || others->type == ENTITY_ENEMY
      || others->type == ENTITY_TILE
      || others->type == ENTITY_PROJECTILE){
@@ -10,3 +10,4 @@ void projectile_collision(Entity *self, Entity *others) {
         self->should_destroy = 1;
     }
 }
+*/

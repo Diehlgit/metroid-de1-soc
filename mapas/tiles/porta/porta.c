@@ -19,7 +19,7 @@ static State idle = {
     .decide_input         = NULL,
 };
 
-static porta_data _porta_data_pool[];
+static porta_data _porta_data_pool[1024];
 static int _porta_data_count = 0;
 
 Entity *porta_create(int x, int y){

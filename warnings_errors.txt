@@ -1,0 +1,1112 @@
+gcc -Wall -Wextra -O1 -std=c11 -I include -I generated -DRUNNING_SDL2 -I/usr/include/SDL2 -D_REENTRANT -c src/entity.c -o build/src/entity.o
+In file included from src/entity.c:1:
+src/../include/entity.h:102:13: warning: ‘generic_transition’ defined but not used [-Wunused-function]
+  102 | static bool generic_transition(Entity *self, State *next) {
+      |             ^~~~~~~~~~~~~~~~~~
+gcc -Wall -Wextra -O1 -std=c11 -I include -I generated -DRUNNING_SDL2 -I/usr/include/SDL2 -D_REENTRANT -c src/get_cells.c -o build/src/get_cells.o
+src/get_cells.c: In function ‘get_triangle_cells’:
+src/get_cells.c:49:15: warning: unused variable ‘tri’ [-Wunused-variable]
+   49 |     Triangle *tri = &self->data.triangle;
+      |               ^~~
+src/get_cells.c:47:55: warning: unused parameter ‘coord’ [-Wunused-parameter]
+   47 | CellList get_triangle_cells(Hitbox *self, Coordinates coord, int cell_size){
+      |                                           ~~~~~~~~~~~~^~~~~
+src/get_cells.c:47:66: warning: unused parameter ‘cell_size’ [-Wunused-parameter]
+   47 | CellList get_triangle_cells(Hitbox *self, Coordinates coord, int cell_size){
+      |                                                              ~~~~^~~~~~~~~
+gcc -Wall -Wextra -O1 -std=c11 -I include -I generated -DRUNNING_SDL2 -I/usr/include/SDL2 -D_REENTRANT -c src/grid.c -o build/src/grid.o
+In file included from src/../include/grid.h:5,
+                 from src/grid.c:1:
+src/../include/entity.h:102:13: warning: ‘generic_transition’ defined but not used [-Wunused-function]
+  102 | static bool generic_transition(Entity *self, State *next) {
+      |             ^~~~~~~~~~~~~~~~~~
+gcc -Wall -Wextra -O1 -std=c11 -I include -I generated -DRUNNING_SDL2 -I/usr/include/SDL2 -D_REENTRANT -c src/main.c -o build/src/main.o
+src/main.c: In function ‘main’:
+src/main.c:122:15: warning: unused variable ‘dt’ [-Wunused-variable]
+  122 |         float dt = (SDL_GetTicks64() - frame_start) / 1000.0f;
+      |               ^~
+In file included from src/main.c:5:
+src/../include/physics.h: At top level:
+src/../include/physics.h:19:12: warning: ‘try_move’ declared ‘static’ but never defined [-Wunused-function]
+   19 | static int try_move(struct Entity *mover, int new_x, int new_y, Grid *g, EntityList *l);
+      |            ^~~~~~~~
+In file included from src/../include/print.h:4,
+                 from src/main.c:4:
+src/../include/grid.h:28:12: warning: ‘grid_hash’ defined but not used [-Wunused-function]
+   28 | static int grid_hash(CellCoord c) {
+      |            ^~~~~~~~~
+In file included from src/main.c:3:
+src/../include/entity.h:102:13: warning: ‘generic_transition’ defined but not used [-Wunused-function]
+  102 | static bool generic_transition(Entity *self, State *next) {
+      |             ^~~~~~~~~~~~~~~~~~
+gcc -Wall -Wextra -O1 -std=c11 -I include -I generated -DRUNNING_SDL2 -I/usr/include/SDL2 -D_REENTRANT -c src/physics.c -o build/src/physics.o
+src/physics.c: In function ‘physics_step’:
+src/physics.c:63:5: warning: this ‘if’ clause does not guard... [-Wmisleading-indentation]
+   63 |     if (e->type != ENTITY_PROJECTILE)
+      |     ^~
+src/physics.c:67:9: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the ‘if’
+   67 |         int on_ground = 0;
+      |         ^~~
+In file included from src/physics.c:3:
+src/../include/grid.h: At top level:
+src/../include/grid.h:28:12: warning: ‘grid_hash’ defined but not used [-Wunused-function]
+   28 | static int grid_hash(CellCoord c) {
+      |            ^~~~~~~~~
+In file included from src/physics.c:2:
+src/../include/entity.h:102:13: warning: ‘generic_transition’ defined but not used [-Wunused-function]
+  102 | static bool generic_transition(Entity *self, State *next) {
+      |             ^~~~~~~~~~~~~~~~~~
+gcc -Wall -Wextra -O1 -std=c11 -I include -I generated -DRUNNING_SDL2 -I/usr/include/SDL2 -D_REENTRANT -c src/print.c -o build/src/print.o
+src/print.c: In function ‘print_sprite’:
+src/print.c:31:105: warning: unused parameter ‘screen_y’ [-Wunused-parameter]
+   31 | void print_sprite(volatile uint16_t (*buf)[LWIDTH], Sprite *sprite, int ofx, int ofy, int screen_x, int screen_y, Orientation o) {
+      |                                                                                                     ~~~~^~~~~~~~
+src/print.c: In function ‘print_game’:
+src/print.c:64:90: warning: unused parameter ‘cell_size’ [-Wunused-parameter]
+   64 | void print_game(volatile uint16_t (*buf)[LWIDTH], Grid *area, Coordinates pos_samus, int cell_size){
+      |                                                                                      ~~~~^~~~~~~~~
+In file included from src/print.c:6:
+src/../include/grid.h: At top level:
+src/../include/grid.h:28:12: warning: ‘grid_hash’ defined but not used [-Wunused-function]
+   28 | static int grid_hash(CellCoord c) {
+      |            ^~~~~~~~~
+In file included from src/print.c:5:
+src/../include/entity.h:102:13: warning: ‘generic_transition’ defined but not used [-Wunused-function]
+  102 | static bool generic_transition(Entity *self, State *next) {
+      |             ^~~~~~~~~~~~~~~~~~
+gcc -Wall -Wextra -O1 -std=c11 -I include -I generated -DRUNNING_SDL2 -I/usr/include/SDL2 -D_REENTRANT -c src/uart.c -o build/src/uart.o
+gcc -Wall -Wextra -O1 -std=c11 -I include -I generated -DRUNNING_SDL2 -I/usr/include/SDL2 -D_REENTRANT -c src/vga.c -o build/src/vga.o
+gcc -Wall -Wextra -O1 -std=c11 -I include -I generated -DRUNNING_SDL2 -I/usr/include/SDL2 -D_REENTRANT -c mapas/entidades/morcego/morcego.c -o build/mapas/entidades/morcego/morcego.o
+mapas/entidades/morcego/morcego.c: In function ‘morcego_collision’:
+mapas/entidades/morcego/morcego.c:6:32: warning: unused parameter ‘self’ [-Wunused-parameter]
+    6 | void morcego_collision(Entity *self, Entity *other, Grid *g, EntityList *l){}
+      |                        ~~~~~~~~^~~~
+mapas/entidades/morcego/morcego.c:6:46: warning: unused parameter ‘other’ [-Wunused-parameter]
+    6 | void morcego_collision(Entity *self, Entity *other, Grid *g, EntityList *l){}
+      |                                      ~~~~~~~~^~~~~
+mapas/entidades/morcego/morcego.c:6:59: warning: unused parameter ‘g’ [-Wunused-parameter]
+    6 | void morcego_collision(Entity *self, Entity *other, Grid *g, EntityList *l){}
+      |                                                     ~~~~~~^
+mapas/entidades/morcego/morcego.c:6:74: warning: unused parameter ‘l’ [-Wunused-parameter]
+    6 | void morcego_collision(Entity *self, Entity *other, Grid *g, EntityList *l){}
+      |                                                              ~~~~~~~~~~~~^
+mapas/entidades/morcego/morcego.c: In function ‘idle_evaluate_entry’:
+mapas/entidades/morcego/morcego.c:14:1: warning: no return statement in function returning non-void [-Wreturn-type]
+   14 | static bool idle_evaluate_entry(Entity *self, State *next) {}
+      | ^~~~~~
+mapas/entidades/morcego/morcego.c:14:41: warning: unused parameter ‘self’ [-Wunused-parameter]
+   14 | static bool idle_evaluate_entry(Entity *self, State *next) {}
+      |                                 ~~~~~~~~^~~~
+mapas/entidades/morcego/morcego.c:14:54: warning: unused parameter ‘next’ [-Wunused-parameter]
+   14 | static bool idle_evaluate_entry(Entity *self, State *next) {}
+      |                                               ~~~~~~~^~~~
+mapas/entidades/morcego/morcego.c: In function ‘idle_evaluate_exit’:
+mapas/entidades/morcego/morcego.c:15:1: warning: no return statement in function returning non-void [-Wreturn-type]
+   15 | static bool idle_evaluate_exit(Entity *self, State *next) {}
+      | ^~~~~~
+mapas/entidades/morcego/morcego.c:15:40: warning: unused parameter ‘self’ [-Wunused-parameter]
+   15 | static bool idle_evaluate_exit(Entity *self, State *next) {}
+      |                                ~~~~~~~~^~~~
+mapas/entidades/morcego/morcego.c:15:53: warning: unused parameter ‘next’ [-Wunused-parameter]
+   15 | static bool idle_evaluate_exit(Entity *self, State *next) {}
+      |                                              ~~~~~~~^~~~
+mapas/entidades/morcego/morcego.c: In function ‘idle_input’:
+mapas/entidades/morcego/morcego.c:17:32: warning: unused parameter ‘grid’ [-Wunused-parameter]
+   17 | static Intent idle_input(Grid *grid, Entity *self) {
+      |                          ~~~~~~^~~~
+mapas/entidades/morcego/morcego.c:17:46: warning: unused parameter ‘self’ [-Wunused-parameter]
+   17 | static Intent idle_input(Grid *grid, Entity *self) {
+      |                                      ~~~~~~~~^~~~
+In file included from mapas/entidades/morcego/morcego.c:2:
+mapas/entidades/morcego/../../../include/physics.h: At top level:
+mapas/entidades/morcego/../../../include/physics.h:19:12: warning: ‘try_move’ declared ‘static’ but never defined [-Wunused-function]
+   19 | static int try_move(struct Entity *mover, int new_x, int new_y, Grid *g, EntityList *l);
+      |            ^~~~~~~~
+mapas/entidades/morcego/morcego.c:37:21: warning: array ‘_morcego_data_pool’ assumed to have one element
+   37 | static morcego_data _morcego_data_pool[];
+      |                     ^~~~~~~~~~~~~~~~~~
+mapas/entidades/morcego/morcego.c:17:15: warning: ‘idle_input’ defined but not used [-Wunused-function]
+   17 | static Intent idle_input(Grid *grid, Entity *self) {
+      |               ^~~~~~~~~~
+mapas/entidades/morcego/morcego.c:15:13: warning: ‘idle_evaluate_exit’ defined but not used [-Wunused-function]
+   15 | static bool idle_evaluate_exit(Entity *self, State *next) {}
+      |             ^~~~~~~~~~~~~~~~~~
+mapas/entidades/morcego/morcego.c:14:13: warning: ‘idle_evaluate_entry’ defined but not used [-Wunused-function]
+   14 | static bool idle_evaluate_entry(Entity *self, State *next) {}
+      |             ^~~~~~~~~~~~~~~~~~~
+In file included from mapas/entidades/morcego/../../../include/physics.h:2:
+mapas/entidades/morcego/../../../include/grid.h:28:12: warning: ‘grid_hash’ defined but not used [-Wunused-function]
+   28 | static int grid_hash(CellCoord c) {
+      |            ^~~~~~~~~
+gcc -Wall -Wextra -O1 -std=c11 -I include -I generated -DRUNNING_SDL2 -I/usr/include/SDL2 -D_REENTRANT -c mapas/entidades/pinwheel/pinwheel.c -o build/mapas/entidades/pinwheel/pinwheel.o
+mapas/entidades/pinwheel/pinwheel.c: In function ‘pinwheel_collision’:
+mapas/entidades/pinwheel/pinwheel.c:6:33: warning: unused parameter ‘self’ [-Wunused-parameter]
+    6 | void pinwheel_collision(Entity *self, Entity *other, Grid *g, EntityList *l){}
+      |                         ~~~~~~~~^~~~
+mapas/entidades/pinwheel/pinwheel.c:6:47: warning: unused parameter ‘other’ [-Wunused-parameter]
+    6 | void pinwheel_collision(Entity *self, Entity *other, Grid *g, EntityList *l){}
+      |                                       ~~~~~~~~^~~~~
+mapas/entidades/pinwheel/pinwheel.c:6:60: warning: unused parameter ‘g’ [-Wunused-parameter]
+    6 | void pinwheel_collision(Entity *self, Entity *other, Grid *g, EntityList *l){}
+      |                                                      ~~~~~~^
+mapas/entidades/pinwheel/pinwheel.c:6:75: warning: unused parameter ‘l’ [-Wunused-parameter]
+    6 | void pinwheel_collision(Entity *self, Entity *other, Grid *g, EntityList *l){}
+      |                                                               ~~~~~~~~~~~~^
+mapas/entidades/pinwheel/pinwheel.c: In function ‘idle_evaluate_entry’:
+mapas/entidades/pinwheel/pinwheel.c:16:1: warning: no return statement in function returning non-void [-Wreturn-type]
+   16 | static bool idle_evaluate_entry(Entity *self, State *next) {}
+      | ^~~~~~
+mapas/entidades/pinwheel/pinwheel.c:16:41: warning: unused parameter ‘self’ [-Wunused-parameter]
+   16 | static bool idle_evaluate_entry(Entity *self, State *next) {}
+      |                                 ~~~~~~~~^~~~
+mapas/entidades/pinwheel/pinwheel.c:16:54: warning: unused parameter ‘next’ [-Wunused-parameter]
+   16 | static bool idle_evaluate_entry(Entity *self, State *next) {}
+      |                                               ~~~~~~~^~~~
+mapas/entidades/pinwheel/pinwheel.c: In function ‘idle_evaluate_exit’:
+mapas/entidades/pinwheel/pinwheel.c:17:1: warning: no return statement in function returning non-void [-Wreturn-type]
+   17 | static bool idle_evaluate_exit(Entity *self, State *next) {}
+      | ^~~~~~
+mapas/entidades/pinwheel/pinwheel.c:17:40: warning: unused parameter ‘self’ [-Wunused-parameter]
+   17 | static bool idle_evaluate_exit(Entity *self, State *next) {}
+      |                                ~~~~~~~~^~~~
+mapas/entidades/pinwheel/pinwheel.c:17:53: warning: unused parameter ‘next’ [-Wunused-parameter]
+   17 | static bool idle_evaluate_exit(Entity *self, State *next) {}
+      |                                              ~~~~~~~^~~~
+mapas/entidades/pinwheel/pinwheel.c: In function ‘walking_evaluate_entry’:
+mapas/entidades/pinwheel/pinwheel.c:19:1: warning: no return statement in function returning non-void [-Wreturn-type]
+   19 | static bool walking_evaluate_entry(Entity *self, State *next) {}
+      | ^~~~~~
+mapas/entidades/pinwheel/pinwheel.c:19:44: warning: unused parameter ‘self’ [-Wunused-parameter]
+   19 | static bool walking_evaluate_entry(Entity *self, State *next) {}
+      |                                    ~~~~~~~~^~~~
+mapas/entidades/pinwheel/pinwheel.c:19:57: warning: unused parameter ‘next’ [-Wunused-parameter]
+   19 | static bool walking_evaluate_entry(Entity *self, State *next) {}
+      |                                                  ~~~~~~~^~~~
+mapas/entidades/pinwheel/pinwheel.c: In function ‘walking_evaluate_exit’:
+mapas/entidades/pinwheel/pinwheel.c:20:1: warning: no return statement in function returning non-void [-Wreturn-type]
+   20 | static bool walking_evaluate_exit(Entity *self, State *next) {}
+      | ^~~~~~
+mapas/entidades/pinwheel/pinwheel.c:20:43: warning: unused parameter ‘self’ [-Wunused-parameter]
+   20 | static bool walking_evaluate_exit(Entity *self, State *next) {}
+      |                                   ~~~~~~~~^~~~
+mapas/entidades/pinwheel/pinwheel.c:20:56: warning: unused parameter ‘next’ [-Wunused-parameter]
+   20 | static bool walking_evaluate_exit(Entity *self, State *next) {}
+      |                                                 ~~~~~~~^~~~
+mapas/entidades/pinwheel/pinwheel.c: In function ‘idle_input’:
+mapas/entidades/pinwheel/pinwheel.c:22:32: warning: unused parameter ‘grid’ [-Wunused-parameter]
+   22 | static Intent idle_input(Grid *grid, Entity *self) {
+      |                          ~~~~~~^~~~
+mapas/entidades/pinwheel/pinwheel.c:22:46: warning: unused parameter ‘self’ [-Wunused-parameter]
+   22 | static Intent idle_input(Grid *grid, Entity *self) {
+      |                                      ~~~~~~~~^~~~
+mapas/entidades/pinwheel/pinwheel.c: In function ‘walking_input’:
+mapas/entidades/pinwheel/pinwheel.c:26:35: warning: unused parameter ‘grid’ [-Wunused-parameter]
+   26 | static Intent walking_input(Grid *grid, Entity *self) {
+      |                             ~~~~~~^~~~
+mapas/entidades/pinwheel/pinwheel.c:26:49: warning: unused parameter ‘self’ [-Wunused-parameter]
+   26 | static Intent walking_input(Grid *grid, Entity *self) {
+      |                                         ~~~~~~~~^~~~
+In file included from mapas/entidades/pinwheel/pinwheel.c:2:
+mapas/entidades/pinwheel/../../../include/physics.h: At top level:
+mapas/entidades/pinwheel/../../../include/physics.h:19:12: warning: ‘try_move’ declared ‘static’ but never defined [-Wunused-function]
+   19 | static int try_move(struct Entity *mover, int new_x, int new_y, Grid *g, EntityList *l);
+      |            ^~~~~~~~
+mapas/entidades/pinwheel/pinwheel.c:55:22: warning: array ‘_pinwheel_data_pool’ assumed to have one element
+   55 | static pinwheel_data _pinwheel_data_pool[];
+      |                      ^~~~~~~~~~~~~~~~~~~
+mapas/entidades/pinwheel/pinwheel.c:26:15: warning: ‘walking_input’ defined but not used [-Wunused-function]
+   26 | static Intent walking_input(Grid *grid, Entity *self) {
+      |               ^~~~~~~~~~~~~
+mapas/entidades/pinwheel/pinwheel.c:22:15: warning: ‘idle_input’ defined but not used [-Wunused-function]
+   22 | static Intent idle_input(Grid *grid, Entity *self) {
+      |               ^~~~~~~~~~
+mapas/entidades/pinwheel/pinwheel.c:20:13: warning: ‘walking_evaluate_exit’ defined but not used [-Wunused-function]
+   20 | static bool walking_evaluate_exit(Entity *self, State *next) {}
+      |             ^~~~~~~~~~~~~~~~~~~~~
+mapas/entidades/pinwheel/pinwheel.c:19:13: warning: ‘walking_evaluate_entry’ defined but not used [-Wunused-function]
+   19 | static bool walking_evaluate_entry(Entity *self, State *next) {}
+      |             ^~~~~~~~~~~~~~~~~~~~~~
+mapas/entidades/pinwheel/pinwheel.c:17:13: warning: ‘idle_evaluate_exit’ defined but not used [-Wunused-function]
+   17 | static bool idle_evaluate_exit(Entity *self, State *next) {}
+      |             ^~~~~~~~~~~~~~~~~~
+mapas/entidades/pinwheel/pinwheel.c:16:13: warning: ‘idle_evaluate_entry’ defined but not used [-Wunused-function]
+   16 | static bool idle_evaluate_entry(Entity *self, State *next) {}
+      |             ^~~~~~~~~~~~~~~~~~~
+mapas/entidades/pinwheel/pinwheel.c:39:14: warning: ‘walking’ defined but not used [-Wunused-variable]
+   39 | static State walking = {
+      |              ^~~~~~~
+In file included from mapas/entidades/pinwheel/../../../include/physics.h:2:
+mapas/entidades/pinwheel/../../../include/grid.h:28:12: warning: ‘grid_hash’ defined but not used [-Wunused-function]
+   28 | static int grid_hash(CellCoord c) {
+      |            ^~~~~~~~~
+gcc -Wall -Wextra -O1 -std=c11 -I include -I generated -DRUNNING_SDL2 -I/usr/include/SDL2 -D_REENTRANT -c mapas/entidades/projetil/projectile_collision.c -o build/mapas/entidades/projetil/projectile_collision.o
+In file included from mapas/entidades/projetil/projectile_collision.c:1:
+mapas/entidades/projetil/../../../include/entity.h:102:13: warning: ‘generic_transition’ defined but not used [-Wunused-function]
+  102 | static bool generic_transition(Entity *self, State *next) {
+      |             ^~~~~~~~~~~~~~~~~~
+gcc -Wall -Wextra -O1 -std=c11 -I include -I generated -DRUNNING_SDL2 -I/usr/include/SDL2 -D_REENTRANT -c mapas/entidades/projetil/projectile_intent.c -o build/mapas/entidades/projetil/projectile_intent.o
+mapas/entidades/projetil/projectile_intent.c: In function ‘projectile_intent’:
+mapas/entidades/projetil/projectile_intent.c:5:32: warning: unused parameter ‘grid’ [-Wunused-parameter]
+    5 | Intent projectile_intent(Grid *grid, Entity *self) {
+      |                          ~~~~~~^~~~
+In file included from mapas/entidades/projetil/projectile_intent.c:1:
+mapas/entidades/projetil/../../../include/physics.h: At top level:
+mapas/entidades/projetil/../../../include/physics.h:19:12: warning: ‘try_move’ declared ‘static’ but never defined [-Wunused-function]
+   19 | static int try_move(struct Entity *mover, int new_x, int new_y, Grid *g, EntityList *l);
+      |            ^~~~~~~~
+In file included from mapas/entidades/projetil/../../../include/physics.h:2:
+mapas/entidades/projetil/../../../include/grid.h:28:12: warning: ‘grid_hash’ defined but not used [-Wunused-function]
+   28 | static int grid_hash(CellCoord c) {
+      |            ^~~~~~~~~
+In file included from mapas/entidades/projetil/../../../include/physics.h:1:
+mapas/entidades/projetil/../../../include/entity.h:102:13: warning: ‘generic_transition’ defined but not used [-Wunused-function]
+  102 | static bool generic_transition(Entity *self, State *next) {
+      |             ^~~~~~~~~~~~~~~~~~
+gcc -Wall -Wextra -O1 -std=c11 -I include -I generated -DRUNNING_SDL2 -I/usr/include/SDL2 -D_REENTRANT -c mapas/entidades/projetil/projetil_2.c -o build/mapas/entidades/projetil/projetil_2.o
+mapas/entidades/projetil/projetil_2.c: In function ‘projetil_collision’:
+mapas/entidades/projetil/projetil_2.c:7:60: warning: unused parameter ‘g’ [-Wunused-parameter]
+    7 | void projetil_collision(Entity *self, Entity *other, Grid *g, EntityList *l){
+      |                                                      ~~~~~~^
+mapas/entidades/projetil/projetil_2.c:7:75: warning: unused parameter ‘l’ [-Wunused-parameter]
+    7 | void projetil_collision(Entity *self, Entity *other, Grid *g, EntityList *l){
+      |                                                               ~~~~~~~~~~~~^
+mapas/entidades/projetil/projetil_2.c: In function ‘normal_input’:
+mapas/entidades/projetil/projetil_2.c:30:34: warning: unused parameter ‘grid’ [-Wunused-parameter]
+   30 | static Intent normal_input(Grid *grid, Entity *self) {
+      |                            ~~~~~~^~~~
+mapas/entidades/projetil/projetil_2.c:30:48: warning: unused parameter ‘self’ [-Wunused-parameter]
+   30 | static Intent normal_input(Grid *grid, Entity *self) {
+      |                                        ~~~~~~~~^~~~
+mapas/entidades/projetil/projetil_2.c: In function ‘super_input’:
+mapas/entidades/projetil/projetil_2.c:34:33: warning: unused parameter ‘grid’ [-Wunused-parameter]
+   34 | static Intent super_input(Grid *grid, Entity *self) {
+      |                           ~~~~~~^~~~
+mapas/entidades/projetil/projetil_2.c:34:47: warning: unused parameter ‘self’ [-Wunused-parameter]
+   34 | static Intent super_input(Grid *grid, Entity *self) {
+      |                                       ~~~~~~~~^~~~
+mapas/entidades/projetil/projetil_2.c: In function ‘veneno_input’:
+mapas/entidades/projetil/projetil_2.c:38:34: warning: unused parameter ‘grid’ [-Wunused-parameter]
+   38 | static Intent veneno_input(Grid *grid, Entity *self) {
+      |                            ~~~~~~^~~~
+mapas/entidades/projetil/projetil_2.c:38:48: warning: unused parameter ‘self’ [-Wunused-parameter]
+   38 | static Intent veneno_input(Grid *grid, Entity *self) {
+      |                                        ~~~~~~~~^~~~
+mapas/entidades/projetil/projetil_2.c: In function ‘projetil_create’:
+mapas/entidades/projetil/projetil_2.c:99:13: warning: unused variable ‘shot_x’ [-Wunused-variable]
+   99 |         int shot_x = shooter->position.x + shooter->hitbox.data.rectangle.width;
+      |             ^~~~~~
+mapas/entidades/projetil/projetil_2.c:101:13: warning: unused variable ‘shot_x’ [-Wunused-variable]
+  101 |         int shot_x = shooter->position.x + shooter->hitbox.data.rectangle.width;
+      |             ^~~~~~
+mapas/entidades/projetil/projetil_2.c:106:13: warning: unused variable ‘shot_y’ [-Wunused-variable]
+  106 |         int shot_y = shooter->position.y + (shooter->hitbox.data.rectangle.height/4);
+      |             ^~~~~~
+mapas/entidades/projetil/projetil_2.c:108:13: warning: unused variable ‘shot_y’ [-Wunused-variable]
+  108 |         int shot_y = shooter->position.x - (shooter->hitbox.data.rectangle.height/4);
+      |             ^~~~~~
+In file included from mapas/entidades/projetil/projetil_2.c:2:
+mapas/entidades/projetil/../../../include/physics.h: At top level:
+mapas/entidades/projetil/../../../include/physics.h:19:12: warning: ‘try_move’ declared ‘static’ but never defined [-Wunused-function]
+   19 | static int try_move(struct Entity *mover, int new_x, int new_y, Grid *g, EntityList *l);
+      |            ^~~~~~~~
+mapas/entidades/projetil/projetil_2.c: In function ‘projetil_collision’:
+mapas/entidades/projetil/projetil_2.c:17:34: warning: this statement may fall through [-Wimplicit-fallthrough=]
+   17 |             self->should_destroy = 1;
+      |             ~~~~~~~~~~~~~~~~~~~~~^~~
+mapas/entidades/projetil/projetil_2.c:19:9: note: here
+   19 |         default:
+      |         ^~~~~~~
+mapas/entidades/projetil/projetil_2.c: At top level:
+mapas/entidades/projetil/projetil_2.c:38:15: warning: ‘veneno_input’ defined but not used [-Wunused-function]
+   38 | static Intent veneno_input(Grid *grid, Entity *self) {
+      |               ^~~~~~~~~~~~
+mapas/entidades/projetil/projetil_2.c:34:15: warning: ‘super_input’ defined but not used [-Wunused-function]
+   34 | static Intent super_input(Grid *grid, Entity *self) {
+      |               ^~~~~~~~~~~
+mapas/entidades/projetil/projetil_2.c:30:15: warning: ‘normal_input’ defined but not used [-Wunused-function]
+   30 | static Intent normal_input(Grid *grid, Entity *self) {
+      |               ^~~~~~~~~~~~
+mapas/entidades/projetil/projetil_2.c:60:14: warning: ‘veneno’ defined but not used [-Wunused-variable]
+   60 | static State veneno = {
+      |              ^~~~~~
+mapas/entidades/projetil/projetil_2.c:51:14: warning: ‘super’ defined but not used [-Wunused-variable]
+   51 | static State super = {
+      |              ^~~~~
+mapas/entidades/projetil/projetil_2.c:42:14: warning: ‘normal’ defined but not used [-Wunused-variable]
+   42 | static State normal = {
+      |              ^~~~~~
+In file included from mapas/entidades/projetil/projetil_2.c:3:
+mapas/entidades/projetil/../samus/samus.h:18:14: warning: ‘walking’ defined but not used [-Wunused-variable]
+   18 | static State walking;
+      |              ^~~~~~~
+mapas/entidades/projetil/../samus/samus.h:17:14: warning: ‘kneeling’ defined but not used [-Wunused-variable]
+   17 | static State kneeling;
+      |              ^~~~~~~~
+mapas/entidades/projetil/../samus/samus.h:16:14: warning: ‘jumping’ defined but not used [-Wunused-variable]
+   16 | static State jumping;
+      |              ^~~~~~~
+mapas/entidades/projetil/../samus/samus.h:15:14: warning: ‘idle’ defined but not used [-Wunused-variable]
+   15 | static State idle;
+      |              ^~~~
+mapas/entidades/projetil/../samus/samus.h:13:14: warning: ‘balling’ defined but not used [-Wunused-variable]
+   13 | static State balling;
+      |              ^~~~~~~
+In file included from mapas/entidades/projetil/../../../include/physics.h:2:
+mapas/entidades/projetil/../../../include/grid.h:28:12: warning: ‘grid_hash’ defined but not used [-Wunused-function]
+   28 | static int grid_hash(CellCoord c) {
+      |            ^~~~~~~~~
+In file included from mapas/entidades/projetil/projetil_2.c:1:
+mapas/entidades/projetil/../../../include/entity.h:102:13: warning: ‘generic_transition’ defined but not used [-Wunused-function]
+  102 | static bool generic_transition(Entity *self, State *next) {
+      |             ^~~~~~~~~~~~~~~~~~
+mapas/entidades/projetil/projetil_2.c: In function ‘projetil_create’:
+mapas/entidades/projetil/projetil_2.c:111:21: warning: ‘shot_y’ is used uninitialized [-Wuninitialized]
+  111 |     e->position     = (Coordinates){shot_y, shot_x};
+      |     ~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mapas/entidades/projetil/projetil_2.c:104:9: note: ‘shot_y’ was declared here
+  104 |     int shot_y;
+      |         ^~~~~~
+mapas/entidades/projetil/projetil_2.c:111:21: warning: ‘shot_x’ is used uninitialized [-Wuninitialized]
+  111 |     e->position     = (Coordinates){shot_y, shot_x};
+      |     ~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mapas/entidades/projetil/projetil_2.c:97:9: note: ‘shot_x’ was declared here
+   97 |     int shot_x;
+      |         ^~~~~~
+gcc -Wall -Wextra -O1 -std=c11 -I include -I generated -DRUNNING_SDL2 -I/usr/include/SDL2 -D_REENTRANT -c mapas/entidades/projetil/projetil.c -o build/mapas/entidades/projetil/projetil.o
+mapas/entidades/projetil/projetil.c: In function ‘projetil_collision’:
+mapas/entidades/projetil/projetil.c:7:60: warning: unused parameter ‘g’ [-Wunused-parameter]
+    7 | void projetil_collision(Entity *self, Entity *other, Grid *g, EntityList *l){
+      |                                                      ~~~~~~^
+mapas/entidades/projetil/projetil.c:7:75: warning: unused parameter ‘l’ [-Wunused-parameter]
+    7 | void projetil_collision(Entity *self, Entity *other, Grid *g, EntityList *l){
+      |                                                               ~~~~~~~~~~~~^
+mapas/entidades/projetil/projetil.c: In function ‘projectile_intent’:
+mapas/entidades/projetil/projetil.c:30:1: warning: no return statement in function returning non-void [-Wreturn-type]
+   30 | }
+      | ^
+mapas/entidades/projetil/projetil.c:28:39: warning: unused parameter ‘grid’ [-Wunused-parameter]
+   28 | static Intent projectile_intent(Grid *grid, Entity *self) {
+      |                                 ~~~~~~^~~~
+mapas/entidades/projetil/projetil.c:28:53: warning: unused parameter ‘self’ [-Wunused-parameter]
+   28 | static Intent projectile_intent(Grid *grid, Entity *self) {
+      |                                             ~~~~~~~~^~~~
+mapas/entidades/projetil/projetil.c: In function ‘projetil_create’:
+mapas/entidades/projetil/projetil.c:89:13: warning: unused variable ‘shot_x’ [-Wunused-variable]
+   89 |         int shot_x = shooter->position.x + shooter->hitbox.data.rectangle.width;
+      |             ^~~~~~
+mapas/entidades/projetil/projetil.c:91:13: warning: unused variable ‘shot_x’ [-Wunused-variable]
+   91 |         int shot_x = shooter->position.x + shooter->hitbox.data.rectangle.width;
+      |             ^~~~~~
+mapas/entidades/projetil/projetil.c:96:13: warning: unused variable ‘shot_y’ [-Wunused-variable]
+   96 |         int shot_y = shooter->position.y + (shooter->hitbox.data.rectangle.height/4);
+      |             ^~~~~~
+mapas/entidades/projetil/projetil.c:98:13: warning: unused variable ‘shot_y’ [-Wunused-variable]
+   98 |         int shot_y = shooter->position.x - (shooter->hitbox.data.rectangle.height/4);
+      |             ^~~~~~
+In file included from mapas/entidades/projetil/projetil.c:2:
+mapas/entidades/projetil/../../../include/physics.h: At top level:
+mapas/entidades/projetil/../../../include/physics.h:19:12: warning: ‘try_move’ declared ‘static’ but never defined [-Wunused-function]
+   19 | static int try_move(struct Entity *mover, int new_x, int new_y, Grid *g, EntityList *l);
+      |            ^~~~~~~~
+mapas/entidades/projetil/projetil.c: In function ‘projetil_collision’:
+mapas/entidades/projetil/projetil.c:15:34: warning: this statement may fall through [-Wimplicit-fallthrough=]
+   15 |             self->should_destroy = 1;
+      |             ~~~~~~~~~~~~~~~~~~~~~^~~
+mapas/entidades/projetil/projetil.c:17:9: note: here
+   17 |         default:
+      |         ^~~~~~~
+mapas/entidades/projetil/projetil.c: At top level:
+mapas/entidades/projetil/projetil.c:50:14: warning: ‘veneno’ defined but not used [-Wunused-variable]
+   50 | static State veneno = {
+      |              ^~~~~~
+mapas/entidades/projetil/projetil.c:41:14: warning: ‘super’ defined but not used [-Wunused-variable]
+   41 | static State super = {
+      |              ^~~~~
+mapas/entidades/projetil/projetil.c:32:14: warning: ‘normal’ defined but not used [-Wunused-variable]
+   32 | static State normal = {
+      |              ^~~~~~
+In file included from mapas/entidades/projetil/projetil.c:3:
+mapas/entidades/projetil/../samus/samus.h:18:14: warning: ‘walking’ defined but not used [-Wunused-variable]
+   18 | static State walking;
+      |              ^~~~~~~
+mapas/entidades/projetil/../samus/samus.h:17:14: warning: ‘kneeling’ defined but not used [-Wunused-variable]
+   17 | static State kneeling;
+      |              ^~~~~~~~
+mapas/entidades/projetil/../samus/samus.h:16:14: warning: ‘jumping’ defined but not used [-Wunused-variable]
+   16 | static State jumping;
+      |              ^~~~~~~
+mapas/entidades/projetil/../samus/samus.h:15:14: warning: ‘idle’ defined but not used [-Wunused-variable]
+   15 | static State idle;
+      |              ^~~~
+mapas/entidades/projetil/../samus/samus.h:13:14: warning: ‘balling’ defined but not used [-Wunused-variable]
+   13 | static State balling;
+      |              ^~~~~~~
+In file included from mapas/entidades/projetil/../../../include/physics.h:2:
+mapas/entidades/projetil/../../../include/grid.h:28:12: warning: ‘grid_hash’ defined but not used [-Wunused-function]
+   28 | static int grid_hash(CellCoord c) {
+      |            ^~~~~~~~~
+In file included from mapas/entidades/projetil/projetil.c:1:
+mapas/entidades/projetil/../../../include/entity.h:102:13: warning: ‘generic_transition’ defined but not used [-Wunused-function]
+  102 | static bool generic_transition(Entity *self, State *next) {
+      |             ^~~~~~~~~~~~~~~~~~
+mapas/entidades/projetil/projetil.c: In function ‘projetil_create’:
+mapas/entidades/projetil/projetil.c:101:21: warning: ‘shot_y’ is used uninitialized [-Wuninitialized]
+  101 |     e->position     = (Coordinates){shot_y, shot_x};
+      |     ~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mapas/entidades/projetil/projetil.c:94:9: note: ‘shot_y’ was declared here
+   94 |     int shot_y;
+      |         ^~~~~~
+mapas/entidades/projetil/projetil.c:101:21: warning: ‘shot_x’ is used uninitialized [-Wuninitialized]
+  101 |     e->position     = (Coordinates){shot_y, shot_x};
+      |     ~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mapas/entidades/projetil/projetil.c:87:9: note: ‘shot_x’ was declared here
+   87 |     int shot_x;
+      |         ^~~~~~
+gcc -Wall -Wextra -O1 -std=c11 -I include -I generated -DRUNNING_SDL2 -I/usr/include/SDL2 -D_REENTRANT -c mapas/entidades/samus/player_input.c -o build/mapas/entidades/samus/player_input.o
+gcc -Wall -Wextra -O1 -std=c11 -I include -I generated -DRUNNING_SDL2 -I/usr/include/SDL2 -D_REENTRANT -c mapas/entidades/samus/samus_2.c -o build/mapas/entidades/samus/samus_2.o
+mapas/entidades/samus/samus_2.c: In function ‘samus_collision’:
+mapas/entidades/samus/samus_2.c:19:57: warning: parameter ‘g’ set but not used [-Wunused-but-set-parameter]
+   19 | void samus_collision(Entity *self, Entity *other, Grid *g, EntityList *l){
+      |                                                   ~~~~~~^
+mapas/entidades/samus/samus_2.c: In function ‘balling_evaluate_entry’:
+mapas/entidades/samus/samus_2.c:51:57: warning: unused parameter ‘next’ [-Wunused-parameter]
+   51 | static bool balling_evaluate_entry(Entity *self, State *next) {
+      |                                                  ~~~~~~~^~~~
+mapas/entidades/samus/samus_2.c: In function ‘balling_evaluate_exit’:
+mapas/entidades/samus/samus_2.c:60:56: warning: unused parameter ‘next’ [-Wunused-parameter]
+   60 | static bool balling_evaluate_exit(Entity *self, State *next) {
+      |                                                 ~~~~~~~^~~~
+mapas/entidades/samus/samus_2.c: In function ‘hit_evaluate_entry’:
+mapas/entidades/samus/samus_2.c:66:53: warning: unused parameter ‘next’ [-Wunused-parameter]
+   66 | static bool hit_evaluate_entry(Entity *self, State *next) {
+      |                                              ~~~~~~~^~~~
+mapas/entidades/samus/samus_2.c: In function ‘hit_evaluate_exit’:
+mapas/entidades/samus/samus_2.c:73:52: warning: unused parameter ‘next’ [-Wunused-parameter]
+   73 | static bool hit_evaluate_exit(Entity *self, State *next) {
+      |                                             ~~~~~~~^~~~
+mapas/entidades/samus/samus_2.c: In function ‘idle_evaluate_entry’:
+mapas/entidades/samus/samus_2.c:79:1: warning: no return statement in function returning non-void [-Wreturn-type]
+   79 | static bool idle_evaluate_entry(Entity *self, State *next) {}
+      | ^~~~~~
+mapas/entidades/samus/samus_2.c:79:41: warning: unused parameter ‘self’ [-Wunused-parameter]
+   79 | static bool idle_evaluate_entry(Entity *self, State *next) {}
+      |                                 ~~~~~~~~^~~~
+mapas/entidades/samus/samus_2.c:79:54: warning: unused parameter ‘next’ [-Wunused-parameter]
+   79 | static bool idle_evaluate_entry(Entity *self, State *next) {}
+      |                                               ~~~~~~~^~~~
+mapas/entidades/samus/samus_2.c: In function ‘idle_evaluate_exit’:
+mapas/entidades/samus/samus_2.c:80:1: warning: no return statement in function returning non-void [-Wreturn-type]
+   80 | static bool idle_evaluate_exit(Entity *self, State *next) {}
+      | ^~~~~~
+mapas/entidades/samus/samus_2.c:80:40: warning: unused parameter ‘self’ [-Wunused-parameter]
+   80 | static bool idle_evaluate_exit(Entity *self, State *next) {}
+      |                                ~~~~~~~~^~~~
+mapas/entidades/samus/samus_2.c:80:53: warning: unused parameter ‘next’ [-Wunused-parameter]
+   80 | static bool idle_evaluate_exit(Entity *self, State *next) {}
+      |                                              ~~~~~~~^~~~
+mapas/entidades/samus/samus_2.c: In function ‘jumping_evaluate_entry’:
+mapas/entidades/samus/samus_2.c:82:57: warning: unused parameter ‘next’ [-Wunused-parameter]
+   82 | static bool jumping_evaluate_entry(Entity *self, State *next) {
+      |                                                  ~~~~~~~^~~~
+mapas/entidades/samus/samus_2.c: In function ‘jumping_evaluate_exit’:
+mapas/entidades/samus/samus_2.c:88:56: warning: unused parameter ‘next’ [-Wunused-parameter]
+   88 | static bool jumping_evaluate_exit(Entity *self, State *next) {
+      |                                                 ~~~~~~~^~~~
+mapas/entidades/samus/samus_2.c: In function ‘kneeling_evaluate_entry’:
+mapas/entidades/samus/samus_2.c:94:58: warning: unused parameter ‘next’ [-Wunused-parameter]
+   94 | static bool kneeling_evaluate_entry(Entity *self, State *next) {
+      |                                                   ~~~~~~~^~~~
+mapas/entidades/samus/samus_2.c: In function ‘kneeling_evaluate_exit’:
+mapas/entidades/samus/samus_2.c:99:57: warning: unused parameter ‘next’ [-Wunused-parameter]
+   99 | static bool kneeling_evaluate_exit(Entity *self, State *next) {
+      |                                                  ~~~~~~~^~~~
+mapas/entidades/samus/samus_2.c: In function ‘walking_evaluate_entry’:
+mapas/entidades/samus/samus_2.c:105:1: warning: no return statement in function returning non-void [-Wreturn-type]
+  105 | static bool walking_evaluate_entry(Entity *self, State *next) {}
+      | ^~~~~~
+mapas/entidades/samus/samus_2.c:105:44: warning: unused parameter ‘self’ [-Wunused-parameter]
+  105 | static bool walking_evaluate_entry(Entity *self, State *next) {}
+      |                                    ~~~~~~~~^~~~
+mapas/entidades/samus/samus_2.c:105:57: warning: unused parameter ‘next’ [-Wunused-parameter]
+  105 | static bool walking_evaluate_entry(Entity *self, State *next) {}
+      |                                                  ~~~~~~~^~~~
+mapas/entidades/samus/samus_2.c: In function ‘walking_evaluate_exit’:
+mapas/entidades/samus/samus_2.c:106:1: warning: no return statement in function returning non-void [-Wreturn-type]
+  106 | static bool walking_evaluate_exit(Entity *self, State *next) {}
+      | ^~~~~~
+mapas/entidades/samus/samus_2.c:106:43: warning: unused parameter ‘self’ [-Wunused-parameter]
+  106 | static bool walking_evaluate_exit(Entity *self, State *next) {}
+      |                                   ~~~~~~~~^~~~
+mapas/entidades/samus/samus_2.c:106:56: warning: unused parameter ‘next’ [-Wunused-parameter]
+  106 | static bool walking_evaluate_exit(Entity *self, State *next) {}
+      |                                                 ~~~~~~~^~~~
+mapas/entidades/samus/samus_2.c: In function ‘default_input’:
+mapas/entidades/samus/samus_2.c:109:35: warning: unused parameter ‘grid’ [-Wunused-parameter]
+  109 | static Intent default_input(Grid *grid, Entity *self) {
+      |                             ~~~~~~^~~~
+mapas/entidades/samus/samus_2.c: In function ‘balling_input’:
+mapas/entidades/samus/samus_2.c:125:35: warning: unused parameter ‘grid’ [-Wunused-parameter]
+  125 | static Intent balling_input(Grid *grid, Entity *self) {
+      |                             ~~~~~~^~~~
+mapas/entidades/samus/samus_2.c: In function ‘hit_input’:
+mapas/entidades/samus/samus_2.c:134:31: warning: unused parameter ‘grid’ [-Wunused-parameter]
+  134 | static Intent hit_input(Grid *grid, Entity *self) {
+      |                         ~~~~~~^~~~
+mapas/entidades/samus/samus_2.c:134:45: warning: unused parameter ‘self’ [-Wunused-parameter]
+  134 | static Intent hit_input(Grid *grid, Entity *self) {
+      |                                     ~~~~~~~~^~~~
+mapas/entidades/samus/samus_2.c: In function ‘jumping_input’:
+mapas/entidades/samus/samus_2.c:139:35: warning: unused parameter ‘grid’ [-Wunused-parameter]
+  139 | static Intent jumping_input(Grid *grid, Entity *self) {
+      |                             ~~~~~~^~~~
+mapas/entidades/samus/samus_2.c: In function ‘kneeling_input’:
+mapas/entidades/samus/samus_2.c:152:36: warning: unused parameter ‘grid’ [-Wunused-parameter]
+  152 | static Intent kneeling_input(Grid *grid, Entity *self) {
+      |                              ~~~~~~^~~~
+mapas/entidades/samus/samus_2.c: In function ‘walking_input’:
+mapas/entidades/samus/samus_2.c:162:35: warning: unused parameter ‘grid’ [-Wunused-parameter]
+  162 | static Intent walking_input(Grid *grid, Entity *self) {
+      |                             ~~~~~~^~~~
+In file included from mapas/entidades/samus/samus_2.c:2:
+mapas/entidades/samus/../../../include/physics.h: At top level:
+mapas/entidades/samus/../../../include/physics.h:19:12: warning: ‘try_move’ declared ‘static’ but never defined [-Wunused-function]
+   19 | static int try_move(struct Entity *mover, int new_x, int new_y, Grid *g, EntityList *l);
+      |            ^~~~~~~~
+mapas/entidades/samus/samus_2.c:162:15: warning: ‘walking_input’ defined but not used [-Wunused-function]
+  162 | static Intent walking_input(Grid *grid, Entity *self) {
+      |               ^~~~~~~~~~~~~
+mapas/entidades/samus/samus_2.c:106:13: warning: ‘walking_evaluate_exit’ defined but not used [-Wunused-function]
+  106 | static bool walking_evaluate_exit(Entity *self, State *next) {}
+      |             ^~~~~~~~~~~~~~~~~~~~~
+mapas/entidades/samus/samus_2.c:105:13: warning: ‘walking_evaluate_entry’ defined but not used [-Wunused-function]
+  105 | static bool walking_evaluate_entry(Entity *self, State *next) {}
+      |             ^~~~~~~~~~~~~~~~~~~~~~
+mapas/entidades/samus/samus_2.c:80:13: warning: ‘idle_evaluate_exit’ defined but not used [-Wunused-function]
+   80 | static bool idle_evaluate_exit(Entity *self, State *next) {}
+      |             ^~~~~~~~~~~~~~~~~~
+mapas/entidades/samus/samus_2.c:79:13: warning: ‘idle_evaluate_entry’ defined but not used [-Wunused-function]
+   79 | static bool idle_evaluate_entry(Entity *self, State *next) {}
+      |             ^~~~~~~~~~~~~~~~~~~
+mapas/entidades/samus/samus_2.c:73:13: warning: ‘hit_evaluate_exit’ defined but not used [-Wunused-function]
+   73 | static bool hit_evaluate_exit(Entity *self, State *next) {
+      |             ^~~~~~~~~~~~~~~~~
+mapas/entidades/samus/samus_2.c:66:13: warning: ‘hit_evaluate_entry’ defined but not used [-Wunused-function]
+   66 | static bool hit_evaluate_entry(Entity *self, State *next) {
+      |             ^~~~~~~~~~~~~~~~~~
+In file included from mapas/entidades/samus/samus_2.c:7:
+mapas/entidades/samus/../projetil/projetil.h:10:14: warning: ‘veneno’ defined but not used [-Wunused-variable]
+   10 | static State veneno;
+      |              ^~~~~~
+mapas/entidades/samus/../projetil/projetil.h:9:14: warning: ‘super’ defined but not used [-Wunused-variable]
+    9 | static State super;
+      |              ^~~~~
+In file included from mapas/entidades/samus/../../../include/switch.h:5,
+                 from mapas/entidades/samus/samus_2.c:4:
+mapas/entidades/samus/../../../include/../generated/maps.h:526:14: warning: ‘load_area’ defined but not used [-Wunused-function]
+  526 | static Grid *load_area(AreaId id) {
+      |              ^~~~~~~~~
+mapas/entidades/samus/../../../include/../generated/maps.h:514:20: warning: ‘get_entidades’ defined but not used [-Wunused-function]
+  514 | static EntityList* get_entidades(AreaId id){
+      |                    ^~~~~~~~~~~~~
+mapas/entidades/samus/../../../include/../generated/maps.h:509:14: warning: ‘get_grid’ defined but not used [-Wunused-function]
+  509 | static Grid* get_grid(AreaId id){
+      |              ^~~~~~~~
+In file included from mapas/entidades/samus/../../../include/physics.h:2:
+mapas/entidades/samus/../../../include/grid.h:28:12: warning: ‘grid_hash’ defined but not used [-Wunused-function]
+   28 | static int grid_hash(CellCoord c) {
+      |            ^~~~~~~~~
+gcc -Wall -Wextra -O1 -std=c11 -I include -I generated -DRUNNING_SDL2 -I/usr/include/SDL2 -D_REENTRANT -c mapas/entidades/samus/samus.c -o build/mapas/entidades/samus/samus.o
+mapas/entidades/samus/samus.c: In function ‘samus_collision’:
+mapas/entidades/samus/samus.c:6:30: warning: unused parameter ‘self’ [-Wunused-parameter]
+    6 | void samus_collision(Entity *self, Entity *other, Grid *g, EntityList *l){}
+      |                      ~~~~~~~~^~~~
+mapas/entidades/samus/samus.c:6:44: warning: unused parameter ‘other’ [-Wunused-parameter]
+    6 | void samus_collision(Entity *self, Entity *other, Grid *g, EntityList *l){}
+      |                                    ~~~~~~~~^~~~~
+mapas/entidades/samus/samus.c:6:57: warning: unused parameter ‘g’ [-Wunused-parameter]
+    6 | void samus_collision(Entity *self, Entity *other, Grid *g, EntityList *l){}
+      |                                                   ~~~~~~^
+mapas/entidades/samus/samus.c:6:72: warning: unused parameter ‘l’ [-Wunused-parameter]
+    6 | void samus_collision(Entity *self, Entity *other, Grid *g, EntityList *l){}
+      |                                                            ~~~~~~~~~~~~^
+mapas/entidades/samus/samus.c: In function ‘balling_evaluate_entry’:
+mapas/entidades/samus/samus.c:17:1: warning: no return statement in function returning non-void [-Wreturn-type]
+   17 | static bool balling_evaluate_entry(Entity *self, State *next) {}
+      | ^~~~~~
+mapas/entidades/samus/samus.c:17:44: warning: unused parameter ‘self’ [-Wunused-parameter]
+   17 | static bool balling_evaluate_entry(Entity *self, State *next) {}
+      |                                    ~~~~~~~~^~~~
+mapas/entidades/samus/samus.c:17:57: warning: unused parameter ‘next’ [-Wunused-parameter]
+   17 | static bool balling_evaluate_entry(Entity *self, State *next) {}
+      |                                                  ~~~~~~~^~~~
+mapas/entidades/samus/samus.c: In function ‘balling_evaluate_exit’:
+mapas/entidades/samus/samus.c:18:1: warning: no return statement in function returning non-void [-Wreturn-type]
+   18 | static bool balling_evaluate_exit(Entity *self, State *next) {}
+      | ^~~~~~
+mapas/entidades/samus/samus.c:18:43: warning: unused parameter ‘self’ [-Wunused-parameter]
+   18 | static bool balling_evaluate_exit(Entity *self, State *next) {}
+      |                                   ~~~~~~~~^~~~
+mapas/entidades/samus/samus.c:18:56: warning: unused parameter ‘next’ [-Wunused-parameter]
+   18 | static bool balling_evaluate_exit(Entity *self, State *next) {}
+      |                                                 ~~~~~~~^~~~
+mapas/entidades/samus/samus.c: In function ‘hit_evaluate_entry’:
+mapas/entidades/samus/samus.c:20:1: warning: no return statement in function returning non-void [-Wreturn-type]
+   20 | static bool hit_evaluate_entry(Entity *self, State *next) {}
+      | ^~~~~~
+mapas/entidades/samus/samus.c:20:40: warning: unused parameter ‘self’ [-Wunused-parameter]
+   20 | static bool hit_evaluate_entry(Entity *self, State *next) {}
+      |                                ~~~~~~~~^~~~
+mapas/entidades/samus/samus.c:20:53: warning: unused parameter ‘next’ [-Wunused-parameter]
+   20 | static bool hit_evaluate_entry(Entity *self, State *next) {}
+      |                                              ~~~~~~~^~~~
+mapas/entidades/samus/samus.c: In function ‘hit_evaluate_exit’:
+mapas/entidades/samus/samus.c:21:1: warning: no return statement in function returning non-void [-Wreturn-type]
+   21 | static bool hit_evaluate_exit(Entity *self, State *next) {}
+      | ^~~~~~
+mapas/entidades/samus/samus.c:21:39: warning: unused parameter ‘self’ [-Wunused-parameter]
+   21 | static bool hit_evaluate_exit(Entity *self, State *next) {}
+      |                               ~~~~~~~~^~~~
+mapas/entidades/samus/samus.c:21:52: warning: unused parameter ‘next’ [-Wunused-parameter]
+   21 | static bool hit_evaluate_exit(Entity *self, State *next) {}
+      |                                             ~~~~~~~^~~~
+mapas/entidades/samus/samus.c: In function ‘idle_evaluate_entry’:
+mapas/entidades/samus/samus.c:23:1: warning: no return statement in function returning non-void [-Wreturn-type]
+   23 | static bool idle_evaluate_entry(Entity *self, State *next) {}
+      | ^~~~~~
+mapas/entidades/samus/samus.c:23:41: warning: unused parameter ‘self’ [-Wunused-parameter]
+   23 | static bool idle_evaluate_entry(Entity *self, State *next) {}
+      |                                 ~~~~~~~~^~~~
+mapas/entidades/samus/samus.c:23:54: warning: unused parameter ‘next’ [-Wunused-parameter]
+   23 | static bool idle_evaluate_entry(Entity *self, State *next) {}
+      |                                               ~~~~~~~^~~~
+mapas/entidades/samus/samus.c: In function ‘idle_evaluate_exit’:
+mapas/entidades/samus/samus.c:24:1: warning: no return statement in function returning non-void [-Wreturn-type]
+   24 | static bool idle_evaluate_exit(Entity *self, State *next) {}
+      | ^~~~~~
+mapas/entidades/samus/samus.c:24:40: warning: unused parameter ‘self’ [-Wunused-parameter]
+   24 | static bool idle_evaluate_exit(Entity *self, State *next) {}
+      |                                ~~~~~~~~^~~~
+mapas/entidades/samus/samus.c:24:53: warning: unused parameter ‘next’ [-Wunused-parameter]
+   24 | static bool idle_evaluate_exit(Entity *self, State *next) {}
+      |                                              ~~~~~~~^~~~
+mapas/entidades/samus/samus.c: In function ‘jumping_evaluate_entry’:
+mapas/entidades/samus/samus.c:26:1: warning: no return statement in function returning non-void [-Wreturn-type]
+   26 | static bool jumping_evaluate_entry(Entity *self, State *next) {}
+      | ^~~~~~
+mapas/entidades/samus/samus.c:26:44: warning: unused parameter ‘self’ [-Wunused-parameter]
+   26 | static bool jumping_evaluate_entry(Entity *self, State *next) {}
+      |                                    ~~~~~~~~^~~~
+mapas/entidades/samus/samus.c:26:57: warning: unused parameter ‘next’ [-Wunused-parameter]
+   26 | static bool jumping_evaluate_entry(Entity *self, State *next) {}
+      |                                                  ~~~~~~~^~~~
+mapas/entidades/samus/samus.c: In function ‘jumping_evaluate_exit’:
+mapas/entidades/samus/samus.c:27:1: warning: no return statement in function returning non-void [-Wreturn-type]
+   27 | static bool jumping_evaluate_exit(Entity *self, State *next) {}
+      | ^~~~~~
+mapas/entidades/samus/samus.c:27:43: warning: unused parameter ‘self’ [-Wunused-parameter]
+   27 | static bool jumping_evaluate_exit(Entity *self, State *next) {}
+      |                                   ~~~~~~~~^~~~
+mapas/entidades/samus/samus.c:27:56: warning: unused parameter ‘next’ [-Wunused-parameter]
+   27 | static bool jumping_evaluate_exit(Entity *self, State *next) {}
+      |                                                 ~~~~~~~^~~~
+mapas/entidades/samus/samus.c: In function ‘kneeling_evaluate_entry’:
+mapas/entidades/samus/samus.c:29:1: warning: no return statement in function returning non-void [-Wreturn-type]
+   29 | static bool kneeling_evaluate_entry(Entity *self, State *next) {}
+      | ^~~~~~
+mapas/entidades/samus/samus.c:29:45: warning: unused parameter ‘self’ [-Wunused-parameter]
+   29 | static bool kneeling_evaluate_entry(Entity *self, State *next) {}
+      |                                     ~~~~~~~~^~~~
+mapas/entidades/samus/samus.c:29:58: warning: unused parameter ‘next’ [-Wunused-parameter]
+   29 | static bool kneeling_evaluate_entry(Entity *self, State *next) {}
+      |                                                   ~~~~~~~^~~~
+mapas/entidades/samus/samus.c: In function ‘kneeling_evaluate_exit’:
+mapas/entidades/samus/samus.c:30:1: warning: no return statement in function returning non-void [-Wreturn-type]
+   30 | static bool kneeling_evaluate_exit(Entity *self, State *next) {}
+      | ^~~~~~
+mapas/entidades/samus/samus.c:30:44: warning: unused parameter ‘self’ [-Wunused-parameter]
+   30 | static bool kneeling_evaluate_exit(Entity *self, State *next) {}
+      |                                    ~~~~~~~~^~~~
+mapas/entidades/samus/samus.c:30:57: warning: unused parameter ‘next’ [-Wunused-parameter]
+   30 | static bool kneeling_evaluate_exit(Entity *self, State *next) {}
+      |                                                  ~~~~~~~^~~~
+mapas/entidades/samus/samus.c: In function ‘walking_evaluate_entry’:
+mapas/entidades/samus/samus.c:32:1: warning: no return statement in function returning non-void [-Wreturn-type]
+   32 | static bool walking_evaluate_entry(Entity *self, State *next) {}
+      | ^~~~~~
+mapas/entidades/samus/samus.c:32:44: warning: unused parameter ‘self’ [-Wunused-parameter]
+   32 | static bool walking_evaluate_entry(Entity *self, State *next) {}
+      |                                    ~~~~~~~~^~~~
+mapas/entidades/samus/samus.c:32:57: warning: unused parameter ‘next’ [-Wunused-parameter]
+   32 | static bool walking_evaluate_entry(Entity *self, State *next) {}
+      |                                                  ~~~~~~~^~~~
+mapas/entidades/samus/samus.c: In function ‘walking_evaluate_exit’:
+mapas/entidades/samus/samus.c:33:1: warning: no return statement in function returning non-void [-Wreturn-type]
+   33 | static bool walking_evaluate_exit(Entity *self, State *next) {}
+      | ^~~~~~
+mapas/entidades/samus/samus.c:33:43: warning: unused parameter ‘self’ [-Wunused-parameter]
+   33 | static bool walking_evaluate_exit(Entity *self, State *next) {}
+      |                                   ~~~~~~~~^~~~
+mapas/entidades/samus/samus.c:33:56: warning: unused parameter ‘next’ [-Wunused-parameter]
+   33 | static bool walking_evaluate_exit(Entity *self, State *next) {}
+      |                                                 ~~~~~~~^~~~
+mapas/entidades/samus/samus.c: In function ‘balling_input’:
+mapas/entidades/samus/samus.c:35:35: warning: unused parameter ‘grid’ [-Wunused-parameter]
+   35 | static Intent balling_input(Grid *grid, Entity *self) {
+      |                             ~~~~~~^~~~
+mapas/entidades/samus/samus.c:35:49: warning: unused parameter ‘self’ [-Wunused-parameter]
+   35 | static Intent balling_input(Grid *grid, Entity *self) {
+      |                                         ~~~~~~~~^~~~
+mapas/entidades/samus/samus.c: In function ‘hit_input’:
+mapas/entidades/samus/samus.c:39:31: warning: unused parameter ‘grid’ [-Wunused-parameter]
+   39 | static Intent hit_input(Grid *grid, Entity *self) {
+      |                         ~~~~~~^~~~
+mapas/entidades/samus/samus.c:39:45: warning: unused parameter ‘self’ [-Wunused-parameter]
+   39 | static Intent hit_input(Grid *grid, Entity *self) {
+      |                                     ~~~~~~~~^~~~
+mapas/entidades/samus/samus.c: In function ‘idle_input’:
+mapas/entidades/samus/samus.c:43:32: warning: unused parameter ‘grid’ [-Wunused-parameter]
+   43 | static Intent idle_input(Grid *grid, Entity *self) {
+      |                          ~~~~~~^~~~
+mapas/entidades/samus/samus.c:43:46: warning: unused parameter ‘self’ [-Wunused-parameter]
+   43 | static Intent idle_input(Grid *grid, Entity *self) {
+      |                                      ~~~~~~~~^~~~
+mapas/entidades/samus/samus.c: In function ‘jumping_input’:
+mapas/entidades/samus/samus.c:47:35: warning: unused parameter ‘grid’ [-Wunused-parameter]
+   47 | static Intent jumping_input(Grid *grid, Entity *self) {
+      |                             ~~~~~~^~~~
+mapas/entidades/samus/samus.c:47:49: warning: unused parameter ‘self’ [-Wunused-parameter]
+   47 | static Intent jumping_input(Grid *grid, Entity *self) {
+      |                                         ~~~~~~~~^~~~
+mapas/entidades/samus/samus.c: In function ‘kneeling_input’:
+mapas/entidades/samus/samus.c:51:36: warning: unused parameter ‘grid’ [-Wunused-parameter]
+   51 | static Intent kneeling_input(Grid *grid, Entity *self) {
+      |                              ~~~~~~^~~~
+mapas/entidades/samus/samus.c:51:50: warning: unused parameter ‘self’ [-Wunused-parameter]
+   51 | static Intent kneeling_input(Grid *grid, Entity *self) {
+      |                                          ~~~~~~~~^~~~
+mapas/entidades/samus/samus.c: In function ‘walking_input’:
+mapas/entidades/samus/samus.c:55:35: warning: unused parameter ‘grid’ [-Wunused-parameter]
+   55 | static Intent walking_input(Grid *grid, Entity *self) {
+      |                             ~~~~~~^~~~
+mapas/entidades/samus/samus.c:55:49: warning: unused parameter ‘self’ [-Wunused-parameter]
+   55 | static Intent walking_input(Grid *grid, Entity *self) {
+      |                                         ~~~~~~~~^~~~
+In file included from mapas/entidades/samus/samus.c:2:
+mapas/entidades/samus/../../../include/physics.h: At top level:
+mapas/entidades/samus/../../../include/physics.h:19:12: warning: ‘try_move’ declared ‘static’ but never defined [-Wunused-function]
+   19 | static int try_move(struct Entity *mover, int new_x, int new_y, Grid *g, EntityList *l);
+      |            ^~~~~~~~
+mapas/entidades/samus/samus.c:120:19: warning: array ‘_samus_data_pool’ assumed to have one element
+  120 | static samus_data _samus_data_pool[];
+      |                   ^~~~~~~~~~~~~~~~
+mapas/entidades/samus/samus.c:55:15: warning: ‘walking_input’ defined but not used [-Wunused-function]
+   55 | static Intent walking_input(Grid *grid, Entity *self) {
+      |               ^~~~~~~~~~~~~
+mapas/entidades/samus/samus.c:51:15: warning: ‘kneeling_input’ defined but not used [-Wunused-function]
+   51 | static Intent kneeling_input(Grid *grid, Entity *self) {
+      |               ^~~~~~~~~~~~~~
+mapas/entidades/samus/samus.c:47:15: warning: ‘jumping_input’ defined but not used [-Wunused-function]
+   47 | static Intent jumping_input(Grid *grid, Entity *self) {
+      |               ^~~~~~~~~~~~~
+mapas/entidades/samus/samus.c:43:15: warning: ‘idle_input’ defined but not used [-Wunused-function]
+   43 | static Intent idle_input(Grid *grid, Entity *self) {
+      |               ^~~~~~~~~~
+mapas/entidades/samus/samus.c:39:15: warning: ‘hit_input’ defined but not used [-Wunused-function]
+   39 | static Intent hit_input(Grid *grid, Entity *self) {
+      |               ^~~~~~~~~
+mapas/entidades/samus/samus.c:35:15: warning: ‘balling_input’ defined but not used [-Wunused-function]
+   35 | static Intent balling_input(Grid *grid, Entity *self) {
+      |               ^~~~~~~~~~~~~
+mapas/entidades/samus/samus.c:33:13: warning: ‘walking_evaluate_exit’ defined but not used [-Wunused-function]
+   33 | static bool walking_evaluate_exit(Entity *self, State *next) {}
+      |             ^~~~~~~~~~~~~~~~~~~~~
+mapas/entidades/samus/samus.c:32:13: warning: ‘walking_evaluate_entry’ defined but not used [-Wunused-function]
+   32 | static bool walking_evaluate_entry(Entity *self, State *next) {}
+      |             ^~~~~~~~~~~~~~~~~~~~~~
+mapas/entidades/samus/samus.c:30:13: warning: ‘kneeling_evaluate_exit’ defined but not used [-Wunused-function]
+   30 | static bool kneeling_evaluate_exit(Entity *self, State *next) {}
+      |             ^~~~~~~~~~~~~~~~~~~~~~
+mapas/entidades/samus/samus.c:29:13: warning: ‘kneeling_evaluate_entry’ defined but not used [-Wunused-function]
+   29 | static bool kneeling_evaluate_entry(Entity *self, State *next) {}
+      |             ^~~~~~~~~~~~~~~~~~~~~~~
+mapas/entidades/samus/samus.c:27:13: warning: ‘jumping_evaluate_exit’ defined but not used [-Wunused-function]
+   27 | static bool jumping_evaluate_exit(Entity *self, State *next) {}
+      |             ^~~~~~~~~~~~~~~~~~~~~
+mapas/entidades/samus/samus.c:26:13: warning: ‘jumping_evaluate_entry’ defined but not used [-Wunused-function]
+   26 | static bool jumping_evaluate_entry(Entity *self, State *next) {}
+      |             ^~~~~~~~~~~~~~~~~~~~~~
+mapas/entidades/samus/samus.c:24:13: warning: ‘idle_evaluate_exit’ defined but not used [-Wunused-function]
+   24 | static bool idle_evaluate_exit(Entity *self, State *next) {}
+      |             ^~~~~~~~~~~~~~~~~~
+mapas/entidades/samus/samus.c:23:13: warning: ‘idle_evaluate_entry’ defined but not used [-Wunused-function]
+   23 | static bool idle_evaluate_entry(Entity *self, State *next) {}
+      |             ^~~~~~~~~~~~~~~~~~~
+mapas/entidades/samus/samus.c:21:13: warning: ‘hit_evaluate_exit’ defined but not used [-Wunused-function]
+   21 | static bool hit_evaluate_exit(Entity *self, State *next) {}
+      |             ^~~~~~~~~~~~~~~~~
+mapas/entidades/samus/samus.c:20:13: warning: ‘hit_evaluate_entry’ defined but not used [-Wunused-function]
+   20 | static bool hit_evaluate_entry(Entity *self, State *next) {}
+      |             ^~~~~~~~~~~~~~~~~~
+mapas/entidades/samus/samus.c:18:13: warning: ‘balling_evaluate_exit’ defined but not used [-Wunused-function]
+   18 | static bool balling_evaluate_exit(Entity *self, State *next) {}
+      |             ^~~~~~~~~~~~~~~~~~~~~
+mapas/entidades/samus/samus.c:17:13: warning: ‘balling_evaluate_entry’ defined but not used [-Wunused-function]
+   17 | static bool balling_evaluate_entry(Entity *self, State *next) {}
+      |             ^~~~~~~~~~~~~~~~~~~~~~
+mapas/entidades/samus/samus.c:104:14: warning: ‘walking’ defined but not used [-Wunused-variable]
+  104 | static State walking = {
+      |              ^~~~~~~
+mapas/entidades/samus/samus.c:95:14: warning: ‘kneeling’ defined but not used [-Wunused-variable]
+   95 | static State kneeling = {
+      |              ^~~~~~~~
+mapas/entidades/samus/samus.c:86:14: warning: ‘jumping’ defined but not used [-Wunused-variable]
+   86 | static State jumping = {
+      |              ^~~~~~~
+mapas/entidades/samus/samus.c:68:14: warning: ‘hit’ defined but not used [-Wunused-variable]
+   68 | static State hit = {
+      |              ^~~
+mapas/entidades/samus/samus.c:59:14: warning: ‘balling’ defined but not used [-Wunused-variable]
+   59 | static State balling = {
+      |              ^~~~~~~
+In file included from mapas/entidades/samus/../../../include/physics.h:2:
+mapas/entidades/samus/../../../include/grid.h:28:12: warning: ‘grid_hash’ defined but not used [-Wunused-function]
+   28 | static int grid_hash(CellCoord c) {
+      |            ^~~~~~~~~
+gcc -Wall -Wextra -O1 -std=c11 -I include -I generated -DRUNNING_SDL2 -I/usr/include/SDL2 -D_REENTRANT -c mapas/entidades/scorpion/old_scorpion.c -o build/mapas/entidades/scorpion/old_scorpion.o
+gcc -Wall -Wextra -O1 -std=c11 -I include -I generated -DRUNNING_SDL2 -I/usr/include/SDL2 -D_REENTRANT -c mapas/entidades/scorpion/scorpion.c -o build/mapas/entidades/scorpion/scorpion.o
+mapas/entidades/scorpion/scorpion.c: In function ‘scorpion_collision’:
+mapas/entidades/scorpion/scorpion.c:6:33: warning: unused parameter ‘self’ [-Wunused-parameter]
+    6 | void scorpion_collision(Entity *self, Entity *other, Grid *g, EntityList *l){}
+      |                         ~~~~~~~~^~~~
+mapas/entidades/scorpion/scorpion.c:6:47: warning: unused parameter ‘other’ [-Wunused-parameter]
+    6 | void scorpion_collision(Entity *self, Entity *other, Grid *g, EntityList *l){}
+      |                                       ~~~~~~~~^~~~~
+mapas/entidades/scorpion/scorpion.c:6:60: warning: unused parameter ‘g’ [-Wunused-parameter]
+    6 | void scorpion_collision(Entity *self, Entity *other, Grid *g, EntityList *l){}
+      |                                                      ~~~~~~^
+mapas/entidades/scorpion/scorpion.c:6:75: warning: unused parameter ‘l’ [-Wunused-parameter]
+    6 | void scorpion_collision(Entity *self, Entity *other, Grid *g, EntityList *l){}
+      |                                                               ~~~~~~~~~~~~^
+mapas/entidades/scorpion/scorpion.c: In function ‘idle_evaluate_entry’:
+mapas/entidades/scorpion/scorpion.c:18:1: warning: no return statement in function returning non-void [-Wreturn-type]
+   18 | static bool idle_evaluate_entry(Entity *self, State *next) {}
+      | ^~~~~~
+mapas/entidades/scorpion/scorpion.c:18:41: warning: unused parameter ‘self’ [-Wunused-parameter]
+   18 | static bool idle_evaluate_entry(Entity *self, State *next) {}
+      |                                 ~~~~~~~~^~~~
+mapas/entidades/scorpion/scorpion.c:18:54: warning: unused parameter ‘next’ [-Wunused-parameter]
+   18 | static bool idle_evaluate_entry(Entity *self, State *next) {}
+      |                                               ~~~~~~~^~~~
+mapas/entidades/scorpion/scorpion.c: In function ‘idle_evaluate_exit’:
+mapas/entidades/scorpion/scorpion.c:19:1: warning: no return statement in function returning non-void [-Wreturn-type]
+   19 | static bool idle_evaluate_exit(Entity *self, State *next) {}
+      | ^~~~~~
+mapas/entidades/scorpion/scorpion.c:19:40: warning: unused parameter ‘self’ [-Wunused-parameter]
+   19 | static bool idle_evaluate_exit(Entity *self, State *next) {}
+      |                                ~~~~~~~~^~~~
+mapas/entidades/scorpion/scorpion.c:19:53: warning: unused parameter ‘next’ [-Wunused-parameter]
+   19 | static bool idle_evaluate_exit(Entity *self, State *next) {}
+      |                                              ~~~~~~~^~~~
+mapas/entidades/scorpion/scorpion.c: In function ‘shooting_evaluate_entry’:
+mapas/entidades/scorpion/scorpion.c:21:1: warning: no return statement in function returning non-void [-Wreturn-type]
+   21 | static bool shooting_evaluate_entry(Entity *self, State *next) {}
+      | ^~~~~~
+mapas/entidades/scorpion/scorpion.c:21:45: warning: unused parameter ‘self’ [-Wunused-parameter]
+   21 | static bool shooting_evaluate_entry(Entity *self, State *next) {}
+      |                                     ~~~~~~~~^~~~
+mapas/entidades/scorpion/scorpion.c:21:58: warning: unused parameter ‘next’ [-Wunused-parameter]
+   21 | static bool shooting_evaluate_entry(Entity *self, State *next) {}
+      |                                                   ~~~~~~~^~~~
+mapas/entidades/scorpion/scorpion.c: In function ‘shooting_evaluate_exit’:
+mapas/entidades/scorpion/scorpion.c:22:1: warning: no return statement in function returning non-void [-Wreturn-type]
+   22 | static bool shooting_evaluate_exit(Entity *self, State *next) {}
+      | ^~~~~~
+mapas/entidades/scorpion/scorpion.c:22:44: warning: unused parameter ‘self’ [-Wunused-parameter]
+   22 | static bool shooting_evaluate_exit(Entity *self, State *next) {}
+      |                                    ~~~~~~~~^~~~
+mapas/entidades/scorpion/scorpion.c:22:57: warning: unused parameter ‘next’ [-Wunused-parameter]
+   22 | static bool shooting_evaluate_exit(Entity *self, State *next) {}
+      |                                                  ~~~~~~~^~~~
+mapas/entidades/scorpion/scorpion.c: In function ‘walking_evaluate_entry’:
+mapas/entidades/scorpion/scorpion.c:24:1: warning: no return statement in function returning non-void [-Wreturn-type]
+   24 | static bool walking_evaluate_entry(Entity *self, State *next) {}
+      | ^~~~~~
+mapas/entidades/scorpion/scorpion.c:24:44: warning: unused parameter ‘self’ [-Wunused-parameter]
+   24 | static bool walking_evaluate_entry(Entity *self, State *next) {}
+      |                                    ~~~~~~~~^~~~
+mapas/entidades/scorpion/scorpion.c:24:57: warning: unused parameter ‘next’ [-Wunused-parameter]
+   24 | static bool walking_evaluate_entry(Entity *self, State *next) {}
+      |                                                  ~~~~~~~^~~~
+mapas/entidades/scorpion/scorpion.c: In function ‘walking_evaluate_exit’:
+mapas/entidades/scorpion/scorpion.c:25:1: warning: no return statement in function returning non-void [-Wreturn-type]
+   25 | static bool walking_evaluate_exit(Entity *self, State *next) {}
+      | ^~~~~~
+mapas/entidades/scorpion/scorpion.c:25:43: warning: unused parameter ‘self’ [-Wunused-parameter]
+   25 | static bool walking_evaluate_exit(Entity *self, State *next) {}
+      |                                   ~~~~~~~~^~~~
+mapas/entidades/scorpion/scorpion.c:25:56: warning: unused parameter ‘next’ [-Wunused-parameter]
+   25 | static bool walking_evaluate_exit(Entity *self, State *next) {}
+      |                                                 ~~~~~~~^~~~
+mapas/entidades/scorpion/scorpion.c: In function ‘idle_input’:
+mapas/entidades/scorpion/scorpion.c:27:32: warning: unused parameter ‘grid’ [-Wunused-parameter]
+   27 | static Intent idle_input(Grid *grid, Entity *self) {
+      |                          ~~~~~~^~~~
+mapas/entidades/scorpion/scorpion.c:27:46: warning: unused parameter ‘self’ [-Wunused-parameter]
+   27 | static Intent idle_input(Grid *grid, Entity *self) {
+      |                                      ~~~~~~~~^~~~
+mapas/entidades/scorpion/scorpion.c: In function ‘shooting_input’:
+mapas/entidades/scorpion/scorpion.c:31:36: warning: unused parameter ‘grid’ [-Wunused-parameter]
+   31 | static Intent shooting_input(Grid *grid, Entity *self) {
+      |                              ~~~~~~^~~~
+mapas/entidades/scorpion/scorpion.c:31:50: warning: unused parameter ‘self’ [-Wunused-parameter]
+   31 | static Intent shooting_input(Grid *grid, Entity *self) {
+      |                                          ~~~~~~~~^~~~
+mapas/entidades/scorpion/scorpion.c: In function ‘walking_input’:
+mapas/entidades/scorpion/scorpion.c:35:35: warning: unused parameter ‘grid’ [-Wunused-parameter]
+   35 | static Intent walking_input(Grid *grid, Entity *self) {
+      |                             ~~~~~~^~~~
+mapas/entidades/scorpion/scorpion.c:35:49: warning: unused parameter ‘self’ [-Wunused-parameter]
+   35 | static Intent walking_input(Grid *grid, Entity *self) {
+      |                                         ~~~~~~~~^~~~
+In file included from mapas/entidades/scorpion/scorpion.c:2:
+mapas/entidades/scorpion/../../../include/physics.h: At top level:
+mapas/entidades/scorpion/../../../include/physics.h:19:12: warning: ‘try_move’ declared ‘static’ but never defined [-Wunused-function]
+   19 | static int try_move(struct Entity *mover, int new_x, int new_y, Grid *g, EntityList *l);
+      |            ^~~~~~~~
+mapas/entidades/scorpion/scorpion.c:73:22: warning: array ‘_scorpion_data_pool’ assumed to have one element
+   73 | static scorpion_data _scorpion_data_pool[];
+      |                      ^~~~~~~~~~~~~~~~~~~
+mapas/entidades/scorpion/scorpion.c:35:15: warning: ‘walking_input’ defined but not used [-Wunused-function]
+   35 | static Intent walking_input(Grid *grid, Entity *self) {
+      |               ^~~~~~~~~~~~~
+mapas/entidades/scorpion/scorpion.c:31:15: warning: ‘shooting_input’ defined but not used [-Wunused-function]
+   31 | static Intent shooting_input(Grid *grid, Entity *self) {
+      |               ^~~~~~~~~~~~~~
+mapas/entidades/scorpion/scorpion.c:27:15: warning: ‘idle_input’ defined but not used [-Wunused-function]
+   27 | static Intent idle_input(Grid *grid, Entity *self) {
+      |               ^~~~~~~~~~
+mapas/entidades/scorpion/scorpion.c:25:13: warning: ‘walking_evaluate_exit’ defined but not used [-Wunused-function]
+   25 | static bool walking_evaluate_exit(Entity *self, State *next) {}
+      |             ^~~~~~~~~~~~~~~~~~~~~
+mapas/entidades/scorpion/scorpion.c:24:13: warning: ‘walking_evaluate_entry’ defined but not used [-Wunused-function]
+   24 | static bool walking_evaluate_entry(Entity *self, State *next) {}
+      |             ^~~~~~~~~~~~~~~~~~~~~~
+mapas/entidades/scorpion/scorpion.c:22:13: warning: ‘shooting_evaluate_exit’ defined but not used [-Wunused-function]
+   22 | static bool shooting_evaluate_exit(Entity *self, State *next) {}
+      |             ^~~~~~~~~~~~~~~~~~~~~~
+mapas/entidades/scorpion/scorpion.c:21:13: warning: ‘shooting_evaluate_entry’ defined but not used [-Wunused-function]
+   21 | static bool shooting_evaluate_entry(Entity *self, State *next) {}
+      |             ^~~~~~~~~~~~~~~~~~~~~~~
+mapas/entidades/scorpion/scorpion.c:19:13: warning: ‘idle_evaluate_exit’ defined but not used [-Wunused-function]
+   19 | static bool idle_evaluate_exit(Entity *self, State *next) {}
+      |             ^~~~~~~~~~~~~~~~~~
+mapas/entidades/scorpion/scorpion.c:18:13: warning: ‘idle_evaluate_entry’ defined but not used [-Wunused-function]
+   18 | static bool idle_evaluate_entry(Entity *self, State *next) {}
+      |             ^~~~~~~~~~~~~~~~~~~
+mapas/entidades/scorpion/scorpion.c:57:14: warning: ‘walking’ defined but not used [-Wunused-variable]
+   57 | static State walking = {
+      |              ^~~~~~~
+mapas/entidades/scorpion/scorpion.c:48:14: warning: ‘shooting’ defined but not used [-Wunused-variable]
+   48 | static State shooting = {
+      |              ^~~~~~~~
+In file included from mapas/entidades/scorpion/../../../include/physics.h:2:
+mapas/entidades/scorpion/../../../include/grid.h:28:12: warning: ‘grid_hash’ defined but not used [-Wunused-function]
+   28 | static int grid_hash(CellCoord c) {
+      |            ^~~~~~~~~
+gcc -Wall -Wextra -O1 -std=c11 -I include -I generated -DRUNNING_SDL2 -I/usr/include/SDL2 -D_REENTRANT build/src/entity.o build/src/get_cells.o build/src/grid.o build/src/main.o build/src/physics.o build/src/print.o build/src/uart.o build/src/vga.o build/mapas/entidades/morcego/morcego.o build/mapas/entidades/pinwheel/pinwheel.o build/mapas/entidades/projetil/projectile_collision.o build/mapas/entidades/projetil/projectile_intent.o build/mapas/entidades/projetil/projetil_2.o build/mapas/entidades/projetil/projetil.o build/mapas/entidades/samus/player_input.o build/mapas/entidades/samus/samus_2.o build/mapas/entidades/samus/samus.o build/mapas/entidades/scorpion/old_scorpion.o build/mapas/entidades/scorpion/scorpion.o -o metroid -lSDL2
+/usr/bin/ld: build/mapas/entidades/projetil/projetil.o: in function `projetil_collision':
+projetil.c:(.text+0x0): multiple definition of `projetil_collision'; build/mapas/entidades/projetil/projetil_2.o:projetil_2.c:(.text+0x0): first defined here
+/usr/bin/ld: build/mapas/entidades/projetil/projetil.o: in function `projetil_ai':
+projetil.c:(.text+0x33): multiple definition of `projetil_ai'; build/mapas/entidades/projetil/projetil_2.o:projetil_2.c:(.text+0x39): first defined here
+/usr/bin/ld: build/mapas/entidades/projetil/projetil.o: in function `projetil_create':
+projetil.c:(.text+0x95): multiple definition of `projetil_create'; build/mapas/entidades/projetil/projetil_2.o:projetil_2.c:(.text+0x9b): first defined here
+/usr/bin/ld: build/mapas/entidades/samus/samus.o: in function `samus_collision':
+samus.c:(.text+0x87): multiple definition of `samus_collision'; build/mapas/entidades/samus/samus_2.o:samus_2.c:(.text+0x17c): first defined here
+/usr/bin/ld: build/mapas/entidades/samus/samus.o: in function `samus_ai':
+samus.c:(.text+0x8c): multiple definition of `samus_ai'; build/mapas/entidades/samus/samus_2.o:samus_2.c:(.text+0x60c): first defined here
+/usr/bin/ld: build/mapas/entidades/samus/samus.o: in function `samus_create':
+samus.c:(.text+0xee): multiple definition of `samus_create'; build/mapas/entidades/samus/samus_2.o:samus_2.c:(.text+0x66e): first defined here
+/usr/bin/ld: build/src/main.o: in function `map_init_INICIAL':
+main.c:(.text+0x4c): undefined reference to `tijolos_create'
+/usr/bin/ld: main.c:(.text+0x77): undefined reference to `tijolos_create'
+/usr/bin/ld: main.c:(.text+0x94): undefined reference to `tijolos_create'
+/usr/bin/ld: main.c:(.text+0xb1): undefined reference to `tijolos_create'
+/usr/bin/ld: main.c:(.text+0xce): undefined reference to `tijolos_create'
+/usr/bin/ld: build/src/main.o:main.c:(.text+0xeb): more undefined references to `tijolos_create' follow
+/usr/bin/ld: build/src/main.o: in function `map_init_PUZZLE':
+main.c:(.text+0x264f): undefined reference to `metal_create'
+/usr/bin/ld: main.c:(.text+0x266c): undefined reference to `tijolos_create'
+/usr/bin/ld: main.c:(.text+0x2689): undefined reference to `tijolos_create'
+/usr/bin/ld: main.c:(.text+0x26a6): undefined reference to `tijolos_create'
+/usr/bin/ld: main.c:(.text+0x26c3): undefined reference to `tijolos_create'
+/usr/bin/ld: main.c:(.text+0x26e0): undefined reference to `tijolos_create'
+/usr/bin/ld: build/src/main.o:main.c:(.text+0x26fd): more undefined references to `tijolos_create' follow
+/usr/bin/ld: build/src/main.o: in function `map_init_PUZZLE':
+main.c:(.text+0x281f): undefined reference to `metal_create'
+/usr/bin/ld: main.c:(.text+0x283c): undefined reference to `tijolos_create'
+/usr/bin/ld: main.c:(.text+0x2859): undefined reference to `tijolos_create'
+/usr/bin/ld: main.c:(.text+0x2876): undefined reference to `tijolos_create'
+/usr/bin/ld: main.c:(.text+0x2893): undefined reference to `tijolos_create'
+/usr/bin/ld: main.c:(.text+0x28b0): undefined reference to `tijolos_create'
+/usr/bin/ld: main.c:(.text+0x28cd): undefined reference to `metal_create'
+/usr/bin/ld: main.c:(.text+0x28ea): undefined reference to `porta_create'
+/usr/bin/ld: main.c:(.text+0x2907): undefined reference to `tijolos_create'
+/usr/bin/ld: main.c:(.text+0x2924): undefined reference to `tijolos_create'
+/usr/bin/ld: main.c:(.text+0x2941): undefined reference to `metal_create'
+/usr/bin/ld: main.c:(.text+0x295e): undefined reference to `tijolos_create'
+/usr/bin/ld: main.c:(.text+0x297b): undefined reference to `tijolos_create'
+/usr/bin/ld: main.c:(.text+0x2998): undefined reference to `tijolos_create'
+/usr/bin/ld: main.c:(.text+0x29b5): undefined reference to `tijolos_create'
+/usr/bin/ld: main.c:(.text+0x29d2): undefined reference to `porta_create'
+/usr/bin/ld: main.c:(.text+0x29ef): undefined reference to `tijolos_create'
+/usr/bin/ld: main.c:(.text+0x2a0c): undefined reference to `metal_create'
+/usr/bin/ld: main.c:(.text+0x2a29): undefined reference to `tijolos_create'
+/usr/bin/ld: main.c:(.text+0x2a46): undefined reference to `tijolos_create'
+/usr/bin/ld: main.c:(.text+0x2a63): undefined reference to `tijolos_create'
+/usr/bin/ld: main.c:(.text+0x2a80): undefined reference to `tijolos_create'
+/usr/bin/ld: main.c:(.text+0x2a9d): undefined reference to `tijolos_create'
+/usr/bin/ld: build/src/main.o:main.c:(.text+0x2aba): more undefined references to `tijolos_create' follow
+/usr/bin/ld: build/src/main.o: in function `map_init_PUZZLE':
+main.c:(.text+0x2ad7): undefined reference to `porta_create'
+/usr/bin/ld: main.c:(.text+0x2af4): undefined reference to `tijolos_create'
+/usr/bin/ld: main.c:(.text+0x2b11): undefined reference to `metal_create'
+/usr/bin/ld: main.c:(.text+0x2b2e): undefined reference to `tijolos_create'
+/usr/bin/ld: main.c:(.text+0x2b4b): undefined reference to `tijolos_create'
+/usr/bin/ld: main.c:(.text+0x2b68): undefined reference to `tijolos_create'
+/usr/bin/ld: main.c:(.text+0x2b85): undefined reference to `tijolos_create'
+/usr/bin/ld: main.c:(.text+0x2ba2): undefined reference to `metal_create'
+/usr/bin/ld: main.c:(.text+0x2bbf): undefined reference to `tijolos_create'
+/usr/bin/ld: main.c:(.text+0x2bdc): undefined reference to `tijolos_create'
+/usr/bin/ld: main.c:(.text+0x2bf9): undefined reference to `tijolos_create'
+/usr/bin/ld: main.c:(.text+0x2c16): undefined reference to `metal_create'
+/usr/bin/ld: main.c:(.text+0x2c33): undefined reference to `tijolos_create'
+/usr/bin/ld: main.c:(.text+0x2c50): undefined reference to `metal_create'
+/usr/bin/ld: main.c:(.text+0x2c6d): undefined reference to `tijolos_create'
+/usr/bin/ld: main.c:(.text+0x2c8a): undefined reference to `tijolos_create'
+/usr/bin/ld: main.c:(.text+0x2ca7): undefined reference to `tijolos_create'
+/usr/bin/ld: main.c:(.text+0x2cc4): undefined reference to `metal_create'
+/usr/bin/ld: main.c:(.text+0x2ce1): undefined reference to `tijolos_create'
+/usr/bin/ld: main.c:(.text+0x2cfe): undefined reference to `tijolos_create'
+/usr/bin/ld: main.c:(.text+0x2d1b): undefined reference to `tijolos_create'
+/usr/bin/ld: main.c:(.text+0x2d38): undefined reference to `tijolos_create'
+/usr/bin/ld: main.c:(.text+0x2d55): undefined reference to `metal_create'
+/usr/bin/ld: main.c:(.text+0x2d72): undefined reference to `metal_create'
+/usr/bin/ld: main.c:(.text+0x2d8f): undefined reference to `tijolos_create'
+/usr/bin/ld: main.c:(.text+0x2dac): undefined reference to `tijolos_create'
+/usr/bin/ld: main.c:(.text+0x2dc9): undefined reference to `tijolos_create'
+/usr/bin/ld: main.c:(.text+0x2de6): undefined reference to `tijolos_create'
+/usr/bin/ld: main.c:(.text+0x2e03): undefined reference to `metal_create'
+/usr/bin/ld: main.c:(.text+0x2e20): undefined reference to `metal_create'
+/usr/bin/ld: main.c:(.text+0x2e3d): undefined reference to `metal_create'
+/usr/bin/ld: main.c:(.text+0x2e5a): undefined reference to `metal_create'
+/usr/bin/ld: main.c:(.text+0x2e77): undefined reference to `tijolos_create'
+/usr/bin/ld: main.c:(.text+0x2e94): undefined reference to `tijolos_create'
+/usr/bin/ld: main.c:(.text+0x2eb1): undefined reference to `tijolos_create'
+/usr/bin/ld: main.c:(.text+0x2ece): undefined reference to `tijolos_create'
+/usr/bin/ld: main.c:(.text+0x2eeb): undefined reference to `tijolos_create'
+/usr/bin/ld: build/src/main.o:main.c:(.text+0x2f08): more undefined references to `tijolos_create' follow
+/usr/bin/ld: build/src/main.o: in function `map_init_PUZZLE':
+main.c:(.text+0x3112): undefined reference to `bola_create'
+/usr/bin/ld: main.c:(.text+0x312f): undefined reference to `arma_create'
+collect2: error: ld returned 1 exit status
+make: *** [Makefile:24: metroid] Error 1

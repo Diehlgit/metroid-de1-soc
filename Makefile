@@ -9,8 +9,8 @@ CFLAGS = -Wall -Wextra -O1 -std=c11 -I include -I generated \
 LDFLAGS = $(shell sdl2-config --libs)
 
 SRC      = $(wildcard src/*.c)
-TILE_SRC = $(wildcard mapas/tiles/*/collision.c)
-ITEM_SRC = $(wildcard mapas/itens/*/collision.c)
+TILE_SRC = $(wildcard mapas/tiles/*/*.c)
+ITEM_SRC = $(wildcard mapas/itens/*/*.c)
 ENT_SRC  = $(wildcard mapas/entidades/*/*.c)
 
 ALL_SRC  = $(SRC) $(TILE_SRC) $(ITEM_SRC) $(ENT_SRC)

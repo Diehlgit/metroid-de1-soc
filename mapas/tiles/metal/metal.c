@@ -19,7 +19,7 @@ static State idle = {
     .decide_input         = NULL,
 };
 
-static metal_data _metal_data_pool[];
+static metal_data _metal_data_pool[1024];
 static int _metal_data_count = 0;
 
 Entity *metal_create(int x, int y){

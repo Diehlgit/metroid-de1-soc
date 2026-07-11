@@ -70,7 +70,7 @@ Intent scorpion_ai(Grid *grid, Entity *self) {
     return (Intent){0};
 }
 
-static scorpion_data _scorpion_data_pool[];
+static scorpion_data _scorpion_data_pool[16];
 static int _scorpion_data_count = 0;
 
 Entity *scorpion_create(int x, int y, int h_dir, int v_dir){

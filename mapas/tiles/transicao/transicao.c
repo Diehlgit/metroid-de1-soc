@@ -19,7 +19,7 @@ static State open = {
     .decide_input         = NULL,
 };
 
-static transicao_data _transicao_data_pool[16];
+static transicao_data _transicao_data_pool[1024];
 static int _transicao_data_count = 0;
 
 Entity *transicao_create(int x, int y){

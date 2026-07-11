@@ -25,53 +25,36 @@ typedef enum {
     VENENO,
 } projetil_state;
 
-static bool normal_evaluate_entry(Entity *self, State *next) {}
-static bool normal_evaluate_exit(Entity *self, State *next) {}
+static Intent projectile_intent(Grid *grid, Entity *self) {
 
-static bool super_evaluate_entry(Entity *self, State *next) {}
-static bool super_evaluate_exit(Entity *self, State *next) {}
+}
 
-static bool veneno_evaluate_entry(Entity *self, State *next) {}
-static bool veneno_evaluate_exit(Entity *self, State *next) {}
-
-static Intent normal_input(Grid *grid, Entity *self) {
-    Intent intent = {0};
-    return intent;
-}
-static Intent super_input(Grid *grid, Entity *self) {
-    Intent intent = {0};
-    return intent;
-}
-static Intent veneno_input(Grid *grid, Entity *self) {
-    Intent intent = {0};
-    return intent;
-}
 static State normal = {
-    .id                    = NORMAL,
+    .id                   = NORMAL,
     .allowed_transitions  = {},
     .count                = 0,
     .animation            = &anim_normal,
     .evaluate_entry       = NULL,
     .evaluate_exit        = NULL,
-    .decide_input         = NULL,
+    .decide_input         = &projectile_intent,
 };
 static State super = {
-    .id                    = SUPER,
+    .id                   = SUPER,
     .allowed_transitions  = {},
     .count                = 0,
     .animation            = &anim_super,
     .evaluate_entry       = NULL,
     .evaluate_exit        = NULL,
-    .decide_input         = NULL,
+    .decide_input         = &projectile_intent,
 };
 static State veneno = {
-    .id                    = VENENO,
+    .id                   = VENENO,
     .allowed_transitions  = {},
     .count                = 0,
     .animation            = &anim_veneno,
     .evaluate_entry       = NULL,
     .evaluate_exit        = NULL,
-    .decide_input         = NULL,
+    .decide_input         = &projectile_intent,
 };
 Intent projetil_ai(Grid *grid, Entity *self) {
     State *s = self->sm.current_state;

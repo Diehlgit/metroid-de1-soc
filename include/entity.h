@@ -87,7 +87,8 @@ struct Entity {
   EntityType type;
   Orientation orientation;
   Hitbox hitbox;
-
+  int frame_timer;
+  int should_destroy;
   void *data;
   StateMachine sm;
   void (*on_collision)(struct Entity *self, struct Entity *other);

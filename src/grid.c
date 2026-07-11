@@ -100,3 +100,9 @@ EntityList grid_query_by_cells(Grid *g, CellList list){
 
     return result;
 }
+
+void grid_reset(Grid *g) {
+    for (int i = 0; i < MAX_GRID_CELLS; i++)
+        g->cells[i] = NULL;
+    // GridEntries estáticas (tiles) serão re-encadeadas pelo map_init
+}

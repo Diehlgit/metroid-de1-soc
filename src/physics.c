@@ -6,7 +6,7 @@
 #include <stdio.h>
 
 #define GRAVITY 1
-#define FRICTION 1 
+#define FRICTION 1
 #define MAX_VEL 8
 
 
@@ -45,8 +45,7 @@ static int try_move(Grid *g, struct Entity *mover, int new_x, int new_y) {
     return !blocked;
 }
 
-void physics_step(Grid *g, struct Entity *e, Intent intent)
-{
+void physics_step(Grid *g, struct Entity *e, Intent intent) {
 
     if (e->should_destroy) {
         grid_remove_entity(g, e);
@@ -55,8 +54,8 @@ void physics_step(Grid *g, struct Entity *e, Intent intent)
 
 	// ajustamos a velocidade da entidade de acordo com a aceleração da intenção
 	// na coordenada x o que mata a velocidade é a fricção
-	e->velocity.x = clampi(e->velocity.x + intent.ax, -MAX_VEL, MAX_VEL);	
-	
+	e->velocity.x = clampi(e->velocity.x + intent.ax, -MAX_VEL, MAX_VEL);
+
 	//uart_print("antes: x=");
     //uart_print_int(e->position.x);
     //uart_print("\n");
@@ -75,12 +74,12 @@ void physics_step(Grid *g, struct Entity *e, Intent intent)
         grid_remove_entity(g, e);
         return;
     }
-    
+
     //uart_print(" y=");
     //uart_print_int(e->position.y);
     //uart_print("\n");
 
-    // aceleração vertical 
+    // aceleração vertical
     if (e->type != ENTITY_PROJECTILE)
         e->velocity.y = clampi(e->velocity.y + GRAVITY + intent.ay, -MAX_VEL, MAX_VEL);
 

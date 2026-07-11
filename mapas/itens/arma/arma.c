@@ -17,12 +17,12 @@ static State idle = {
     .decide_input         = NULL,
 };
 
-const Entity *arma_create(int x, int y, int h_dir, int v_dir){
+const Entity *arma_create(int x, int y){
     Entity *e = entity_alloc();
     e->position     = (Coordinates){y, x};
     e->velocity     = (Coordinates){0, 0};
     e->type         = ENTITY_ITEM;
-    e->orientation  = (Orientation){ h_dir, v_dir};
+    e->orientation  = (Orientation){ RIGHT, UP};
     e->hitbox       = (Hitbox){
         .type       = HITBOX_RECTANGLE,
         .data       = { .rectangle={ 16, 32 } },

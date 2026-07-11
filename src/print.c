@@ -9,6 +9,14 @@
 #define ROWS 240
 #define COLS 320
 
+static Sprite* get_current_sprite(Entity *e) {
+    if (!e->sm.current_state) return NULL;
+    Animation *anim = e->sm.current_state->animation;
+    if (!anim || !anim->frames || anim->frame_count == 0) return NULL;
+    // frame_timer precisa estar na Entity ou na Animation
+    return anim->frames[e->frame_timer % anim->frame_count];
+}
+
 #define GET_PIXEL_RU(sprite, x, y, w, h)  ((sprite)->pixels[(y) * (w) + (x)])
 #define GET_PIXEL_LU(sprite, x, y, w, h)  ((sprite)->pixels[(y) * (w) + ((w)-1-(x))])
 #define GET_PIXEL_RD(sprite, x, y, w, h)  ((sprite)->pixels[((h)-1-(y)) * (w) + (x)])
@@ -95,6 +103,8 @@ void print_game(volatile uint16_t (*buf)[LWIDTH], Grid *area, Coordinates pos_sa
             pos_y = 0;
         }
 
-        print_sprite(buf, e->current_sprite, offset_x, offset_y, pos_x, pos_y, e->orientation);
+        Sprite *sprite = get_current_sprite(e);
+        if (!sprite) continue;
+        print_sprite(buf, sprite, offset_x, offset_y, pos_x, pos_y, e->orientation);
     }
 }

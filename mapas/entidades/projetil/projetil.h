@@ -22,4 +22,3 @@ static Animation anim_moving = {
     .loops           = 0,
 };
 
-extern const Entity PROJETIL_TEMPLATE;

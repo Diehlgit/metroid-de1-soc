@@ -42,4 +42,3 @@ static Animation anim_idle = {
     .loops           = 0,
 };
 
-extern const Entity MORCEGO_TEMPLATE;

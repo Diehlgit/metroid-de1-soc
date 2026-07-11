@@ -34,4 +34,3 @@ static Animation anim_idle = {
     .loops           = 0,
 };
 
-extern const Entity BOLA_TEMPLATE;

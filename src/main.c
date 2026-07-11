@@ -13,46 +13,36 @@
 
 #define TARGET_FPS 60
 #define FRAME_MS   (1000 / TARGET_FPS)
+static AreaId area_atual = AREA_PUZZLE;
 
-Grid* game_init(Entity *player_ptr, EntityList *ents_list) {
-    maps_init();
+Grid* switch_area(AreaId id, Entity *player, EntityList *ents_list) {
+    // 1. reseta o grid da área anterior se houver
+    Grid *old = get_grid(area_atual);
+    if (old) grid_reset(old);
 
-    // 1. Busca a área e o mapa
-    Grid *area = get_grid(AREA_INICIAL);
-    EntityList *ents_area = get_entidades(AREA_INICIAL);
+    // 2. atualiza a área atual
+    area_atual = id;
 
-    // 2. Configura os dados do Player diretamente no ponteiro seguro que veio do main
-    *player_ptr = (Entity){
-        .position       = { 16, 16 },
-		.velocity 		= { 0, 0 },
-		.type           = ENTITY_PLAYER,
-        .facing         = RIGHT,
-        .should_destroy = 0,
-        .hitbox         = {
-            .type      = HITBOX_RECTANGLE,
-            .data      = { .rectangle = { 16, 32 } },
-            .get_cells = get_rectangle_cells,
-        },
-        .current_sprite = &SPRITE_SAMUS,
-        .think          = player_input,
-        .on_collision   = samus_collision,
-    };
+    // 3. reseta o pool — libera todas as entidades dinâmicas
+    entity_pool_reset();
 
-    // 3. Adiciona o player no grid físico
-    grid_add_entity(area, player_ptr);
+    // 4. carrega a nova área — map_init re-encadeia os tiles no grid
+    Grid *new_area = load_area(id);
 
-    // 4. Inicializa a lista de entidades do loop limpando o contador
+    // 5. reconstrói a lista de entidades
     ents_list->count = 0;
-    ents_list->ents[ents_list->count++] = player_ptr;
+    ents_list->ents[ents_list->count++] = player;  // player sempre índice 0
 
-    // 5. Copia as demais entidades do mapa
+    EntityList *ents_area = get_entidades(id);
     for (int i = 0; i < ents_area->count; i++) {
-        if (ents_list->count < 256) { // Proteção contra estouro de array
+        if (ents_list->count < 256)
             ents_list->ents[ents_list->count++] = ents_area->ents[i];
-        }
     }
 
-    return area; // Retorna o ponteiro correto para o main salvar
+    // 6. adiciona o player no novo grid
+    grid_add_entity(new_area, player);
+
+    return new_area;
 }
 
 static void game_loop(Grid *g, EntityList *list) {
@@ -66,6 +56,16 @@ static void game_loop(Grid *g, EntityList *list) {
         struct Entity *e  = list->ents[i];
         Intent        *it = &intents[i];
         physics_step(g, e, *it);
+
+        // no game_loop, após physics_step
+        if (!e->should_destroy) {
+            Animation *anim = e->sm.current_state ? e->sm.current_state->animation : NULL;
+            if (anim && anim->frame_duration > 0) {
+                e->frame_timer++;
+                if (e->frame_timer >= anim->frame_count * anim->frame_duration)
+                    e->frame_timer = 0;
+            }
+        }
 
         for (int s = 0; s < it->spawn_count; s++) {
             grid_add_entity(g, it->spawns[s]);
@@ -89,9 +89,9 @@ int main(void) {
 
     clear_screen(0x0000);
 
-    Entity Samus;
     EntityList entidades;
-    Grid *area = game_init(&Samus, &entidades);
+    Entity *Samus = samus_create(16, 16, RIGHT, UP);
+    Grid *area = switch_area(area_atual, Samus, &entidades);
 
 	while (1) {
         uint64_t frame_start = SDL_GetTicks64();

@@ -14,4 +14,4 @@ extern State pinwheel_idle;
 extern State pinwheel_walking;
 
 Entity *pinwheel_create(int x, int y, int h_dir, int v_dir);
-void pinwheel_collision(Entity *self, Entity *other, Grid *g, EntityList *l);
+void pinwheel_collision(Entity *self, Entity *other, Grid **g, EntityList *l);

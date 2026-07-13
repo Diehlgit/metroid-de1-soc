@@ -5,11 +5,12 @@
 #include "arma_sprites.h"
 #include "arma.h"
 
-void arma_collision(Entity *self, Entity *other, Grid *g, EntityList *l){
+void arma_collision(Entity *self, Entity *other, Grid **g, EntityList *l){
     switch(other->type){
         case(ENTITY_PLAYER):
             samus_data *d = (samus_data *)other->data;
             d->tipo_arma = &projetil_super;
+            self->should_destroy = 1;
             break;
         default:
             break;

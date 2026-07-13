@@ -51,7 +51,6 @@ typedef struct {
     int      loops;          // 0 = em loop, 1 = toca uma vez
 } Animation;
 
-
 /*==========================================================
  * Entidade e Máquina de Estados
  *==========================================================*/
@@ -78,7 +77,7 @@ typedef struct State {
     StateGuard evaluate_entry;
     StateGuard evaluate_exit;
 
-    Intent (*decide_input)(Grid *g, Entity *self);
+    Intent (*decide_input)(Grid **g, Entity *self);
 } State;
 
 typedef struct {
@@ -96,7 +95,7 @@ struct Entity {
   int should_destroy;
   void *data;
   StateMachine sm;
-  void (*on_collision)(struct Entity *self, struct Entity *other, Grid *g, EntityList *l);
+  void (*on_collision)(struct Entity *self, struct Entity *other, Grid **g, EntityList *l);
 };
 
 static bool generic_transition(Entity *self, State *next) {

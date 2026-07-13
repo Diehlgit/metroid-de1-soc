@@ -9,12 +9,12 @@
 #include "samus.h"
 #include <stdio.h>
 
-void samus_collision(Entity *self, Entity *other, Grid *g, EntityList *l){
+void samus_collision(Entity *self, Entity *other, Grid **g, EntityList *l){
     switch(other->type){
         case(ENTITY_TRANSITION):
             transicao_data *d = (transicao_data *)other->data;
-            int id = d->destino;
-            g = switch_area(id, self, l);
+            AreaId id = d->destino;
+            *g = switch_area(id, self, l);
 
             self->position.x = d->spawn_x;
             self->position.y = d->spawn_y;
@@ -25,8 +25,20 @@ void samus_collision(Entity *self, Entity *other, Grid *g, EntityList *l){
     }
 }
 
+bool evaluate_jump_condition(Entity *self){
+    samus_data *d = (samus_data *)self->data;
+    if(self->sm.current_state->id == SAMUS_JUMPING){
+        if(d->jumps_remaining <= 0){
+            return false;
+        }
+    }
+    d->jumps_remaining -= 1;
+    return true;
+}
+
 static bool balling_evaluate_entry(Entity *self, State *next) {
     samus_data *d = (samus_data *)self->data;
+    printf("item_bola = %d\n", ((samus_data *)self->data)->item_bola);
     if(d->item_bola != false){
         self->hitbox.data.rectangle.height  = 16;
         self->position.y += 16;
@@ -56,17 +68,6 @@ static bool hit_evaluate_exit(Entity *self, State *next) {
 static bool idle_evaluate_entry(Entity *self, State *next) {}
 static bool idle_evaluate_exit(Entity *self, State *next) {}
 
-static bool jumping_evaluate_entry(Entity *self, State *next) {
-    samus_data *d = (samus_data *)self->data;
-    if (d->jumps_remaining <= 0) return false;
-    d->jumps_remaining--;
-    return true;
-}
-static bool jumping_evaluate_exit(Entity *self, State *next) {
-    samus_data *d = (samus_data *)self->data;
-    d->jumps_remaining = d->max_jumps;
-    return true;
-}
 
 static bool kneeling_evaluate_entry(Entity *self, State *next) {
     self->hitbox.data.rectangle.height = 16;
@@ -82,22 +83,58 @@ static bool kneeling_evaluate_exit(Entity *self, State *next) {
 static bool walking_evaluate_entry(Entity *self, State *next) {}
 static bool walking_evaluate_exit(Entity *self, State *next) {}
 
-static Intent default_input(Grid *grid, Entity *self) {
+static Intent default_input(Grid **grid, Entity *self) {
     Intent intent = {0};
-
-    printf("antes\n");
-    fflush(stdout);
-
     char key = uart_read_char();
-
-    printf("depois\n");
-    fflush(stdout);
-
-
-    if (key == 'w') { if( self->sm.transition(self, &samus_jumping)) intent.ay = -16; }
+    if (key == 'w') {
+        if( evaluate_jump_condition(self)) {
+            self->sm.transition(self, &samus_jumping);
+            intent.ay = -16;
+        }
+    }
     if (key == 'a') { intent.ax = -2;  self->orientation.h_direction = LEFT;  self->sm.transition(self, &samus_walking); }
     if (key == 's') { self->sm.transition(self, &samus_kneeling); }
     if (key == 'd') { intent.ax =  2;  self->orientation.h_direction = RIGHT; self->sm.transition(self, &samus_walking); }
+    if (key == 'e') { self->sm.transition(self, &samus_balling); }
+    if (key == 'f') {
+        samus_data *d = (samus_data *)self->data;
+        Entity *p = projetil_create(self, d->tipo_arma);
+        printf("%p\n", (void *)p);
+        intent.spawns[intent.spawn_count++] = p;
+    }
+    if (!key)        self->sm.transition(self, &samus_idle);
+    return intent;
+}
+
+static Intent balling_input(Grid **grid, Entity *self) {
+    Intent intent = {0};
+    char key = uart_read_char();
+    if (key == 'w') {
+        if( evaluate_jump_condition(self)) {
+            intent.ay = -16;
+        }
+    }
+    if (key == 'a') { intent.ax = -2; self->orientation.h_direction = LEFT; }
+    if (key == 'd') { intent.ax =  2; self->orientation.h_direction = RIGHT; }
+    if (key == 'e') { self->sm.transition(self, &samus_idle); }
+    return intent;
+}
+static Intent hit_input(Grid **grid, Entity *self) {
+    Intent intent = {0};
+    return intent;
+}
+
+static Intent jumping_input(Grid **grid, Entity *self) {
+    Intent intent = {0};
+    char key = uart_read_char();
+    if (key == 'w') {
+        if( evaluate_jump_condition(self)) {
+            self->sm.transition(self, &samus_jumping);
+            intent.ay = -16;
+        }
+    }
+    if (key == 'a') { intent.ax = -2;  self->orientation.h_direction = LEFT; }
+    if (key == 'd') { intent.ax =  2;  self->orientation.h_direction = RIGHT; }
     if (key == 'e') { self->sm.transition(self, &samus_balling); }
     if (key == 'f') {
         samus_data *d = (samus_data *)self->data;
@@ -106,35 +143,7 @@ static Intent default_input(Grid *grid, Entity *self) {
     if (!key)        self->sm.transition(self, &samus_idle);
     return intent;
 }
-
-static Intent balling_input(Grid *grid, Entity *self) {
-    Intent intent = {0};
-    char key = uart_read_char();
-    if (key == 'w') { intent.ay = -16; }
-    if (key == 'a') { intent.ax = -2; self->orientation.h_direction = LEFT; }
-    if (key == 'd') { intent.ax =  2; self->orientation.h_direction = RIGHT; }
-    if (key == 'e') { self->sm.transition(self, &samus_idle); }
-    return intent;
-}
-static Intent hit_input(Grid *grid, Entity *self) {
-    Intent intent = {0};
-    return intent;
-}
-
-static Intent jumping_input(Grid *grid, Entity *self) {
-    Intent intent = {0};
-    char key = uart_read_char();
-    if (key == 'w') {  if( self->sm.transition(self, &samus_jumping)) intent.ay = -16; }
-    if (key == 'a') { intent.ax = -2;  self->orientation.h_direction = LEFT; }
-    if (key == 'd') { intent.ax =  2;  self->orientation.h_direction = RIGHT; }
-    if (key == 'e') { self->sm.transition(self, &samus_balling); }
-    if (key == 'f') {
-        samus_data *d = (samus_data *)self->data;
-        intent.spawns[intent.spawn_count++] = projetil_create(self, d->tipo_arma);
-    }
-    return intent;
-}
-static Intent kneeling_input(Grid *grid, Entity *self) {
+static Intent kneeling_input(Grid **grid, Entity *self) {
     Intent intent = {0};
     char key = uart_read_char();
     if (key == 'f') {
@@ -144,10 +153,14 @@ static Intent kneeling_input(Grid *grid, Entity *self) {
     if (key == 's') { self->sm.transition(self, &samus_idle); }
     return intent;
 }
-static Intent walking_input(Grid *grid, Entity *self) {
+static Intent walking_input(Grid **grid, Entity *self) {
     Intent intent = {0};
     char key = uart_read_char();
-    if (key == 'w') { if( self->sm.transition(self, &samus_jumping)) intent.ay = -16; }
+    if (key == 'w') {
+        if(self->sm.transition(self, &samus_jumping)){
+            intent.ay = -16;
+        }
+    }
     if (key == 'a') { intent.ax = -2;  self->orientation.h_direction = LEFT; }
     if (key == 'd') { intent.ax =  2;  self->orientation.h_direction = RIGHT; }
     if (key == 'e') { self->sm.transition(self, &samus_balling); }
@@ -191,8 +204,8 @@ State samus_jumping = {
     .allowed_transitions  = {&samus_idle, &samus_hit, &samus_balling, &samus_jumping},
     .count                = 4,
     .animation            = &anim_jumping,
-    .evaluate_entry       = &jumping_evaluate_entry,
-    .evaluate_exit        = &jumping_evaluate_exit,
+    .evaluate_entry       = NULL,
+    .evaluate_exit        = NULL,
     .decide_input         = &jumping_input,
 };
 State samus_kneeling = {
@@ -214,7 +227,7 @@ State samus_walking = {
     .decide_input         = &default_input,
 };
 
-Intent samus_ai(Grid *grid, Entity *self) {
+Intent samus_ai(Grid **grid, Entity *self) {
     State *s = self->sm.current_state;
     if (s->decide_input)
         return s->decide_input(grid, self);
@@ -226,7 +239,6 @@ static int _samus_data_count = 0;
 
 Entity *samus_create(int x, int y, int h_dir, int v_dir){
     Entity *e = player_alloc();
-    printf("criando samus a\n");
     samus_data *d = &_samus_data_pool[_samus_data_count++];
 
     *d = (samus_data){

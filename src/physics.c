@@ -22,10 +22,11 @@ static int is_solid(struct Entity *e) {
 
 // Testa movimento num eixo, retorna 1 se livre, 0 se bloqueado
 // Dispara on_collision nas entidades encontradas
-static int try_move(struct Entity *mover, int new_x, int new_y, Grid *g, EntityList *l) {
+static int try_move(struct Entity *mover, int new_x, int new_y, Grid **g, EntityList *l) {
+    Grid* gr = *g;
     Coordinates next_pos = { new_x, new_y };
-    CellList cells = mover->hitbox.get_cells(&mover->hitbox, next_pos, g->cell_size);
-    EntityList hit = grid_query_by_cells(g, cells);
+    CellList cells = mover->hitbox.get_cells(&mover->hitbox, next_pos, gr->cell_size);
+    EntityList hit = grid_query_by_cells(*g, cells);
 
     int blocked = 0;
     for (int i = 0; i < hit.count; i++) {
@@ -44,16 +45,16 @@ static int try_move(struct Entity *mover, int new_x, int new_y, Grid *g, EntityL
     return !blocked;
 }
 
-void physics_step(struct Entity *e, Intent intent, Grid *g, EntityList *l) {
+void physics_step(struct Entity *e, Intent intent, Grid **g, EntityList *l) {
 	// ajustamos a velocidade da entidade de acordo com a aceleração da intenção
 	// na coordenada x o que mata a velocidade é a fricção
 	e->velocity.x = clampi(e->velocity.x + intent.ax, -MAX_VEL, MAX_VEL);
 
 	if (try_move(e, e->position.x + e->velocity.x, e->position.y, g, l)) {
-        grid_remove_entity(g, e);
+        grid_remove_entity(*g, e);
     	e->position.x += e->velocity.x;
         if (!e->should_destroy) {
-            grid_add_entity(g, e);
+            grid_add_entity(*g, e);
         }
     } else {
 		e->velocity.x = 0;
@@ -67,10 +68,10 @@ void physics_step(struct Entity *e, Intent intent, Grid *g, EntityList *l) {
 	int on_ground = 0;
 
 	if (try_move(e, e->position.x, e->position.y + e->velocity.y, g, l)) {
-    	grid_remove_entity(g, e);
+    	grid_remove_entity(*g, e);
         e->position.y += e->velocity.y;
         if (!e->should_destroy) {
-            grid_add_entity(g, e);
+            grid_add_entity(*g, e);
         }
     } else {
 		if (e->velocity.y > 0) on_ground = 1;

@@ -16,4 +16,4 @@ extern State projetil_super;
 extern State projetil_veneno;
 
 Entity *projetil_create(Entity *shooter, State *state);
-void projetil_collision(Entity *self, Entity *other, Grid *g, EntityList *l);
+void projetil_collision(Entity *self, Entity *other, Grid **g, EntityList *l);

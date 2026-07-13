@@ -3,7 +3,7 @@
 #include "morcego_sprites.h"
 #include "morcego.h"
 
-void morcego_collision(Entity *self, Entity *other, Grid *g, EntityList *l){}
+void morcego_collision(Entity *self, Entity *other, Grid **g, EntityList *l){}
 
 static bool idle_evaluate_entry(Entity *self, State *next) {}
 static bool idle_evaluate_exit(Entity *self, State *next) {}
@@ -21,7 +21,7 @@ State morcego_idle = {
     .evaluate_exit        = NULL,
     .decide_input         = NULL,
 };
-Intent morcego_ai(Grid *grid, Entity *self) {
+Intent morcego_ai(Grid **grid, Entity *self) {
     State *s = self->sm.current_state;
     if (s->decide_input)
         return s->decide_input(grid, self);

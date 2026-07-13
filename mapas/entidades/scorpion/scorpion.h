@@ -16,4 +16,4 @@ extern State scorpion_shooting;
 extern State scorpion_walking;
 
 Entity *scorpion_create(int x, int y, int h_dir, int v_dir);
-void scorpion_collision(Entity *self, Entity *other, Grid *g, EntityList *l);
+void scorpion_collision(Entity *self, Entity *other, Grid **g, EntityList *l);

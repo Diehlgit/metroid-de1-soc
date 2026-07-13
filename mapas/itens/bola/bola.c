@@ -4,11 +4,12 @@
 #include "bola_sprites.h"
 #include "bola.h"
 
-void bola_collision(Entity *self, Entity *other, Grid *g, EntityList *l){
+void bola_collision(Entity *self, Entity *other, Grid **g, EntityList *l){
     switch(other->type){
         case(ENTITY_PLAYER):
             samus_data *d = (samus_data *)other->data;
             d->item_bola = true;
+            self->should_destroy = 1;
             break;
         default:
             break;

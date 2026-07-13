@@ -27,4 +27,4 @@ extern State samus_kneeling;
 extern State samus_walking;
 
 Entity *samus_create(int x, int y, int h_dir, int v_dir);
-void samus_collision(Entity *self, Entity *other, Grid *g, EntityList *l);
+void samus_collision(Entity *self, Entity *other, Grid **g, EntityList *l);

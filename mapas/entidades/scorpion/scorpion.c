@@ -3,7 +3,7 @@
 #include "scorpion_sprites.h"
 #include "scorpion.h"
 
-void scorpion_collision(Entity *self, Entity *other, Grid *g, EntityList *l){}
+void scorpion_collision(Entity *self, Entity *other, Grid **g, EntityList *l){}
 
 static bool idle_evaluate_entry(Entity *self, State *next) {}
 static bool idle_evaluate_exit(Entity *self, State *next) {}
@@ -53,7 +53,7 @@ State scorpion_walking = {
     .evaluate_exit        = NULL,
     .decide_input         = NULL,
 };
-Intent scorpion_ai(Grid *grid, Entity *self) {
+Intent scorpion_ai(Grid **grid, Entity *self) {
     State *s = self->sm.current_state;
     if (s->decide_input)
         return s->decide_input(grid, self);

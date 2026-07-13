@@ -3,7 +3,7 @@
 #include "pinwheel_sprites.h"
 #include "pinwheel.h"
 
-void pinwheel_collision(Entity *self, Entity *other, Grid *g, EntityList *l){}
+void pinwheel_collision(Entity *self, Entity *other, Grid **g, EntityList *l){}
 
 static bool idle_evaluate_entry(Entity *self, State *next) {}
 static bool idle_evaluate_exit(Entity *self, State *next) {}

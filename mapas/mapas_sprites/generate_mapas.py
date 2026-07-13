@@ -122,7 +122,7 @@ def main():
             lines += [f"map_add_entity(&GRID_{name}, &ENTIDADES_{name}, {f}({col*CELL_SIZE},{row*CELL_SIZE}));"]
 
         for col, row, f in ent_entries:
-            lines += [f"map_add_entity(&GRID_{name}, &ENTIDADES_{name}, {f}({col*CELL_SIZE},{row*CELL_SIZE}));"]
+            lines += [f"map_add_entity(&GRID_{name}, &ENTIDADES_{name}, {f}({col*CELL_SIZE},{row*CELL_SIZE}, RIGHT, UP));"]
 
         lines += [
             f"}};", ""

@@ -4,7 +4,7 @@
 #include "projetil_sprites.h"
 #include "projetil.h"
 
-void projetil_collision(Entity *self, Entity *other, Grid *g, EntityList *l){
+void projetil_collision(Entity *self, Entity *other, Grid **g, EntityList *l){
     projetil_data *pd = (projetil_data *)self->data;
 
     switch(other->type){
@@ -19,7 +19,7 @@ void projetil_collision(Entity *self, Entity *other, Grid *g, EntityList *l){
     }
 }
 
-static Intent projectile_intent(Grid *grid, Entity *self) {
+static Intent projectile_intent(Grid **grid, Entity *self) {
     Intent intent = {0};
     return intent;
 }
@@ -51,7 +51,7 @@ State projetil_veneno = {
     .evaluate_exit        = NULL,
     .decide_input         = &projectile_intent,
 };
-Intent projetil_ai(Grid *grid, Entity *self) {
+Intent projetil_ai(Grid **grid, Entity *self) {
     State *s = self->sm.current_state;
     if (s->decide_input)
         return s->decide_input(grid, self);

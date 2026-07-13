@@ -12,4 +12,4 @@ typedef enum {
 extern State arma_idle;
 
 Entity *arma_create(int x, int y);
-void arma_collision(Entity *self, Entity *other, Grid *g, EntityList *l);
+void arma_collision(Entity *self, Entity *other, Grid **g, EntityList *l);

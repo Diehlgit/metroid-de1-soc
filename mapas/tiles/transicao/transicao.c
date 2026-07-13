@@ -28,7 +28,7 @@ Entity *transicao_create(int x, int y, AreaId id, int player_x, int player_y){
 
     e->position     = (Coordinates){x, y};
     e->velocity     = (Coordinates){0, 0};
-    e->type         = ENTITY_DOOR;
+    e->type         = ENTITY_TRANSITION;
     e->orientation  = (Orientation){ RIGHT, UP};
     e->hitbox       = (Hitbox){
         .type       = HITBOX_RECTANGLE,

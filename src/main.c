@@ -13,9 +13,10 @@
 /*  GAME LOOP                                                         */
 /* ================================================================== */
 
-#define TARGET_FPS 60
+#define TARGET_FPS 29
 #define FRAME_MS   (1000 / TARGET_FPS)
-static AreaId area_atual = AREA_INICIAL;
+Grid *area = NULL;
+static AreaId area_atual = AREA_PUZZLE;
 
 Grid* switch_area(AreaId id, Entity *player, EntityList *ents_list) {
     // 1. reseta o grid da área anterior se houver
@@ -48,33 +49,13 @@ Grid* switch_area(AreaId id, Entity *player, EntityList *ents_list) {
     return new_area;
 }
 
-static void game_loop(Grid *g, EntityList *list) {
-     printf("game_loop\n");
-
-     printf("count=%d\n", list->count);
-     fflush(stdout);
-
-     printf("entidade=%p\n", (void *)list->ents[0]);
-     fflush(stdout);
-
-     printf("estado=%p\n",
-            list->ents[0]->sm.current_state->id);
-     fflush(stdout);
-
-
-     printf("samus pos = %d %d\n", list->ents[0]->position.x, list->ents[0]->position.y);
-     fflush(stdout);
-
+static void game_loop(Grid **g, EntityList *list) {
     // FASE 1: coleta intents — nenhuma modificação na lista
     Intent intents[256];
     for (int i = 0; i < list->count; i++) {
         struct Entity *e = list->ents[i];
         intents[i] = e->sm.current_state->decide_input ? e->sm.current_state->decide_input(g, e) : (Intent){0};
     }
-
-    printf("input=%p\n",
-           (void *)list->ents[0]->sm.current_state->decide_input);
-    fflush(stdout);
 
     // FASE 2: aplica física e spawns — pode setar should_destroy, não remove ainda
     for (int i = 0; i < list->count; i++) {
@@ -98,7 +79,7 @@ static void game_loop(Grid *g, EntityList *list) {
         for (int s = 0; s < it->spawn_count; s++) {
             if (list->count < 256) {
                 list->ents[list->count++] = it->spawns[s];
-                grid_add_entity(g, it->spawns[s]);
+                grid_add_entity(*g, it->spawns[s]);
             }
         }
     }
@@ -107,7 +88,7 @@ static void game_loop(Grid *g, EntityList *list) {
     for (int i = list->count - 1; i >= 0; i--) {
         Entity *e = list->ents[i];
         if (!e->should_destroy) continue;
-        grid_remove_entity(g, e);
+        grid_remove_entity(*g, e);
         // swap com o último — não desloca tudo, O(1)
         list->ents[i] = list->ents[--list->count];
         list->ents[list->count] = NULL;
@@ -121,7 +102,7 @@ int main(void) {
     clear_screen(0x0000);
 
     EntityList entidades = { .count = 0 };
-    Entity *Samus = samus_create(320, 16, RIGHT, UP);
+    Entity *Samus = samus_create(32, 16, RIGHT, UP);
     Grid *area = switch_area(area_atual, Samus, &entidades);
 
 	while (1) {
@@ -131,7 +112,7 @@ int main(void) {
         Coordinates samus_pos = entidades.ents[0]->position;
         print_game(tela, area, samus_pos, CELL_SIZE);
         swap_buffers();
-        game_loop(area, &entidades);
+        game_loop(&area, &entidades);
 
 
         uint64_t frame_end  = SDL_GetTicks64();

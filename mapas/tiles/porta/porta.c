@@ -3,14 +3,8 @@
 #include "porta_sprites.h"
 #include "porta.h"
 
-void porta_collision(Entity *self, Entity *other, Grid *g, EntityList *l){}
-
-typedef enum {
-    IDLE,
-} porta_state;
-
-static State idle = {
-    .id                    = IDLE,
+State porta_idle = {
+    .id                    = PORTA_IDLE,
     .allowed_transitions  = {},
     .count                = 0,
     .animation            = &anim_idle,
@@ -30,7 +24,7 @@ Entity *porta_create(int x, int y){
 
     };
 
-    e->position     = (Coordinates){y, x};
+    e->position     = (Coordinates){x, y};
     e->velocity     = (Coordinates){0, 0};
     e->type         = ENTITY_DOOR;
     e->orientation  = (Orientation){ RIGHT, UP};
@@ -40,8 +34,8 @@ Entity *porta_create(int x, int y){
         .get_cells  = get_rectangle_cells,
     };
     e->data           = d;
-    e->sm.current_state = &idle;
+    e->sm.current_state = &porta_idle;
     e->sm.transition    = NULL;
-    e->on_collision     = porta_collision;
+    e->on_collision     = NULL;
     return e;
 };

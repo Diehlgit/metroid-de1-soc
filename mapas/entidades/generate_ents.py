@@ -42,10 +42,10 @@ def get_hitbox_lines(hb):
             f"        .get_cells  = {HITBOX_FN[t]},",
             "    };"]
 
-def gen_states(name):
+def gen_states(ent, name):
     lines = [
-        f"static State {name} = {{",
-        f"    .id                    = {name.upper()},",
+        f"State {ent}_{name} = {{",
+        f"    .id                    = {ent.upper()}_{name.upper()},",
         f"    .allowed_transitions  = {{}},",
         f"    .count                = 0,",
         f"    .animation            = &anim_{name},",
@@ -70,8 +70,7 @@ def main():
         dados_output     = e/f"{e.name}.h"
         animation_output = e/f"{e.name}_sprites.h"
 
-        dados_linhas = ["#pragma once", '#include "../../../include/entity.h"', "", "typedef struct {", "", f"}} {name}_data;", "", f"Entity *{name}_create(int x, int y, int h_dir, int v_dir);", f"void {name}_collision(Entity *self, Entity *other, Grid *g, EntityList *l);"]
-        dados_output.write_text("\n".join(dados_linhas)+"\n")
+        dados_linhas = ["#pragma once", '#include "../../../include/entity.h"', "", "typedef struct {", "", f"}} {name}_data;", ""]
 
 
         function_lines = ['#include "../../../include/entity.h"', '#include "../../../include/physics.h"', f'#include "{e.name}_sprites.h"', f'#include "{name}.h"', "", f"void {name}_collision(Entity *self, Entity *other, Grid *g, EntityList *l){{}}", ""]
@@ -122,14 +121,18 @@ def main():
 
         animation_output.write_text("\n".join(animation_lines)+"\n")
 
-        function_lines += ["typedef enum {"]
+        dados_linhas += ["typedef enum {"]
         for s in states_lines:
-            function_lines += [f"    {s.upper()},"]
-        function_lines += [f"}} {e.name}_state;", ""]
+            dados_linhas += [f"    {e.name.upper()}_{s.upper()},"]
+        dados_linhas += [f"}} {e.name}_state;", ""]
 
         for s in states_lines:
-            function_lines += [f"static State {s};"]
-        function_lines += [""]
+            dados_linhas += [f"extern State {e.name}_{s};"]
+
+        dados_linhas += ["", f"Entity *{name}_create(int x, int y, int h_dir, int v_dir);", f"void {name}_collision(Entity *self, Entity *other, Grid *g, EntityList *l);"]
+        dados_output.write_text("\n".join(dados_linhas)+"\n")
+
+
 
         for s in states_lines:
             function_lines += [
@@ -147,13 +150,13 @@ def main():
             ]
 
         for s in states_lines:
-            function_lines += gen_states(s)
+            function_lines += gen_states(e.name, s)
 
         function_lines.extend([f"Intent {e.name}_ai(Grid *grid, Entity *self) {{",  "    State *s = self->sm.current_state;", "    if (s->decide_input)", "        return s->decide_input(grid, self);", "    return (Intent){0};", f"}}", ""])
 
         hitbox_lines = get_hitbox_lines(json_data[e.name]["hitbox"])
         function_lines += [
-            f"static {e.name}_data _{e.name}_data_pool[];",
+            f"static {e.name}_data _{e.name}_data_pool[1024];",
             f"static int _{e.name}_data_count = 0;",
             "",
             f"Entity *{e.name}_create(int x, int y, int h_dir, int v_dir){{",
@@ -163,7 +166,7 @@ def main():
             f"    *d = ({e.name}_data){{",
             f"",
             f"    }};", "",
-            f"    e->position     = (Coordinates){{y, x}};",
+            f"    e->position     = (Coordinates){{x, y}};",
             f"    e->velocity     = (Coordinates){{0, 0}};",
             f"    e->type         = {json_data[e.name]["entity_type"] or "ENTITY_ENEMY"};",
             f"    e->orientation  = (Orientation){{ h_dir, v_dir}};",
@@ -172,7 +175,7 @@ def main():
         function_lines += hitbox_lines
         function_lines += [
             f"    e->data           = d;",
-            f"    e->sm.current_state = &{json_data[e.name]["sm_starting_state"]};",
+            f"    e->sm.current_state = &{e.name}_{json_data[e.name]["sm_starting_state"]};",
             f"    e->sm.transition    = {json_data[e.name]["sm_transition_func"]};",
             f"    e->on_collision     = {e.name}_collision;",
             f"    return e;",

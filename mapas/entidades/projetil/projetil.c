@@ -11,7 +11,7 @@ void projetil_collision(Entity *self, Entity *other, Grid *g, EntityList *l){
         case ENTITY_PLAYER:
             samus_data *sd = (samus_data *)other->data;
             sd->hp -= pd->dano;
-            other->sm.transition(other, &hit);
+            other->sm.transition(other, &samus_hit);
             self->should_destroy = 1;
 
         default:
@@ -19,18 +19,13 @@ void projetil_collision(Entity *self, Entity *other, Grid *g, EntityList *l){
     }
 }
 
-typedef enum {
-    NORMAL,
-    SUPER,
-    VENENO,
-} projetil_state;
-
 static Intent projectile_intent(Grid *grid, Entity *self) {
-
+    Intent intent = {0};
+    return intent;
 }
 
-static State normal = {
-    .id                   = NORMAL,
+State projetil_normal = {
+    .id                    = PROJETIL_NORMAL,
     .allowed_transitions  = {},
     .count                = 0,
     .animation            = &anim_normal,
@@ -38,8 +33,8 @@ static State normal = {
     .evaluate_exit        = NULL,
     .decide_input         = &projectile_intent,
 };
-static State super = {
-    .id                   = SUPER,
+State projetil_super = {
+    .id                    = PROJETIL_SUPER,
     .allowed_transitions  = {},
     .count                = 0,
     .animation            = &anim_super,
@@ -47,8 +42,8 @@ static State super = {
     .evaluate_exit        = NULL,
     .decide_input         = &projectile_intent,
 };
-static State veneno = {
-    .id                   = VENENO,
+State projetil_veneno = {
+    .id                    = PROJETIL_VENENO,
     .allowed_transitions  = {},
     .count                = 0,
     .animation            = &anim_veneno,
@@ -63,7 +58,7 @@ Intent projetil_ai(Grid *grid, Entity *self) {
     return (Intent){0};
 }
 
-static projetil_data _projetil_data_pool[32];
+static projetil_data _projetil_data_pool[1024];
 static int _projetil_data_count = 0;
 
 Entity *projetil_create(Entity *shooter, State *state){
@@ -73,13 +68,13 @@ Entity *projetil_create(Entity *shooter, State *state){
     *d = (projetil_data){};
 
     switch(state->id){
-        case NORMAL:
+        case PROJETIL_NORMAL:
             d->dano = 2;
             break;
-        case SUPER:
+        case PROJETIL_SUPER:
             d->dano = 4;
             break;
-        case VENENO:
+        case PROJETIL_VENENO:
             d->dano = 4;
             break;
     }
@@ -98,7 +93,7 @@ Entity *projetil_create(Entity *shooter, State *state){
         int shot_y = shooter->position.x - (shooter->hitbox.data.rectangle.height/4);
     }
 
-    e->position     = (Coordinates){shot_y, shot_x};
+    e->position     = (Coordinates){shot_x, shot_y};
     e->velocity     = (Coordinates){0, 0};
 
     if(shooter->orientation.h_direction == RIGHT){

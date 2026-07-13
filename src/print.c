@@ -29,7 +29,7 @@ void print_on_screen(volatile uint16_t (*buf)[LWIDTH], uint16_t pixel, int pos_x
 }
 
 void print_sprite(volatile uint16_t (*buf)[LWIDTH], Sprite *sprite, int ofx, int ofy, int screen_x, int screen_y, Orientation o) {
-    int pos_y  = screen_x;
+    int pos_y  = screen_y;
     int pos_x  = screen_x;
     int largura = sprite->width;
     int altura  = sprite->height;

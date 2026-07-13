@@ -10,12 +10,21 @@ typedef struct {
     bool   invulnerable;
 } samus_data;
 
-static State balling;
-static State hit;
-static State idle;
-static State jumping;
-static State kneeling;
-static State walking;
+typedef enum {
+    SAMUS_BALLING,
+    SAMUS_HIT,
+    SAMUS_IDLE,
+    SAMUS_JUMPING,
+    SAMUS_KNEELING,
+    SAMUS_WALKING,
+} samus_state;
+
+extern State samus_balling;
+extern State samus_hit;
+extern State samus_idle;
+extern State samus_jumping;
+extern State samus_kneeling;
+extern State samus_walking;
 
 Entity *samus_create(int x, int y, int h_dir, int v_dir);
 void samus_collision(Entity *self, Entity *other, Grid *g, EntityList *l);

@@ -8,6 +8,7 @@ I_CONFIG = Path("../itens/itens_config.json")
 E_CONFIG = Path("../entidades/entidades_config.json")
 MAPS_DIR = Path(".")
 OUTPUT   = Path("../../generated/maps.h")
+OUTPUT_2 = Path("../../include/area_id.h")
 
 CELL_SIZE         = 16
 MAX_ENTS_PER_CELL = 16
@@ -53,7 +54,13 @@ def main():
         '#include \"../include/basics.h"',
         '#include \"../include/entity.h"',
         "#include \"../include/grid.h\"",
+        '#include "../include/area_id.h"',
         "#include \"tiles.h\"","#include \"itens.h\"","#include \"entidades.h\"","",
+
+        f"static void map_add_tile(Grid *grid, Entity *ent) {{",
+        f"    if (!ent) return;",
+        f"    grid_add_entity(grid, ent);",
+        f"}}",
 
         f"static void map_add_entity( Grid *grid, EntityList *list, Entity *ent) {{",
         f"    if (!ent) return;",
@@ -109,23 +116,20 @@ def main():
         ent_entries = load_png_entries(ent_png, ent_colors,  "entidades")
 
         for col, row, f in col_entries:
-            lines += [f"map_add_entity(&GRID_{name}, &ENTIDADES_{name}, {f}({col},{row}));"]
+            lines += [f"map_add_tile(&GRID_{name}, {f}({col*CELL_SIZE},{row*CELL_SIZE}));"]
 
         for col, row, f in item_entries:
-            lines += [f"map_add_entity(&GRID_{name}, &ENTIDADES_{name}, {f}({col},{row}));"]
+            lines += [f"map_add_entity(&GRID_{name}, &ENTIDADES_{name}, {f}({col*CELL_SIZE},{row*CELL_SIZE}));"]
 
         for col, row, f in ent_entries:
-            lines += [f"map_add_entity(&GRID_{name}, &ENTIDADES_{name}, {f}({col},{row}));"]
+            lines += [f"map_add_entity(&GRID_{name}, &ENTIDADES_{name}, {f}({col*CELL_SIZE},{row*CELL_SIZE}));"]
 
         lines += [
             f"}};", ""
         ]
 
-    # AreaId enum + get_grid
-    lines += ["typedef enum {"]
-    for n in map_names: lines.append(f"    AREA_{n},")
-    lines += ["    AREA_COUNT,","} AreaId;","",
-              "static Grid *_grids[] = {"]
+
+    lines += ["static Grid *_grids[] = {"]
     for n in map_names: lines.append(f"    [AREA_{n}] = &GRID_{n},")
     lines += ["};", "",]
 
@@ -157,5 +161,11 @@ def main():
 
     OUTPUT.write_text("\n".join(lines)+"\n")
     print(f"Gerado: {OUTPUT}  ({len(map_names)} áreas)")
+
+    # AreaId enum + get_grid
+    area_id_lines = ["#pragma once", ""]
+    area_id_lines += ["typedef enum {"]
+    for n in map_names: lines.append(f"    AREA_{n},")
+    lines += ["    AREA_COUNT,","} AreaId;",""]
 
 if __name__=="__main__": main()

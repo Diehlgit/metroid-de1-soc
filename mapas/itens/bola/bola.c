@@ -15,12 +15,8 @@ void bola_collision(Entity *self, Entity *other, Grid *g, EntityList *l){
     }
 }
 
-typedef enum {
-    IDLE,
-} bola_state;
-
-static State idle = {
-    .id                    = IDLE,
+State bola_idle = {
+    .id                   = BOLA_IDLE,
     .allowed_transitions  = {},
     .count                = 0,
     .animation            = &anim_idle,
@@ -29,7 +25,7 @@ static State idle = {
     .decide_input         = NULL,
 };
 
-static bola_data _bola_data_pool[32];
+static bola_data _bola_data_pool[1024];
 static int _bola_data_count = 0;
 
 Entity *bola_create(int x, int y){
@@ -40,7 +36,7 @@ Entity *bola_create(int x, int y){
 
     };
 
-    e->position     = (Coordinates){y, x};
+    e->position     = (Coordinates){x, y};
     e->velocity     = (Coordinates){0, 0};
     e->type         = ENTITY_ITEM;
     e->orientation  = (Orientation){ RIGHT, UP};
@@ -50,7 +46,7 @@ Entity *bola_create(int x, int y){
         .get_cells  = get_rectangle_cells,
     };
     e->data           = d;
-    e->sm.current_state = &idle;
+    e->sm.current_state = &bola_idle;
     e->sm.transition    = NULL;
     e->on_collision     = bola_collision;
     return e;

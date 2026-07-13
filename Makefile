@@ -4,8 +4,9 @@
 
 CC     = gcc
 TARGET = metroid
-CFLAGS = -Wall -Wextra -O1 -std=c11 -I include -I generated \
+CFLAGS = -Wall -Wextra -std=c11 -I include -I generated \
          -DRUNNING_SDL2 $(shell sdl2-config --cflags)
+CFLAGS += -g -O0
 LDFLAGS = $(shell sdl2-config --libs)
 
 SRC      = $(wildcard src/*.c)

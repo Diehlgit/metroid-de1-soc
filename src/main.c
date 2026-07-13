@@ -5,6 +5,7 @@
 #include "../include/physics.h"
 #include "../generated/maps.h"
 #include "../include/vga.h"
+#include "../include/uart.h"
 #include "../include/switch.h"
 #include <SDL2/SDL.h>
 
@@ -15,7 +16,6 @@
 #define TARGET_FPS 60
 #define FRAME_MS   (1000 / TARGET_FPS)
 static AreaId area_atual = AREA_INICIAL;
-
 
 Grid* switch_area(AreaId id, Entity *player, EntityList *ents_list) {
     // 1. reseta o grid da área anterior se houver
@@ -28,32 +28,53 @@ Grid* switch_area(AreaId id, Entity *player, EntityList *ents_list) {
     // 3. reseta o pool — libera todas as entidades dinâmicas
     entity_pool_reset();
 
-    // 4. carrega a nova área — map_init re-encadeia os tiles no grid
-    Grid *new_area = load_area(id);
+    // 4. zera a EntityList do mapa antes de chamar map_init
+    EntityList *map_list = get_entidades(id);
+    map_list->count = 0;
 
-    // 5. reconstrói a lista de entidades
+    // 5. carrega a nova área — map_init re-encadeia os tiles no grid
+    Grid *new_area = load_area(id);  // agora map_add_entity começa do zero
+
+    // 6. reconstrói a lista de entidades
     ents_list->count = 0;
-    ents_list->ents[ents_list->count++] = player;  // player sempre índice 0
-
-    EntityList *ents_area = get_entidades(id);
-    for (int i = 0; i < ents_area->count; i++) {
+    ents_list->ents[ents_list->count++] = player;
+    for (int i = 0; i < map_list->count; i++) {
         if (ents_list->count < 256)
-            ents_list->ents[ents_list->count++] = ents_area->ents[i];
+            ents_list->ents[ents_list->count++] = map_list->ents[i];
     }
 
-    // 6. adiciona o player no novo grid
+    // 7. adiciona o player no novo grid
     grid_add_entity(new_area, player);
-
     return new_area;
 }
 
 static void game_loop(Grid *g, EntityList *list) {
+     printf("game_loop\n");
+
+     printf("count=%d\n", list->count);
+     fflush(stdout);
+
+     printf("entidade=%p\n", (void *)list->ents[0]);
+     fflush(stdout);
+
+     printf("estado=%p\n",
+            list->ents[0]->sm.current_state->id);
+     fflush(stdout);
+
+
+     printf("samus pos = %d %d\n", list->ents[0]->position.x, list->ents[0]->position.y);
+     fflush(stdout);
+
     // FASE 1: coleta intents — nenhuma modificação na lista
     Intent intents[256];
     for (int i = 0; i < list->count; i++) {
         struct Entity *e = list->ents[i];
         intents[i] = e->sm.current_state->decide_input ? e->sm.current_state->decide_input(g, e) : (Intent){0};
     }
+
+    printf("input=%p\n",
+           (void *)list->ents[0]->sm.current_state->decide_input);
+    fflush(stdout);
 
     // FASE 2: aplica física e spawns — pode setar should_destroy, não remove ainda
     for (int i = 0; i < list->count; i++) {
@@ -99,13 +120,12 @@ int main(void) {
 
     clear_screen(0x0000);
 
-    EntityList entidades;
-    Entity *Samus = samus_create(16, 16, RIGHT, UP);
+    EntityList entidades = { .count = 0 };
+    Entity *Samus = samus_create(320, 16, RIGHT, UP);
     Grid *area = switch_area(area_atual, Samus, &entidades);
 
 	while (1) {
         uint64_t frame_start = SDL_GetTicks64();
-
 
         clear_screen(0x0000);
         Coordinates samus_pos = entidades.ents[0]->position;

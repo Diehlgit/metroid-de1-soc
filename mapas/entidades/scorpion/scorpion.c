@@ -5,16 +5,6 @@
 
 void scorpion_collision(Entity *self, Entity *other, Grid *g, EntityList *l){}
 
-typedef enum {
-    IDLE,
-    SHOOTING,
-    WALKING,
-} scorpion_state;
-
-static State idle;
-static State shooting;
-static State walking;
-
 static bool idle_evaluate_entry(Entity *self, State *next) {}
 static bool idle_evaluate_exit(Entity *self, State *next) {}
 
@@ -36,8 +26,8 @@ static Intent walking_input(Grid *grid, Entity *self) {
     Intent intent = {0};
     return intent;
 }
-static State idle = {
-    .id                    = IDLE,
+State scorpion_idle = {
+    .id                    = SCORPION_IDLE,
     .allowed_transitions  = {},
     .count                = 0,
     .animation            = &anim_idle,
@@ -45,8 +35,8 @@ static State idle = {
     .evaluate_exit        = NULL,
     .decide_input         = NULL,
 };
-static State shooting = {
-    .id                    = SHOOTING,
+State scorpion_shooting = {
+    .id                    = SCORPION_SHOOTING,
     .allowed_transitions  = {},
     .count                = 0,
     .animation            = &anim_shooting,
@@ -54,8 +44,8 @@ static State shooting = {
     .evaluate_exit        = NULL,
     .decide_input         = NULL,
 };
-static State walking = {
-    .id                    = WALKING,
+State scorpion_walking = {
+    .id                    = SCORPION_WALKING,
     .allowed_transitions  = {},
     .count                = 0,
     .animation            = &anim_walking,
@@ -70,7 +60,7 @@ Intent scorpion_ai(Grid *grid, Entity *self) {
     return (Intent){0};
 }
 
-static scorpion_data _scorpion_data_pool[16];
+static scorpion_data _scorpion_data_pool[1024];
 static int _scorpion_data_count = 0;
 
 Entity *scorpion_create(int x, int y, int h_dir, int v_dir){
@@ -81,7 +71,7 @@ Entity *scorpion_create(int x, int y, int h_dir, int v_dir){
 
     };
 
-    e->position     = (Coordinates){y, x};
+    e->position     = (Coordinates){x, y};
     e->velocity     = (Coordinates){0, 0};
     e->type         = ENTITY_ENEMY;
     e->orientation  = (Orientation){ h_dir, v_dir};
@@ -91,7 +81,7 @@ Entity *scorpion_create(int x, int y, int h_dir, int v_dir){
         .get_cells  = get_rectangle_cells,
     };
     e->data           = d;
-    e->sm.current_state = &idle;
+    e->sm.current_state = &scorpion_idle;
     e->sm.transition    = generic_transition;
     e->on_collision     = scorpion_collision;
     return e;

@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <SDL2/SDL.h>
+#include "../include/uart.h"
 
 char uart_read_char(void) {
     SDL_Event e;

@@ -61,7 +61,7 @@ typedef struct Grid Grid;
 typedef struct Intent Intent;
 
 typedef struct {
-    struct Entity *ents[256];
+    struct Entity *ents[4096];
     int count;
 } EntityList;
 
@@ -123,6 +123,7 @@ static bool generic_transition(Entity *self, State *next) {
 
 void remove_entity(Entity *e, EntityList*);
 Entity *entity_alloc(void);
+Entity *player_alloc(void);
 void entity_pool_reset(void);
 
 #endif

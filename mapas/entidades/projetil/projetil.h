@@ -3,6 +3,7 @@
 
 typedef struct {
     int dano;
+	Entity *shooter;
 } projetil_data;
 
 typedef enum {

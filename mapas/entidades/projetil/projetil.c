@@ -7,15 +7,20 @@
 void projetil_collision(Entity *self, Entity *other, Grid **g, EntityList *l){
     projetil_data *pd = (projetil_data *)self->data;
 
+	if(other == pd->shooter) {
+		//printf("colidu consigo mesmo\n");
+		return;
+	}
+
     switch(other->type){
         case ENTITY_PLAYER:
-            samus_data *sd = (samus_data *)other->data;
+			samus_data *sd = (samus_data *)other->data;
             sd->hp -= pd->dano;
             other->sm.transition(other, &samus_hit);
             self->should_destroy = 1;
-
-        default:
-            self->should_destroy = 1;
+		break;
+		default:
+           self->should_destroy = 1;
     }
 }
 
@@ -65,7 +70,7 @@ Entity *projetil_create(Entity *shooter, State *state){
     Entity *e = entity_alloc();
     projetil_data *d = &_projetil_data_pool[_projetil_data_count++];
 
-    *d = (projetil_data){};
+    *d = (projetil_data){ .shooter = shooter};
 
     switch(state->id){
         case PROJETIL_NORMAL:
@@ -81,9 +86,9 @@ Entity *projetil_create(Entity *shooter, State *state){
 
     int shot_x;
     if(shooter->orientation.h_direction == RIGHT){
-        shot_x = shooter->position.x + shooter->hitbox.data.rectangle.width;
+        shot_x = shooter->position.x + shooter->hitbox.data.rectangle.width ;
     } else {
-        shot_x = shooter->position.x - 4;
+        shot_x = shooter->position.x ;
     }
 
     int shot_y;
@@ -101,13 +106,18 @@ Entity *projetil_create(Entity *shooter, State *state){
     } else  {
         e->velocity.x = -5;
     }
-
+	/*
+	printf("---------------------------------\n");
+	printf("Shooter position: (x:%d,y:%d)\n", shooter->position.x, shooter->position.y);
+	printf("Projectile position: (x:%d,y:%d)\n", shot_x, shot_y);
+	printf("---------------------------------\n");
+	*/
 
     e->type         = ENTITY_PROJECTILE;
     e->orientation  = (Orientation){ shooter->orientation.h_direction, shooter->orientation.v_direction};
     e->hitbox       = (Hitbox){
         .type       = HITBOX_RECTANGLE,
-        .data       = { .rectangle={ 4, 4 } },
+        .data       = { .rectangle={ 1, 1 } },
         .get_cells  = get_rectangle_cells,
     };
     e->data           = d;

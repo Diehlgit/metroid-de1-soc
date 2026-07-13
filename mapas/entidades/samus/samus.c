@@ -99,7 +99,7 @@ static Intent default_input(Grid **grid, Entity *self) {
     if (key == 'f') {
         samus_data *d = (samus_data *)self->data;
         Entity *p = projetil_create(self, d->tipo_arma);
-        printf("%p\n", (void *)p);
+        //printf("%p\n", (void *)p);
         intent.spawns[intent.spawn_count++] = p;
     }
     if (!key)        self->sm.transition(self, &samus_idle);

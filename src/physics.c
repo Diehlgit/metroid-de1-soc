@@ -34,6 +34,7 @@ static int try_move(struct Entity *mover, int new_x, int new_y, Grid **g, Entity
         if (other == mover) continue;
         if (is_solid(other)) {
             if (mover->type == ENTITY_PROJECTILE) {
+                printf("destruindo: %p\n", (void*)mover);
                 mover->should_destroy = 1;
             }
             blocked = 1;

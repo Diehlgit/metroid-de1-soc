@@ -81,16 +81,16 @@ Entity *projetil_create(Entity *shooter, State *state){
 
     int shot_x;
     if(shooter->orientation.h_direction == RIGHT){
-        int shot_x = shooter->position.x + shooter->hitbox.data.rectangle.width;
+        shot_x = shooter->position.x + shooter->hitbox.data.rectangle.width;
     } else {
-        int shot_x = shooter->position.x + shooter->hitbox.data.rectangle.width;
+        shot_x = shooter->position.x - 4;
     }
 
     int shot_y;
     if(shooter->orientation.v_direction == UP){
-        int shot_y = shooter->position.y + (shooter->hitbox.data.rectangle.height/4);
+        shot_y = shooter->position.y + (shooter->hitbox.data.rectangle.height/4);
     } else {
-        int shot_y = shooter->position.x - (shooter->hitbox.data.rectangle.height/4);
+        shot_y = shooter->position.x - (shooter->hitbox.data.rectangle.height/4);
     }
 
     e->position     = (Coordinates){shot_x, shot_y};

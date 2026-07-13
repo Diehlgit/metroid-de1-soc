@@ -65,6 +65,15 @@ static void game_loop(Grid **g, EntityList *list) {
         Intent *it = &intents[i];
         physics_step(e, *it, g, list);
 
+        // adiciona spawns ao final da lista — fora do range atual, não afeta iteração
+        for (int s = 0; s < it->spawn_count; s++) {
+            printf("spawn: %p\n", (void*)it->spawns[s]);
+            if (list->count < 256) {
+                list->ents[list->count++] = it->spawns[s];
+                grid_add_entity(*g, it->spawns[s]);
+            }
+        }
+
         // no game_loop, após physics_step
         if (!e->should_destroy) {
             Animation *anim = e->sm.current_state ? e->sm.current_state->animation : NULL;
@@ -72,14 +81,6 @@ static void game_loop(Grid **g, EntityList *list) {
                 e->frame_timer++;
                 if (e->frame_timer >= anim->frame_count * anim->frame_duration)
                     e->frame_timer = 0;
-            }
-        }
-
-        // adiciona spawns ao final da lista — fora do range atual, não afeta iteração
-        for (int s = 0; s < it->spawn_count; s++) {
-            if (list->count < 256) {
-                list->ents[list->count++] = it->spawns[s];
-                grid_add_entity(*g, it->spawns[s]);
             }
         }
     }

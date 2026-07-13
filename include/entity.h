@@ -85,6 +85,15 @@ typedef struct {
     bool (*transition)(struct Entity *self, State *next);
 } StateMachine;
 
+typedef struct {
+    int    hp;
+    int    max_jumps;
+    int    jumps_remaining;
+    State* tipo_projetil;
+    bool   item_bola;
+    bool   invulnerable;
+} generic_data;
+
 struct Entity {
   Coordinates position;
   Coordinates velocity;

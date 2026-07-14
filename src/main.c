@@ -21,6 +21,9 @@
 Grid *area = NULL;
 static AreaId area_atual = AREA_PUZZLE;
 
+int score = 0;
+int lives = 3;
+
 Grid* switch_area(AreaId id, Entity *player, EntityList *ents_list) {
     // 1. reseta o grid da área anterior se houver
     Grid *old = get_grid(area_atual);
@@ -111,6 +114,9 @@ int main(void) {
 	while (1) {
 	    /*struct timespec frame_start, frame_end;
 	    clock_gettime(CLOCK_MONOTONIC, &frame_start);*/
+
+            //display_score(score);
+            //display_live(lives);
 
             clear_screen(0x0000);
             Coordinates samus_pos = entidades.ents[0]->position;

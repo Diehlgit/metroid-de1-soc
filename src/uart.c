@@ -21,7 +21,7 @@ static void keyboard_handler(int sig) {
 
     while(read(keyboard_fd, &ev, sizeof(ev)) > 0) {
 
-        if(ev.type == EV_KEY && ev.value == 1) {
+        if(ev.type == EV_KEY && (ev.value == 1 || ev.value == 2)) {
 
             switch(ev.code) {
                 case KEY_A:

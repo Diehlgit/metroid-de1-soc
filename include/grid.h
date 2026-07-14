@@ -37,4 +37,5 @@ EntityList grid_query_region(Grid *g, Coordinates pos,
 
 EntityList grid_query_by_cells(Grid *g, CellList list);
 
+void grid_reset(Grid *g);
 #endif

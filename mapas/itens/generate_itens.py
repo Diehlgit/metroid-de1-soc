@@ -1,6 +1,7 @@
 """
-generate_itens.py  (itens/)
-Lê itens_config.json e gera generated/itens.h
+generate_entidades.py  (entidades/)
+Lê entidades_config.json e gera generated/entidades.h
+Entidades não têm cor fixa no mapa — são instanciadas via entidade_create().
 """
 
 import json
@@ -9,20 +10,9 @@ from pathlib import Path
 
 from PIL import Image
 
-CONFIG = Path("itens_config.json")
+E_CONFIG = Path("itens_config.json")
+ENTS_DIR = Path(".")
 OUTPUT = Path("../../generated/itens.h")
-
-HITBOX_ENUM = {
-    "rectangle": "HITBOX_RECTANGLE",
-    "circle": "HITBOX_CIRCLE",
-    "triangle": "HITBOX_TRIANGLE",
-}
-HITBOX_FN = {
-    "rectangle": "get_rectangle_cells",
-    "circle": "get_circle_cells",
-    "triangle": "get_triangle_cells",
-}
-
 
 def to_rgb565(r, g, b):
     return ((r & 0xF8) << 8) | ((g & 0xFC) << 3) | (b >> 3)
@@ -45,133 +35,141 @@ def gen_pixels(path, name):
     lines.append("};")
     return lines, w, h
 
+HITBOX_ENUM = {"rectangle":"HITBOX_RECTANGLE","circle":"HITBOX_CIRCLE","triangle":"HITBOX_TRIANGLE"}
+HITBOX_FN   = {"rectangle":"get_rectangle_cells","circle":"get_circle_cells","triangle":"get_triangle_cells"}
 
-def hitbox_lines(hb):
+def get_hitbox_lines(hb):
     t = hb["type"]
-    if t == "rectangle":
-        data = f".rectangle = {{ {hb['width']}, {hb['height']} }}"
-    elif t == "circle":
-        data = f".circle    = {{ {hb['radius']} }}"
-    else:
-        data = f".triangle  = {{ {hb['width']}, {hb['height']} }}"
-    return [
-        f"        .type      = {HITBOX_ENUM[t]},",
-        f"        .data      = {{ {data} }},",
-        f"        .get_cells = {HITBOX_FN[t]},",
+    if   t=="rectangle": data=f".rectangle={{ {hb['width']}, {hb['height']} }}"
+    elif t=="circle":    data=f".circle   ={{ {hb['radius']} }}"
+    else:                data=f".triangle ={{ {hb['width']}, {hb['height']} }}"
+    return [f"        .type       = {HITBOX_ENUM[t]},",
+            f"        .data       = {{ {data} }},",
+            f"        .get_cells  = {HITBOX_FN[t]},",
+            "    };"]
+
+def gen_states(ent, name):
+    lines = [
+        f"State {ent}_{name} = {{",
+        f"    .id                   = {ent.upper()}_{name.upper()},",
+        f"    .allowed_transitions  = {{}},",
+        f"    .count                = 0,",
+        f"    .animation            = &anim_{name},",
+        f"    .evaluate_entry       = NULL,",
+        f"    .evaluate_exit        = NULL,",
+        f"    .decide_input         = NULL,",
+        f"}};",
     ]
 
+    return lines
 
 def main():
-    if not CONFIG.exists():
-        print(f"{CONFIG} não encontrado")
-        sys.exit(1)
-    itens = json.loads(CONFIG.read_text())["itens"]
-    OUTPUT.parent.mkdir(parents=True, exist_ok=True)
+    json_data = json.loads(E_CONFIG.read_text())
+    ents = sorted(e for e in ENTS_DIR.iterdir() if e.is_dir() and not e.name.startswith("."))
+    if not ents: print("Nenhuma área encontrada"); sys.exit(1)
 
-    lines = [
-        "/* AUTO-GERADO por generate_itens.py — não edite */",
-        "#pragma once",
-        "#include <stdint.h>",
-        '#include "../include/basics.h"',
-        '#include "../include/entity.h"',
-        "",
-        "extern CellList get_rectangle_cells(Hitbox*,Coordinates,int);",
-        "extern CellList get_circle_cells   (Hitbox*,Coordinates,int);",
-        "extern CellList get_triangle_cells (Hitbox*,Coordinates,int);",
-        "",
-    ]
+    itens_h_lihas = ["#pragma once", '#include "../include/entity.h"']
+    for e in ents:
+        name = e.name
+        itens_h_lihas += [f"Entity *{name}_create(int x, int y);"]
+        functions_output = e/f"{e.name}.c"
+        dados_output     = e/f"{e.name}.h"
+        animation_output = e/f"{e.name}_sprites.h"
 
-    # externs — cada item tem seu próprio collision.c em itens/<nome>/
-    for it in itens:
-        if it["on_collision"]:
-            lines.append(
-                f"extern void {it['on_collision']}(struct Entity*,struct Entity*);"
-            )
-        if it["think"]:
-            lines.append(
-                f"extern Intent {it['think']}(Grid *grid, struct Entity *self);"
-            )
-    lines.append("")
+        dados_linhas = ["#pragma once", '#include "../../../include/entity.h"', "", "typedef struct {", "", f"}} {name}_data;", ""]
 
-    # pixels + sprites
-    for it in itens:
-        name = c_id(it["name"])
-        pxl, w, h = gen_pixels(it["sprite"], name)
-        lines += pxl
-        lines += [
-            f"static Sprite SPRITE_{name} = {{",
-            f"    .height={h}, .width={w},",
-            f"    .pixels=(uint16_t*){name}_PIXELS,",
-            f"}};",
+        function_lines = ['#include "../../../include/entity.h"', '#include "../../../include/physics.h"', f'#include "{e.name}_sprites.h"', f'#include "{name}.h"', "", f"void {name}_collision(Entity *self, Entity *other, Grid *g, EntityList *l){{}}", ""]
+        animation_lines = ["#pragma once", '#include "../../../include/entity.h"', ""]
+
+        states_lines = []
+
+        states_path = e / "states"
+        states = sorted(s for s in states_path.iterdir() if s.is_dir() and not s.name.startswith("."))
+
+        for s in states:
+            states_lines.append(s.name)
+
+            sprites = sorted(p for p in s.iterdir() if p.suffix == ".png")
+
+            sprites_list = []
+            for sprite in sprites:
+                sprite_name = f"{s.name.upper()}_{sprite.stem}"
+                sprites_list.append(sprite_name)
+
+                lines, w, h = gen_pixels(sprite, sprite_name)
+
+                lines += [
+                    f"static Sprite {s.name.upper()}_{sprite.stem} = {{",
+                    f"    .height={h}, .width={w},",
+                    f"    .pixels=(uint16_t*){sprite_name}_PIXELS",
+                    f"}};",
+                    "",
+                ]
+
+                animation_lines.extend(lines)
+
+            animation_lines += [f"static Sprite *{e.name}_{s.stem}_frames[] = {{"]
+            for sn in sprites_list:
+                animation_lines += [f"    &{sn},"]
+            animation_lines += ["};", ""]
+
+            animation_lines += [
+                f"static Animation anim_{s.name} = {{",
+                f"    .frames          = {e.name}_{s.stem}_frames,",
+                f"    .frame_count     = {len(sprites_list)},",
+                f"    .frame_duration  = 1,",
+                f"    .loops           = 0,",
+                f"}};",
+                "",
+            ]
+
+        animation_output.write_text("\n".join(animation_lines)+"\n")
+
+        dados_linhas += ["typedef enum {"]
+        for s in states_lines:
+            dados_linhas += [f"    {e.name.upper()}_{s.upper()},"]
+        dados_linhas += [f"}} {e.name}_state;", ""]
+
+        for s in states_lines:
+            dados_linhas += [f"extern State {e.name}_{s};"]
+
+        dados_linhas += ["", f"Entity *{name}_create(int x, int y);", f"void {name}_collision(Entity *self, Entity *other, Grid *g, EntityList *l);"]
+        dados_output.write_text("\n".join(dados_linhas)+"\n")
+
+
+        for s in states_lines:
+            function_lines += gen_states(e.name, s)
+
+        hitbox_lines = get_hitbox_lines(json_data[e.name]["hitbox"])
+        function_lines += [ "",
+            f"static {e.name}_data _{e.name}_data_pool[1024];",
+            f"static int _{e.name}_data_count = 0;",
             "",
+            f"Entity *{e.name}_create(int x, int y){{",
+            f"    Entity *e = entity_alloc();",
+            f"    {e.name}_data *d = &_{e.name}_data_pool[_{e.name}_data_count++];",
+            f"",
+            f"    *d = ({e.name}_data){{",
+            f"",
+            f"    }};", "",
+            f"    e->position     = (Coordinates){{x, y}};",
+            f"    e->velocity     = (Coordinates){{0, 0}};",
+            f"    e->type         = {json_data[e.name]["entity_type"] or "ENTITY_ENEMY"};",
+            f"    e->orientation  = (Orientation){{ RIGHT, UP}};",
+            f"    e->hitbox       = (Hitbox){{",
         ]
+        function_lines += hitbox_lines
+        function_lines += [
+            f"    e->data           = d;",
+            f"    e->sm.current_state = &{e.name}_{json_data[e.name]["sm_starting_state"]};",
+            f"    e->sm.transition    = {json_data[e.name]["sm_transition_func"]};",
+            f"    e->on_collision     = {e.name}_collision;",
+            f"    return e;",
+            "};",
+        ]
+        functions_output.write_text("\n".join(function_lines)+"\n")
 
-    # ItemInfo registry  (análogo ao TileInfo)
-    lines += [
-        "typedef struct {",
-        "    uint8_t r,g,b;",
-        "    Sprite *sprite;",
-        "    Hitbox  hitbox;",
-        "    void (*on_collision)(struct Entity*,struct Entity*);",
-        "    Intent (*think)(Grid*, struct Entity*);",
-        "} ItemInfo;",
-        "",
-        "static ItemInfo ITEM_REGISTRY[] = {",
-    ]
-    for it in itens:
-        name = c_id(it["name"])
-        color = it.get("color") or [0, 0, 0]
-        r, g, b = color
-        cb = it["on_collision"] if it["on_collision"] else "NULL"
-        think = it["think"] if it["think"] else "NULL"
-        lines += (
-            [
-                f"    {{ /* {it['name']} */",
-                f"        .r={r},.g={g},.b={b},",
-                f"        .sprite=&SPRITE_{name},",
-                f"        .hitbox={{",
-            ]
-            + ["    " + l for l in hitbox_lines(it["hitbox"])]
-            + [
-                f"        }},",
-                f"        .on_collision={cb},",
-                f"        .think={think},",
-                f"    }},",
-            ]
-        )
-    lines += [
-        "};",
-        f"static int ITEM_REGISTRY_SIZE={len(itens)};",
-        "",
-        "static ItemInfo* item_from_color(uint8_t r,uint8_t g,uint8_t b){",
-        "    for(int i=0;i<ITEM_REGISTRY_SIZE;i++){",
-        "        ItemInfo *it=&ITEM_REGISTRY[i];",
-        "        if(it->r==r&&it->g==g&&it->b==b) return it;",
-        "    }",
-        "    return NULL;",
-        "}",
-        "",
-        "/* Cria uma Entity de item na posição dada (alocação estática via pool) */",
-        "#define MAX_ITEM_INSTANCES 64",
-        "static Entity _item_pool[MAX_ITEM_INSTANCES];",
-        "static int    _item_pool_count = 0;",
-        "",
-        "static Entity* item_create(ItemInfo *info, Coordinates pos){",
-        "    if(!info || _item_pool_count >= MAX_ITEM_INSTANCES) return NULL;",
-        "    Entity *e = &_item_pool[_item_pool_count++];",
-        "    e->position       = pos;",
-        "    e->type           = ENTITY_ITEM;",
-        "    e->hitbox         = info->hitbox;",
-        "    e->current_sprite = info->sprite;",
-        "    e->think          = info->think;",
-        "    e->on_collision   = info->on_collision;",
-        "    return e;",
-        "}",
-    ]
-
-    OUTPUT.write_text("\n".join(lines) + "\n")
-    print(f"Gerado: {OUTPUT}  ({len(itens)} itens)")
-
+        OUTPUT.write_text("\n".join(itens_h_lihas)+"\n")
 
 if __name__ == "__main__":
     main()

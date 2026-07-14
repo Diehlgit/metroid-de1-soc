@@ -3,10 +3,6 @@
 #include "basics.h"
 #include "grid.h"
 
-#define ROWS 240
-#define COLS 320
-#define LWIDTH 512
-
 void print_on_screen(volatile uint16_t (*buf)[LWIDTH], uint16_t pixel, int pos_x, int pos_y);
-void print_sprite(volatile uint16_t (*buf)[LWIDTH], Sprite *sprite, int ofx, int ofy, int screen_x, int screen_y);
+void print_sprite(volatile uint16_t (*buf)[LWIDTH], Sprite *sprite, int ofx, int ofy, int screen_x, int screen_y,  Orientation o);
 void print_game(volatile uint16_t (*buf)[LWIDTH], Grid *area, Coordinates cam, int cell_size);

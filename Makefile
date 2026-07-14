@@ -1,33 +1,28 @@
 # ============================================================
-#  Metroid DE1-SoC — Makefile
+#  Metroid — Makefile SDL2 (notebook)
 # ============================================================
 
-# --- Toolchain ----------------------------------------------
-# Compilação cruzada no notebook:
-#   CC = arm-linux-gnueabihf-gcc
-# Compilação nativa na placa:
-#   CC = gcc
-CC     = arm-linux-gnueabihf-gcc
-CFLAGS = -Wall -Wextra -O1 -std=c11 -I include -I generated
-
+CC     = gcc
 TARGET = metroid
+CFLAGS = -Wall -Wextra -std=c1x -I include -I generated \
+         -DRUNNING_SDL2 $(shell sdl2-config --cflags)
+CFLAGS += -g -O0
+LDFLAGS = $(shell sdl2-config --libs)
 
-# --- Fontes -------------------------------------------------
 SRC      = $(wildcard src/*.c)
-TILE_SRC = $(wildcard mapas/tiles/*/collision.c)
-ITEM_SRC = $(wildcard mapas/itens/*/collision.c)
+TILE_SRC = $(wildcard mapas/tiles/*/*.c)
+ITEM_SRC = $(wildcard mapas/itens/*/*.c)
 ENT_SRC  = $(wildcard mapas/entidades/*/*.c)
 
 ALL_SRC  = $(SRC) $(TILE_SRC) $(ITEM_SRC) $(ENT_SRC)
 OBJ      = $(patsubst %.c, build/%.o, $(ALL_SRC))
 
-# --- Regras -------------------------------------------------
 .PHONY: all clean
 
 all: $(TARGET)
 
 $(TARGET): $(OBJ)
-	$(CC) $(CFLAGS) $^ -o $@
+	$(CC) $(CFLAGS) $^ -o $@ $(LDFLAGS)
 
 build/%.o: %.c
 	@mkdir -p $(dir $@)

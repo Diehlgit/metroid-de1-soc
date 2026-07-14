@@ -8,7 +8,19 @@
 
 #define ROWS 240
 #define COLS 320
-#define GET_PIXEL(sprite, x, y) ((sprite)->pixels[(y) * (sprite)->width + (x)])
+
+static Sprite* get_current_sprite(Entity *e) {
+    if (!e->sm.current_state) return NULL;
+    Animation *anim = e->sm.current_state->animation;
+    if (!anim || !anim->frames || anim->frame_count == 0) return NULL;
+    // frame_timer precisa estar na Entity ou na Animation
+    return anim->frames[e->frame_timer % anim->frame_count];
+}
+
+#define GET_PIXEL_RU(sprite, x, y, w, h)  ((sprite)->pixels[(y) * (w) + (x)])
+#define GET_PIXEL_LU(sprite, x, y, w, h)  ((sprite)->pixels[(y) * (w) + ((w)-1-(x))])
+#define GET_PIXEL_RD(sprite, x, y, w, h)  ((sprite)->pixels[((h)-1-(y)) * (w) + (x)])
+#define GET_PIXEL_LD(sprite, x, y, w, h)  ((sprite)->pixels[((h)-1-(y)) * (w) + ((w)-1-(x))])
 
 void print_on_screen(volatile uint16_t (*buf)[LWIDTH], uint16_t pixel, int pos_x, int pos_y){
     if(pos_x < 0 || pos_x >= COLS || pos_y < 0 || pos_y >= ROWS) return;
@@ -16,22 +28,37 @@ void print_on_screen(volatile uint16_t (*buf)[LWIDTH], uint16_t pixel, int pos_x
     buf[pos_y][pos_x] = pixel;
 }
 
+void print_sprite(volatile uint16_t (*buf)[LWIDTH], Sprite *sprite, int ofx, int ofy, int screen_x, int screen_y, Orientation o) {
+    int pos_y  = screen_y;
+    int pos_x  = screen_x;
+    int largura = sprite->width;
+    int altura  = sprite->height;
 
-void print_sprite(volatile uint16_t (*buf)[LWIDTH], Sprite *sprite, int ofx, int ofy, int screen_x, int screen_y){
-    int pos_y = screen_y;
-    int pos_x = screen_x;
+    // seleciona o índice de pixel uma única vez
+    #define CALL_GET(fn) fn(sprite, x, y, largura, altura)
 
-    for(int y = 0 + ofy; y < sprite->height; y++){
-        for(int x = 0 + ofx; x < sprite->width; x++){
-            if(pos_x >= COLS) break;
-            uint16_t pixel = GET_PIXEL(sprite, x, y);
+    int modo = (o.v_direction == DOWN ? 2 : 0) | (o.h_direction == LEFT ? 1 : 0);
+
+    for (int y = ofy; y < altura; y++) {
+        for (int x = ofx; x < largura; x++) {
+            if (pos_x >= COLS) break;
+
+            uint16_t pixel;
+            switch (modo) {
+                case 0: pixel = CALL_GET(GET_PIXEL_RU); break;
+                case 1: pixel = CALL_GET(GET_PIXEL_LU); break;
+                case 2: pixel = CALL_GET(GET_PIXEL_RD); break;
+                case 3: pixel = CALL_GET(GET_PIXEL_LD); break;
+            }
+
             print_on_screen(buf, pixel, pos_x, pos_y);
             pos_x++;
         }
         pos_x = screen_x;
-        pos_y ++;
-        if(pos_y >= ROWS) break;
+        pos_y++;
+        if (pos_y >= ROWS) break;
     }
+    #undef CALL_GET
 }
 
 void print_game(volatile uint16_t (*buf)[LWIDTH], Grid *area, Coordinates pos_samus, int cell_size){
@@ -76,6 +103,8 @@ void print_game(volatile uint16_t (*buf)[LWIDTH], Grid *area, Coordinates pos_sa
             pos_y = 0;
         }
 
-        print_sprite(buf, e->current_sprite, offset_x, offset_y, pos_x, pos_y);
+        Sprite *sprite = get_current_sprite(e);
+        if (!sprite) continue;
+        print_sprite(buf, sprite, offset_x, offset_y, pos_x, pos_y, e->orientation);
     }
 }

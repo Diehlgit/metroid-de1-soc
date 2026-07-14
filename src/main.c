@@ -1,4 +1,7 @@
+#define _POSIX_C_SOURCE 199309L
+
 #include <stdint.h>
+#include <stdio.h>
 #include "../include/basics.h"
 #include "../include/entity.h"
 #include "../include/print.h"
@@ -6,100 +9,126 @@
 #include "../generated/maps.h"
 #include "../include/vga.h"
 #include "../include/uart.h"
+#include "../include/switch.h"
+#include <time.h>
+/*#include <SDL2/SDL.h>
 
 /* ================================================================== */
 /*  GAME LOOP                                                         */
 /* ================================================================== */
 
-#define CELL_SIZE 16
+#define TARGET_NS   (1000000000L / 60)
+Grid *area = NULL;
+static AreaId area_atual = AREA_PUZZLE;
 
-Grid* game_init(Entity *player_ptr, EntityList *ents_list) {
-    maps_init();
+Grid* switch_area(AreaId id, Entity *player, EntityList *ents_list) {
+    // 1. reseta o grid da área anterior se houver
+    Grid *old = get_grid(area_atual);
+    if (old) grid_reset(old);
 
-    // 1. Busca a área e o mapa
-    Grid *area = get_grid(AREA_INICIAL);
-    EntityList *ents_area = get_entidades(AREA_INICIAL);
+    // 2. atualiza a área atual
+    area_atual = id;
 
-    // 2. Configura os dados do Player diretamente no ponteiro seguro que veio do main
-    *player_ptr = (Entity){
-        .position       = { 16, 16 },
-        .type           = ENTITY_PLAYER,
-        .hitbox         = {
-            .type      = HITBOX_RECTANGLE,
-            .data      = { .rectangle = { 16, 32 } },
-            .get_cells = get_rectangle_cells,
-        },
-        .current_sprite = &SPRITE_SAMUS,
-        .think          = player_input,
-        .on_collision   = samus_collision,
-    };
+    // 3. reseta o pool — libera todas as entidades dinâmicas
+    entity_pool_reset();
 
-    // 3. Adiciona o player no grid físico
-    grid_add_entity(area, player_ptr);
+    // 4. zera a EntityList do mapa antes de chamar map_init
+    EntityList *map_list = get_entidades(id);
+    map_list->count = 0;
 
-    // 4. Inicializa a lista de entidades do loop limpando o contador
+    // 5. carrega a nova área — map_init re-encadeia os tiles no grid
+    Grid *new_area = load_area(id);  // agora map_add_entity começa do zero
+
+    // 6. reconstrói a lista de entidades
     ents_list->count = 0;
-    ents_list->ents[ents_list->count++] = player_ptr;
-
-    // 5. Copia as demais entidades do mapa
-    for (int i = 0; i < ents_area->count; i++) {
-        if (ents_list->count < 256) { // Proteção contra estouro de array
-            ents_list->ents[ents_list->count++] = ents_area->ents[i];
-        }
+    ents_list->ents[ents_list->count++] = player;
+    for (int i = 0; i < map_list->count; i++) {
+        if (ents_list->count < 256)
+            ents_list->ents[ents_list->count++] = map_list->ents[i];
     }
 
-    return area; // Retorna o ponteiro correto para o main salvar
+    // 7. adiciona o player no novo grid
+    grid_add_entity(new_area, player);
+    return new_area;
 }
 
-static void game_loop(Grid *g, EntityList *list) {
+static void game_loop(Grid **g, EntityList *list) {
+    // FASE 1: coleta intents — nenhuma modificação na lista
     Intent intents[256];
     for (int i = 0; i < list->count; i++) {
         struct Entity *e = list->ents[i];
-        intents[i] = e->think ? e->think(g, e) : (Intent){0};
+        intents[i] = e->sm.current_state->decide_input ? e->sm.current_state->decide_input(g, e) : (Intent){0};
     }
 
+    // FASE 2: aplica física e spawns — pode setar should_destroy, não remove ainda
     for (int i = 0; i < list->count; i++) {
         struct Entity *e  = list->ents[i];
-        Intent        *it = &intents[i];
-        physics_step(g, e, *it);
+        if(e->should_destroy) continue;
 
+        Intent *it = &intents[i];
+        physics_step(e, *it, g, list);
+
+        // adiciona spawns ao final da lista — fora do range atual, não afeta iteração
         for (int s = 0; s < it->spawn_count; s++) {
-            grid_add_entity(g, it->spawns[s]);
-            if (list->count < 256)
+            printf("spawn: %p\n", (void*)it->spawns[s]);
+            if (list->count < 256) {
                 list->ents[list->count++] = it->spawns[s];
+                grid_add_entity(*g, it->spawns[s]);
+            }
         }
 
-        if (it->destroy_self) {
-            grid_remove_entity(g, e);
-            list->ents[i] = list->ents[--list->count];
-            i--;
+        // no game_loop, após physics_step
+        if (!e->should_destroy) {
+            Animation *anim = e->sm.current_state ? e->sm.current_state->animation : NULL;
+            if (anim && anim->frame_duration > 0) {
+                e->frame_timer++;
+                if (e->frame_timer >= anim->frame_count * anim->frame_duration)
+                    e->frame_timer = 0;
+            }
         }
+    }
+
+    // FASE 3: remove todos os should_destroy de uma vez, iterando de trás para frente
+    for (int i = list->count - 1; i >= 0; i--) {
+        Entity *e = list->ents[i];
+        if (!e->should_destroy) continue;
+        grid_remove_entity(*g, e);
+        // swap com o último — não desloca tudo, O(1)
+        list->ents[i] = list->ents[--list->count];
+        list->ents[list->count] = NULL;
     }
 }
 
 int main(void) {
     if (vga_init() < 0) return 1;
-
-    #ifdef RUNNING_LINUX
-        if (uart_init() < 0) return 1;
-    #endif
-
-    uart_print("UART OK\n");
+    if (uart_init() < 0) return 1;
     clear_screen(0x0000);
 
-    Entity Samus;
-    EntityList entidades;
-    Grid *area = game_init(&Samus, &entidades);
+    EntityList entidades = { .count = 0 };
+    Entity *Samus = samus_create(32, 16, RIGHT, UP);
+    Grid *area = switch_area(area_atual, Samus, &entidades);
 
-    while (1) {
-        clear_screen(0x0000);
+	while (1) {
+	    /*struct timespec frame_start, frame_end;
+	    clock_gettime(CLOCK_MONOTONIC, &frame_start);*/
 
-        Coordinates samus_pos = entidades.ents[0]->position;
-        print_game(tela, area, samus_pos, CELL_SIZE);
+            clear_screen(0x0000);
+            Coordinates samus_pos = entidades.ents[0]->position;
+            print_game(tela, area, samus_pos, CELL_SIZE);
+            swap_buffers();
+            game_loop(&area, &entidades);
 
-        swap_buffers();
 
-        game_loop(area, &entidades);
+	   /* clock_gettime(CLOCK_MONOTONIC, &frame_end);
+	    long elapsed = (frame_end.tv_sec - frame_start.tv_sec) * 1000000000L + (frame_end.tv_nsec - frame_start.tv_nsec);
+
+            if (elapsed < TARGET_NS) {
+		struct timespec sleep_time = {
+		    .tv_sec = 0,
+		    .tv_nsec = TARGET_NS - elapsed
+		};
+		nanosleep(&sleep_time, NULL);
+	    }*/
     }
     return 0;
 }

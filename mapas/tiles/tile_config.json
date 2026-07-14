@@ -1,40 +1,30 @@
 {
-  "tiles": [
-    {
-      "name": "tijolos",
-      "color": [255, 0, 0],
-      "sprite": "tijolos/tijolos.png",
-      "hitbox": { "type": "rectangle", "width": 16, "height": 16 },
-      "on_collision": "tijolos_collision",
-      "think": null,
-      "entity_type": "ENTITY_TILE"
-    },
-    {
-      "name": "metal",
-      "color": [0, 216, 255],
-      "sprite": "metal/metal.png",
-      "hitbox": { "type": "rectangle", "width": 16, "height": 16 },
-      "on_collision": "tijolos_collision",
-      "think": null,
-      "entity_type": "ENTITY_TILE"
-    },
-    {
-      "name": "transicao",
-      "color": [255, 208, 0],
-      "sprite": "porta/porta.png",
-      "hitbox": { "type": "rectangle", "width": 16, "height": 16 },
-      "on_collision": "transicao_collision",
-      "think": null,
-      "entity_type": "ENTITY_TILE"
-    },
-    {
-      "name": "porta",
-      "color": [255, 129, 0],
-      "sprite": "porta/porta.png",
-      "hitbox": { "type": "rectangle", "width": 16, "height": 16 },
-      "on_collision": "porta_collision",
-      "think": null,
-      "entity_type": "ENTITY_TILE"
-    }
-  ]
+  "tijolos": {
+    "color": [255, 0, 0],
+    "hitbox": { "type": "rectangle", "width": 16, "height": 16 },
+    "entity_type": "ENTITY_TILE",
+    "sm_starting_state": "idle",
+    "sm_transition_func": "NULL"
+  },
+  "porta": {
+    "color": [255, 129, 0],
+    "hitbox": { "type": "rectangle", "width": 16, "height": 16 },
+    "entity_type": "ENTITY_DOOR",
+    "sm_starting_state": "idle",
+    "sm_transition_func": "NULL"
+  },
+  "metal": {
+    "color": [0, 216, 255],
+    "hitbox": { "type": "rectangle", "width": 16, "height": 16 },
+    "entity_type": "ENTITY_TILE",
+    "sm_starting_state": "idle",
+    "sm_transition_func": "NULL"
+  },
+  "transicao": {
+    "color": [255, 208, 0],
+    "hitbox": { "type": "rectangle", "width": 16, "height": 16 },
+    "entity_type": "ENTITY_DOOR",
+    "sm_starting_state": "open",
+    "sm_transition_func": "NULL"
+  }
 }

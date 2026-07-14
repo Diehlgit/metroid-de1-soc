@@ -5,6 +5,9 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#define ROWS 240
+#define COLS 320
+#define LWIDTH 512
 #define CELL_SIZE 16
 
 /*==========================================================

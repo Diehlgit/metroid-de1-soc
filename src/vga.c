@@ -5,12 +5,12 @@
 #include <stdio.h>
 
 #define FRAME_BUFFER0 0xC0000000
-#define FRAME_BUFFER1 0xC0100000
+#define FRAME_BUFFER1 0xC8000000
 
 #define PIXEL_CTRL_BASE 0xFF203020
 
 #define HW_REGS_BASE 0xFF200000
-#define HW_REGS_SPAN 0x5000
+#define HW_REGS_SPAN 0x200000 
 #define HW_REGS_MASK (HW_REGS_SPAN-1)
 
 #define VGA_BUFFER_SPAN (512*240*2)
@@ -114,19 +114,21 @@ void clear_screen(uint16_t color) {
 static int no_buffer1 = 1;
 
 void swap_buffers(void) {
-    *pixel_ctrl_ptr = 1;
-    while ((*(pixel_ctrl_ptr+3)) & 1);
-
-    if (no_buffer1) {
-        // acabou de exibir C8, agora desenha no C0
-        *(pixel_ctrl_ptr+1) = FRAME_BUFFER0;
-        tela = (volatile uint16_t (*)[LWIDTH]) vga_mem_virtual_c0;
-        no_buffer1 = 0;
+    if (tela == (volatile uint16_t (*)[LWIDTH]) vga_mem_virtual_c8) {
+        *(pixel_ctrl_ptr + 1) = FRAME_BUFFER1;
     } else {
-        // acabou de exibir C0, agora desenha no C8
-        *(pixel_ctrl_ptr+1) = FRAME_BUFFER1;
+        *(pixel_ctrl_ptr + 1) = FRAME_BUFFER0;
+    }
+    printf("BUFFER:%u\n", *(pixel_ctrl_ptr + 1));
+    fflush(stdout);
+    *pixel_ctrl_ptr = 1;
+
+    while ((*(pixel_ctrl_ptr + 3)) & 1);
+
+    if (tela == (volatile uint16_t (*)[LWIDTH]) vga_mem_virtual_c8) {
+        tela = (volatile uint16_t (*)[LWIDTH]) vga_mem_virtual_c0;
+    } else {
         tela = (volatile uint16_t (*)[LWIDTH]) vga_mem_virtual_c8;
-        no_buffer1 = 1;
     }
 }
 

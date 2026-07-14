@@ -11,7 +11,7 @@
 #include "../include/uart.h"
 #include "../include/switch.h"
 #include <time.h>
-/*#include <SDL2/SDL.h>
+//#include <SDL2/SDL.h>
 
 /* ================================================================== */
 /*  GAME LOOP                                                         */
@@ -112,8 +112,8 @@ int main(void) {
     Grid *area = switch_area(area_atual, Samus, &entidades);
 
 	while (1) {
-	    /*struct timespec frame_start, frame_end;
-	    clock_gettime(CLOCK_MONOTONIC, &frame_start);*/
+	    struct timespec frame_start, frame_end;
+	    clock_gettime(CLOCK_MONOTONIC, &frame_start);
 
             //display_score(score);
             //display_live(lives);
@@ -125,7 +125,7 @@ int main(void) {
             game_loop(&area, &entidades);
 
 
-	   /* clock_gettime(CLOCK_MONOTONIC, &frame_end);
+	    clock_gettime(CLOCK_MONOTONIC, &frame_end);
 	    long elapsed = (frame_end.tv_sec - frame_start.tv_sec) * 1000000000L + (frame_end.tv_nsec - frame_start.tv_nsec);
 
             if (elapsed < TARGET_NS) {
@@ -134,7 +134,7 @@ int main(void) {
 		    .tv_nsec = TARGET_NS - elapsed
 		};
 		nanosleep(&sleep_time, NULL);
-	    }*/
+	    }
     }
     return 0;
 }

@@ -16,6 +16,8 @@ struct Intent {
     int destroy_self;
 };
 
+int is_solid(struct Entity *e);
+
 static int try_move(struct Entity *mover, int new_x, int new_y, Grid **g, EntityList *l);
 
 void physics_step(struct Entity *e, Intent intent, Grid **g, EntityList *l);

@@ -1,20 +1,21 @@
 #pragma once
 #include "../../../include/entity.h"
 
-typedef struct {
-    int dano;
-	Entity *shooter;
-} projetil_data;
-
-typedef enum {
-    PROJETIL_NORMAL,
-    PROJETIL_SUPER,
-    PROJETIL_VENENO,
-} projetil_state;
-
-extern State projetil_normal;
+extern State projetil_base;
 extern State projetil_super;
 extern State projetil_veneno;
 
-Entity *projetil_create(Entity *shooter, State *state);
+typedef enum {
+    PROJETIL_BASE,
+    PROJETIL_SUPER,
+    PROJETIL_VENENO,
+} projetilStates;
+
+typedef struct {
+    int dano;
+    Entity *shooter;
+    projetilStates ent_state;
+} projetil_data;
+
+Entity *projetil_create(Entity *shooter, projetilStates tipo);
 void projetil_collision(Entity *self, Entity *other, Grid **g, EntityList *l);

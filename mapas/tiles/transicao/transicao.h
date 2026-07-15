@@ -2,17 +2,18 @@
 #include "../../../include/area_id.h"
 #include "../../../include/entity.h"
 
-typedef struct {
-    AreaId destino;
-    int    spawn_x;
-    int    spawn_y;
-} transicao_data;
+extern State transicao_open;
 
 typedef enum {
     TRANSICAO_OPEN,
-} transicao_state;
+} transicaoStates;
 
-extern State transicao_open;
+typedef struct {
+    AreaId destino;
+    int spawn_x;
+    int spawn_y;
+    transicaoStates ent_state;
+} transicao_data;
 
-Entity *transicao_create(int x, int y, AreaId id, int player_x, int player_y);
-void transicao_collision(Entity *self, Entity *other, Grid *g, EntityList *l);
+Entity *transicao_create(int x, int y, AreaId destino, int spawn_x, int spawn_y);
+void transicao_collision(Entity *self, Entity *other, Grid **g, EntityList *l);

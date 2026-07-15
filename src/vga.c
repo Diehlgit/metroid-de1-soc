@@ -10,7 +10,7 @@
 #define PIXEL_CTRL_BASE 0xFF203020
 
 #define HW_REGS_BASE 0xFF200000
-#define HW_REGS_SPAN 0x200000 
+#define HW_REGS_SPAN 0x200000
 #define HW_REGS_MASK (HW_REGS_SPAN-1)
 
 #define VGA_BUFFER_SPAN (512*240*2)
@@ -119,8 +119,8 @@ void swap_buffers(void) {
     } else {
         *(pixel_ctrl_ptr + 1) = FRAME_BUFFER0;
     }
-    /*printf("BUFFER:%u\n", *(pixel_ctrl_ptr + 1));
-    fflush(stdout);*/
+    printf("BUFFER:%u\n", *(pixel_ctrl_ptr + 1));
+    fflush(stdout);
     *pixel_ctrl_ptr = 1;
 
     while ((*(pixel_ctrl_ptr + 3)) & 1);
@@ -134,7 +134,7 @@ void swap_buffers(void) {
 
 void display_score(int score) {
     if (!hex3_hex0_ptr) return;
-    
+
     if (score > 9999) score = 9999;
     if (score < 0) score = 0;
 
@@ -153,7 +153,7 @@ void display_score(int score) {
 
 void display_live(int live) {
     if (!hex5_hex4_ptr) return;
-    
+
     if (live > 99) live = 99;
     if (live < 0) live = 0;
 

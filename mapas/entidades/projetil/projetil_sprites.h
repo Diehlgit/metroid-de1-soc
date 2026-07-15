@@ -1,65 +1,65 @@
 #pragma once
 #include "../../../include/entity.h"
 
-static const uint16_t NORMAL_projetil_PIXELS[16] = {
+static const uint16_t BASE_MOVE_00_PIXELS[16] = {
     0x8001, 0xF880, 0xF880, 0x8001,
     0xF880, 0xFEE0, 0xFEE0, 0xF880,
     0xF880, 0xFEE0, 0xFEE0, 0xF880,
     0x8001, 0xF880, 0xF880, 0x8001,
 };
-static Sprite NORMAL_projetil = {
+static Sprite BASE_MOVE_00 = {
     .height=4, .width=4,
-    .pixels=(uint16_t*)NORMAL_projetil_PIXELS
+    .pixels=(uint16_t*)BASE_MOVE_00_PIXELS
 };
 
-static Sprite *projetil_normal_frames[] = {
-    &NORMAL_projetil,
+static Sprite *base_move_frames[] = {
+    &BASE_MOVE_00,
 };
 
-static Animation anim_normal = {
-    .frames          = projetil_normal_frames,
+static Animation anim_base_move = {
+    .frames          = base_move_frames,
     .frame_count     = 1,
     .frame_duration  = 1,
     .loops           = 0,
 };
 
-static const uint16_t SUPER_00_PIXELS[30] = {
+static const uint16_t SUPER_MOVE_00_PIXELS[30] = {
     0x8001, 0x8001, 0x8001, 0xA800, 0x8001, 0x8001,
     0xFC40, 0xFE00, 0x07FA, 0xA800, 0xA800, 0x8001,
     0x8001, 0xFC40, 0x07FA, 0x07FA, 0xA800, 0xA800,
     0xFC40, 0xFE00, 0x07FA, 0xA800, 0xA800, 0x8001,
     0x8001, 0x8001, 0x8001, 0xA800, 0x8001, 0x8001,
 };
-static Sprite SUPER_00 = {
+static Sprite SUPER_MOVE_00 = {
     .height=5, .width=6,
-    .pixels=(uint16_t*)SUPER_00_PIXELS
+    .pixels=(uint16_t*)SUPER_MOVE_00_PIXELS
 };
 
-static const uint16_t SUPER_01_PIXELS[30] = {
+static const uint16_t SUPER_MOVE_01_PIXELS[30] = {
     0x8001, 0x8001, 0x8001, 0xA800, 0x8001, 0x8001,
     0xFE00, 0xFC40, 0x07FA, 0xA800, 0xA800, 0x8001,
     0x8001, 0xFE00, 0x07FA, 0x07FA, 0xA800, 0xA800,
     0xFE00, 0xFC40, 0x07FA, 0xA800, 0xA800, 0x8001,
     0x8001, 0x8001, 0x8001, 0xA800, 0x8001, 0x8001,
 };
-static Sprite SUPER_01 = {
+static Sprite SUPER_MOVE_01 = {
     .height=5, .width=6,
-    .pixels=(uint16_t*)SUPER_01_PIXELS
+    .pixels=(uint16_t*)SUPER_MOVE_01_PIXELS
 };
 
-static Sprite *projetil_super_frames[] = {
-    &SUPER_00,
-    &SUPER_01,
+static Sprite *super_move_frames[] = {
+    &SUPER_MOVE_00,
+    &SUPER_MOVE_01,
 };
 
-static Animation anim_super = {
-    .frames          = projetil_super_frames,
+static Animation anim_super_move = {
+    .frames          = super_move_frames,
     .frame_count     = 2,
     .frame_duration  = 1,
     .loops           = 0,
 };
 
-static const uint16_t VENENO_00_PIXELS[36] = {
+static const uint16_t VENENO_MOVE_00_PIXELS[36] = {
     0x8001, 0x5561, 0x07E3, 0x07E3, 0x07E3, 0x8001,
     0x5561, 0x07E3, 0x5561, 0x07E3, 0x07E3, 0x07E3,
     0x5561, 0x5561, 0x5561, 0x5561, 0x07E3, 0x07E3,
@@ -67,12 +67,12 @@ static const uint16_t VENENO_00_PIXELS[36] = {
     0x8001, 0x8001, 0x8001, 0x8001, 0x8001, 0x07E3,
     0x8001, 0x8001, 0x8001, 0x8001, 0x8001, 0x8001,
 };
-static Sprite VENENO_00 = {
+static Sprite VENENO_MOVE_00 = {
     .height=6, .width=6,
-    .pixels=(uint16_t*)VENENO_00_PIXELS
+    .pixels=(uint16_t*)VENENO_MOVE_00_PIXELS
 };
 
-static const uint16_t VENENO_01_PIXELS[36] = {
+static const uint16_t VENENO_MOVE_01_PIXELS[36] = {
     0x8001, 0x5561, 0x07E3, 0x07E3, 0x07E3, 0x8001,
     0x8001, 0x5561, 0x5561, 0x07E3, 0x07E3, 0x07E3,
     0x5561, 0x5561, 0x07E3, 0x5561, 0x07E3, 0x07E3,
@@ -80,12 +80,12 @@ static const uint16_t VENENO_01_PIXELS[36] = {
     0x8001, 0x8001, 0x8001, 0x07E3, 0x8001, 0x07E3,
     0x8001, 0x8001, 0x8001, 0x8001, 0x8001, 0x07E3,
 };
-static Sprite VENENO_01 = {
+static Sprite VENENO_MOVE_01 = {
     .height=6, .width=6,
-    .pixels=(uint16_t*)VENENO_01_PIXELS
+    .pixels=(uint16_t*)VENENO_MOVE_01_PIXELS
 };
 
-static const uint16_t VENENO_02_PIXELS[36] = {
+static const uint16_t VENENO_MOVE_02_PIXELS[36] = {
     0x8001, 0x5561, 0x07E3, 0x07E3, 0x07E3, 0x8001,
     0x8001, 0x5561, 0x5561, 0x07E3, 0x07E3, 0x07E3,
     0x8001, 0x5561, 0x07E3, 0x5561, 0x5561, 0x07E3,
@@ -93,19 +93,19 @@ static const uint16_t VENENO_02_PIXELS[36] = {
     0x5561, 0x07E3, 0x8001, 0x8001, 0x8001, 0x07E3,
     0x8001, 0x8001, 0x8001, 0x07E3, 0x8001, 0x8001,
 };
-static Sprite VENENO_02 = {
+static Sprite VENENO_MOVE_02 = {
     .height=6, .width=6,
-    .pixels=(uint16_t*)VENENO_02_PIXELS
+    .pixels=(uint16_t*)VENENO_MOVE_02_PIXELS
 };
 
-static Sprite *projetil_veneno_frames[] = {
-    &VENENO_00,
-    &VENENO_01,
-    &VENENO_02,
+static Sprite *veneno_move_frames[] = {
+    &VENENO_MOVE_00,
+    &VENENO_MOVE_01,
+    &VENENO_MOVE_02,
 };
 
-static Animation anim_veneno = {
-    .frames          = projetil_veneno_frames,
+static Animation anim_veneno_move = {
+    .frames          = veneno_move_frames,
     .frame_count     = 3,
     .frame_duration  = 1,
     .loops           = 0,

@@ -11,7 +11,7 @@
 
 static Sprite* get_current_sprite(Entity *e) {
     if (!e->sm.current_state) return NULL;
-    Animation *anim = e->sm.current_state->animation;
+    Animation *anim = e->sm.get_animation(e);
     if (!anim || !anim->frames || anim->frame_count == 0) return NULL;
     // frame_timer precisa estar na Entity ou na Animation
     return anim->frames[e->frame_timer % anim->frame_count];

@@ -35,20 +35,20 @@ static void keyboard_handler(int sig) {
                 case KEY_W:
                     last_key='w';
                     break;
-				
-				case KEY_S:
-					last_key='s';
-					break;
+
+                case KEY_S:
+                    last_key='s';
+                    break;
+
+                case KEY_E:
+                    last_key='e';
+                    break;
 
                 case KEY_F:
                     last_key='f';
                     break;
 
-				case KEY_E:
-					last_key='e';
-					break;
-
-				default:
+                default:
                     break;
             }
         }

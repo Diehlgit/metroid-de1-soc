@@ -1,15 +1,17 @@
 #pragma once
 #include "../../../include/entity.h"
 
-typedef struct {
-
-} porta_data;
+extern State porta_closed;
+extern State porta_open;
 
 typedef enum {
-    PORTA_IDLE,
-} porta_state;
+    PORTA_CLOSED,
+    PORTA_OPEN,
+} portaStates;
 
-extern State porta_idle;
+typedef struct {
+    portaStates ent_state;
+} porta_data;
 
 Entity *porta_create(int x, int y);
-void porta_collision(Entity *self, Entity *other, Grid *g, EntityList *l);
+void porta_collision(Entity *self, Entity *other, Grid **g, EntityList *l);

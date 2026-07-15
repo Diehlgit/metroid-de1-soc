@@ -3,55 +3,49 @@
 #include "scorpion_sprites.h"
 #include "scorpion.h"
 
+Animation *scorpion_get_animation(Entity *e){
+    return &anim_normal_move;
+}
+
+bool scorpion_move_transition(Entity *self, MovementState next){
+    scorpion_data *d = (scorpion_data *)self->data;
+    MovementState current = self->mv_state;
+
+    switch (next) {
+        case IDLE:
+            break;
+
+        case MOVE:
+            break;
+
+        case AIRBORNE:
+            break;
+
+        case HIT:
+            break;
+
+        default:
+            return false;
+    }
+    self->mv_state = next;
+    return true;
+}
 void scorpion_collision(Entity *self, Entity *other, Grid **g, EntityList *l){}
 
-static bool idle_evaluate_entry(Entity *self, State *next) {}
-static bool idle_evaluate_exit(Entity *self, State *next) {}
+static bool normal_evaluate_entry(Entity *self) {}
+static bool normal_evaluate_exit(Entity *self) {}
 
-static bool shooting_evaluate_entry(Entity *self, State *next) {}
-static bool shooting_evaluate_exit(Entity *self, State *next) {}
-
-static bool walking_evaluate_entry(Entity *self, State *next) {}
-static bool walking_evaluate_exit(Entity *self, State *next) {}
-
-static Intent idle_input(Grid *grid, Entity *self) {
+static Intent normal_input(Grid **grid, Entity *self) {
     Intent intent = {0};
     return intent;
 }
-static Intent shooting_input(Grid *grid, Entity *self) {
-    Intent intent = {0};
-    return intent;
-}
-static Intent walking_input(Grid *grid, Entity *self) {
-    Intent intent = {0};
-    return intent;
-}
-State scorpion_idle = {
-    .id                    = SCORPION_IDLE,
+State scorpion_normal = {
+    .id                   = SCORPION_NORMAL,
     .allowed_transitions  = {},
     .count                = 0,
-    .animation            = &anim_idle,
-    .evaluate_entry       = NULL,
-    .evaluate_exit        = NULL,
-    .decide_input         = NULL,
-};
-State scorpion_shooting = {
-    .id                    = SCORPION_SHOOTING,
-    .allowed_transitions  = {},
-    .count                = 0,
-    .animation            = &anim_shooting,
-    .evaluate_entry       = NULL,
-    .evaluate_exit        = NULL,
-    .decide_input         = NULL,
-};
-State scorpion_walking = {
-    .id                    = SCORPION_WALKING,
-    .allowed_transitions  = {},
-    .count                = 0,
-    .animation            = &anim_walking,
-    .evaluate_entry       = NULL,
-    .evaluate_exit        = NULL,
-    .decide_input         = NULL,
+    .evaluate_entry       = normal_evaluate_entry,
+    .evaluate_exit        = normal_evaluate_exit,
+    .decide_input         = normal_input,
 };
 Intent scorpion_ai(Grid **grid, Entity *self) {
     State *s = self->sm.current_state;
@@ -68,21 +62,26 @@ Entity *scorpion_create(int x, int y, int h_dir, int v_dir){
     scorpion_data *d = &_scorpion_data_pool[_scorpion_data_count++];
 
     *d = (scorpion_data){
-
     };
 
     e->position     = (Coordinates){x, y};
     e->velocity     = (Coordinates){0, 0};
     e->type         = ENTITY_ENEMY;
     e->orientation  = (Orientation){ h_dir, v_dir};
+    e->hp           = 10;
+    e->invulnerable = false;
+    e->hit          = false;
+    e->mv_state     = IDLE;
     e->hitbox       = (Hitbox){
         .type       = HITBOX_RECTANGLE,
         .data       = { .rectangle={ 32, 16 } },
         .get_cells  = get_rectangle_cells,
     };
-    e->data           = d;
-    e->sm.current_state = &scorpion_idle;
+    e->data         = d;
+    e->sm.current_state = &scorpion_normal;
     e->sm.transition    = generic_transition;
+    e->sm.move_transition = &scorpion_move_transition;
+    e->sm.get_animation = &scorpion_get_animation;
     e->on_collision     = scorpion_collision;
     return e;
 };

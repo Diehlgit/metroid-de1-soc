@@ -82,7 +82,7 @@ static void game_loop(Grid **g, EntityList *list) {
 
         // no game_loop, após physics_step
         if (!e->should_destroy) {
-            Animation *anim = e->sm.current_state ? e->sm.current_state->animation : NULL;
+            Animation *anim = e->sm.current_state ? e->sm.get_animation(e) : NULL;
             if (anim && anim->frame_duration > 0) {
                 e->frame_timer++;
                 if (e->frame_timer >= anim->frame_count * anim->frame_duration)
@@ -115,8 +115,8 @@ int main(void) {
 	    struct timespec frame_start, frame_end;
 	    clock_gettime(CLOCK_MONOTONIC, &frame_start);
 
-            display_score(score);
-            display_live(lives);
+            //display_score(score);
+            //display_live(lives);
 
             clear_screen(0x0000);
             Coordinates samus_pos = entidades.ents[0]->position;

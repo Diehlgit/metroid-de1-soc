@@ -1,232 +1,255 @@
 #include "../../../include/entity.h"
 #include "../../../include/physics.h"
 #include "../../../include/uart.h"
-#include "../../../include/switch.h"
 #include "../../../generated/entidades.h"
-#include "../../tiles/transicao/transicao.h"
-#include "../projetil/projetil.h"
 #include "samus_sprites.h"
 #include "samus.h"
-#include <stdio.h>
 
-void samus_collision(Entity *self, Entity *other, Grid **g, EntityList *l){
-    switch(other->type){
-        case(ENTITY_TRANSITION):
-            {transicao_data *d = (transicao_data *)other->data;
-            AreaId id = d->destino;
-            *g = switch_area(id, self, l);
-
-            self->position.x = d->spawn_x;
-            self->position.y = d->spawn_y;
-            break;}
-
-        default:
+Animation *samus_get_animation(Entity *e){
+    samus_data *d = (samus_data *)e->data;
+    switch(d->ent_state){
+        case SAMUS_BALL:
+            switch(e->mv_state){
+                case IDLE:
+                    return &anim_ball_idle;
+                    break;
+                case MOVE:
+                    return &anim_ball_move;
+                    break;
+                case HIT:
+                    return &anim_ball_hit;
+                    break;
+                case AIRBORNE:
+                    return &anim_ball_airborne;
+                    break;
+            }
+            break;
+        case SAMUS_KNEEL:
+            return &anim_kneel_idle;
+            break;
+        case SAMUS_NORMAL:
+            switch(e->mv_state){
+                case IDLE:
+                    return &anim_normal_idle;
+                    break;
+                case MOVE:
+                    return &anim_normal_move;
+                    break;
+                case HIT:
+                    return &anim_normal_hit;
+                    break;
+                case AIRBORNE:
+                    return &anim_normal_airborne;
+                    break;
+            }
             break;
     }
 }
 
-bool evaluate_jump_condition(Entity *self){
+bool samus_move_transition(Entity *self, MovementState next){
     samus_data *d = (samus_data *)self->data;
-    if(self->sm.current_state->id == SAMUS_JUMPING){
-        if(d->jumps_remaining <= 0){
+    MovementState current = self->mv_state;
+
+    // HIT não pode ser interrompido
+    if (current == HIT && next != IDLE)
+        return false;
+
+    switch (next) {
+        case AIRBORNE:
+            break;
+
+        case IDLE:
+            // saindo de AIRBORNE reseta pulos
+            if (current == AIRBORNE)
+                d->jumps_remaining = d->max_jumps;
+            // saindo de HIT remove invulnerabilidade
+            if (current == HIT)
+                self->invulnerable = false;
+            break;
+
+        case HIT:
+            d->item_bola  = false;
+            d->tipo_arma  = PROJETIL_BASE;
+            self->invulnerable = true;
+            //self->hit_timer    = SAMUS_HIT_DURATION;
+            if (current == AIRBORNE)
+                d->jumps_remaining = d->max_jumps;
+            break;
+
+        case MOVE:
+            if (current == AIRBORNE)
+                d->jumps_remaining = d->max_jumps;
+            break;
+
+        default:
             return false;
-        }
     }
-    d->jumps_remaining -= 1;
+    self->mv_state = next;
     return true;
 }
 
-static bool balling_evaluate_entry(Entity *self, State *next) {
+// ==============
+// EVALUATE JUMP
+// ==============
+
+bool evaluate_jump(Entity* self){
     samus_data *d = (samus_data *)self->data;
-    printf("item_bola = %d\n", ((samus_data *)self->data)->item_bola);
+    if (d->jumps_remaining <= 0) return false;
+    d->jumps_remaining--;
+    return true;
+}
+
+// ===============
+// SAMUS_COLLISION
+// ===============
+
+void samus_collision(Entity *self, Entity *other, Grid **g, EntityList *l){}
+
+// ===============
+// BALL STATE
+// ===============
+static bool ball_evaluate_entry(Entity *self) {
+    samus_data *d = (samus_data *)self->data;
     if(d->item_bola != false){
+        d->ent_state = SAMUS_BALL;
         self->hitbox.data.rectangle.height  = 16;
         self->position.y += 16;
         return true;
     }
     return false;
 }
-static bool balling_evaluate_exit(Entity *self, State *next) {
+static bool ball_evaluate_exit(Entity *self) {
+    samus_data *d = (samus_data *)self->data;
+    d->ent_state = SAMUS_NORMAL;
     self->hitbox.data.rectangle.height  = 32;
     self->position.y -= 16;
     return true;
 }
 
-static bool hit_evaluate_entry(Entity *self, State *next) {
-    samus_data *d = (samus_data *)self->data;
-    d->item_bola = false;
-    d->tipo_arma = &projetil_normal;
-    d->invulnerable = true;
-    return true;
+static Intent ball_input(Grid **grid, Entity *self) {
+    Intent intent = {0};
+    char key = uart_read_char();
+    if (key == 'w' && evaluate_jump(self)) { intent.ay = -16; }
+    if (key == 'a') { intent.ax = -2; self->orientation.h_direction = LEFT; }
+    if (key == 'd') { intent.ax =  2; self->orientation.h_direction = RIGHT; }
+    if (key == 'e') {
+        Coordinates next_coord = {self->position.x, self->position.y - 16};
+        int w = self->hitbox.data.rectangle.width;
+        EntityList ent_list = grid_query_region(*grid, next_coord, w, CELL_SIZE);
+
+        int blocked  = 0;
+        for(int i = 0; i < ent_list.count; i ++){
+            if(is_solid(ent_list.ents[i])){
+                blocked = 1;
+                break;
+            }
+        }
+
+        if(!blocked){
+            self->sm.transition(self, &samus_normal);
+        }
+    }
+    return intent;
 }
-static bool hit_evaluate_exit(Entity *self, State *next) {
-    samus_data *d = (samus_data *)self->data;
-    d->invulnerable = false;
-    return true;
-}
 
-static bool idle_evaluate_entry(Entity *self, State *next) {}
-static bool idle_evaluate_exit(Entity *self, State *next) {}
+State samus_ball = {
+    .id                   = SAMUS_BALL,
+    .allowed_transitions  = {&samus_normal},
+    .count                = 1,
+    .evaluate_entry       = ball_evaluate_entry,
+    .evaluate_exit        = ball_evaluate_exit,
+    .decide_input         = ball_input,
+};
 
-
-static bool kneeling_evaluate_entry(Entity *self, State *next) {
+// ===============
+// KNEEL STATE
+// ===============
+static bool kneel_evaluate_entry(Entity *self) {
+    ((samus_data *)(self->data))->ent_state = SAMUS_KNEEL;
     self->hitbox.data.rectangle.height = 16;
     self->position.y += 16;
     return true;
 }
-static bool kneeling_evaluate_exit(Entity *self, State *next) {
+static bool kneel_evaluate_exit(Entity *self) {
+    ((samus_data *)(self->data))->ent_state = SAMUS_NORMAL;
     self->hitbox.data.rectangle.height = 32;
     self->position.y -= 16;
     return true;
 }
 
-static bool walking_evaluate_entry(Entity *self, State *next) {}
-static bool walking_evaluate_exit(Entity *self, State *next) {}
-
-static Intent default_input(Grid **grid, Entity *self) {
+static Intent kneel_input(Grid **grid, Entity *self) {
     Intent intent = {0};
     char key = uart_read_char();
-    if (key == 'w') {
-        if( evaluate_jump_condition(self)) {
-            self->sm.transition(self, &samus_jumping);
-            intent.ay = -16;
-        }
-    }
-    if (key == 'a') { intent.ax = -2;  self->orientation.h_direction = LEFT;  self->sm.transition(self, &samus_walking); }
-    if (key == 's') { self->sm.transition(self, &samus_kneeling); }
-    if (key == 'd') { intent.ax =  2;  self->orientation.h_direction = RIGHT; self->sm.transition(self, &samus_walking); }
-    if (key == 'e') { self->sm.transition(self, &samus_balling); }
     if (key == 'f') {
         samus_data *d = (samus_data *)self->data;
-        Entity *p = projetil_create(self, d->tipo_arma);
-        //printf("%p\n", (void *)p);
-        intent.spawns[intent.spawn_count++] = p;
+        intent.spawns[intent.spawn_count++] = projetil_create(self, d->tipo_arma);
     }
-    if (!key)        self->sm.transition(self, &samus_idle);
+    if (key == 's') {
+        Coordinates next_coord = {self->position.x, self->position.y - 16};
+        int w = self->hitbox.data.rectangle.width;
+        EntityList ent_list = grid_query_region(*grid, next_coord, w, CELL_SIZE);
+
+        int blocked  = 0;
+        for(int i = 0; i < ent_list.count; i ++){
+            if(is_solid(ent_list.ents[i])){
+                blocked = 1;
+                break;
+            }
+        }
+
+        if(!blocked){
+            self->sm.transition(self, &samus_normal);
+        }
+    }
+
     return intent;
 }
 
-static Intent balling_input(Grid **grid, Entity *self) {
+State samus_kneel = {
+    .id                   = SAMUS_KNEEL,
+    .allowed_transitions  = {&samus_normal},
+    .count                = 1,
+    .evaluate_entry       = kneel_evaluate_entry,
+    .evaluate_exit        = kneel_evaluate_exit,
+    .decide_input         = kneel_input,
+};
+
+// ===============
+// NORMAL STATE
+// ===============
+static bool normal_evaluate_entry(Entity *self) {
+    ((samus_data *)self->data)->ent_state = SAMUS_NORMAL;
+    return true;
+}
+static bool normal_evaluate_exit(Entity *self) {return true;}
+
+static Intent normal_input(Grid **grid, Entity *self) {
     Intent intent = {0};
     char key = uart_read_char();
-    if (key == 'w') {
-        if( evaluate_jump_condition(self)) {
-            intent.ay = -16;
-        }
-    }
+    if (key == 'w' && evaluate_jump(self)) { intent.ay = -16; }
     if (key == 'a') { intent.ax = -2; self->orientation.h_direction = LEFT; }
+    if (key == 's') { self->sm.transition(self, &samus_kneel); }
     if (key == 'd') { intent.ax =  2; self->orientation.h_direction = RIGHT; }
-    if (key == 'e') { self->sm.transition(self, &samus_idle); }
-    return intent;
-}
-static Intent hit_input(Grid **grid, Entity *self) {
-    Intent intent = {0};
+    if (key == 'e') { self->sm.transition(self, &samus_ball); }
+    if (key == 'f') {
+        samus_data *d = (samus_data *)self->data;
+        intent.spawns[intent.spawn_count++] = projetil_create(self, d->tipo_arma);
+    }
     return intent;
 }
 
-static Intent jumping_input(Grid **grid, Entity *self) {
-    Intent intent = {0};
-    char key = uart_read_char();
-    if (key == 'w') {
-        if( evaluate_jump_condition(self)) {
-            self->sm.transition(self, &samus_jumping);
-            intent.ay = -16;
-        }
-    }
-    if (key == 'a') { intent.ax = -2;  self->orientation.h_direction = LEFT; }
-    if (key == 'd') { intent.ax =  2;  self->orientation.h_direction = RIGHT; }
-    if (key == 'e') { self->sm.transition(self, &samus_balling); }
-    if (key == 'f') {
-        samus_data *d = (samus_data *)self->data;
-        intent.spawns[intent.spawn_count++] = projetil_create(self, d->tipo_arma);
-    }
-    if (!key)        self->sm.transition(self, &samus_idle);
-    return intent;
-}
-static Intent kneeling_input(Grid **grid, Entity *self) {
-    Intent intent = {0};
-    char key = uart_read_char();
-    if (key == 'f') {
-        samus_data *d = (samus_data *)self->data;
-        intent.spawns[intent.spawn_count++] = projetil_create(self, d->tipo_arma);
-    }
-    if (key == 's') { self->sm.transition(self, &samus_idle); }
-    return intent;
-}
-static Intent walking_input(Grid **grid, Entity *self) {
-    Intent intent = {0};
-    char key = uart_read_char();
-    if (key == 'w') {
-        if(self->sm.transition(self, &samus_jumping)){
-            intent.ay = -16;
-        }
-    }
-    if (key == 'a') { intent.ax = -2;  self->orientation.h_direction = LEFT; }
-    if (key == 'd') { intent.ax =  2;  self->orientation.h_direction = RIGHT; }
-    if (key == 'e') { self->sm.transition(self, &samus_balling); }
-    if (key == 'f') {
-        samus_data *d = (samus_data *)self->data;
-        intent.spawns[intent.spawn_count++] = projetil_create(self, d->tipo_arma);
-    }
-    if (!key)        self->sm.transition(self, &samus_idle);
-    return intent;
-}
-
-State samus_balling = {
-    .id                   = SAMUS_BALLING,
-    .allowed_transitions  = {&samus_idle, &samus_hit},
+State samus_normal = {
+    .id                   = SAMUS_NORMAL,
+    .allowed_transitions  = {&samus_ball, &samus_kneel},
     .count                = 2,
-    .animation            = &anim_balling,
-    .evaluate_entry       = &balling_evaluate_entry,
-    .evaluate_exit        = &balling_evaluate_exit,
-    .decide_input         = &balling_input,
-};
-State samus_hit = {
-    .id                   = SAMUS_HIT,
-    .allowed_transitions  = {&samus_idle},
-    .count                = 1,
-    .animation            = &anim_hit,
-    .evaluate_entry       = NULL,
-    .evaluate_exit        = NULL,
-    .decide_input         = &hit_input,
-};
-State samus_idle = {
-    .id                   = SAMUS_IDLE,
-    .allowed_transitions  = { &samus_walking, &samus_kneeling, &samus_jumping, &samus_balling, &samus_hit },
-    .count                = 5,
-    .animation            = &anim_idle,
-    .evaluate_entry       = NULL,
-    .evaluate_exit        = NULL,
-    .decide_input         = &default_input,
-};
-State samus_jumping = {
-    .id                    = SAMUS_JUMPING,
-    .allowed_transitions  = {&samus_idle, &samus_hit, &samus_balling, &samus_jumping},
-    .count                = 4,
-    .animation            = &anim_jumping,
-    .evaluate_entry       = NULL,
-    .evaluate_exit        = NULL,
-    .decide_input         = &jumping_input,
-};
-State samus_kneeling = {
-    .id                    = SAMUS_KNEELING,
-    .allowed_transitions  = { &samus_idle },
-    .count                = 1,
-    .animation            = &anim_kneeling,
-    .evaluate_entry       = &kneeling_evaluate_entry,
-    .evaluate_exit        = &kneeling_evaluate_exit,
-    .decide_input         = &kneeling_input,
-};
-State samus_walking = {
-    .id                    = SAMUS_WALKING,
-    .allowed_transitions  = {&samus_idle, &samus_hit, &samus_balling, &samus_jumping},
-    .count                = 4,
-    .animation            = &anim_walking,
-    .evaluate_entry       = NULL,
-    .evaluate_exit        = NULL,
-    .decide_input         = &default_input,
+    .evaluate_entry       = normal_evaluate_entry,
+    .evaluate_exit        = normal_evaluate_exit,
+    .decide_input         = normal_input,
 };
 
+// ===============
+// INPUT AND CREATE
+// ===============
 Intent samus_ai(Grid **grid, Entity *self) {
     State *s = self->sm.current_state;
     if (s->decide_input)
@@ -242,26 +265,32 @@ Entity *samus_create(int x, int y, int h_dir, int v_dir){
     samus_data *d = &_samus_data_pool[_samus_data_count++];
 
     *d = (samus_data){
-        .hp              = 100,
         .max_jumps       = 2,
         .jumps_remaining = 2,
         .item_bola       = false,
-        .tipo_arma       = &projetil_normal,
-        .invulnerable    = false,
+        .tipo_arma       = PROJETIL_BASE,
+        .atirando        = false,
+        .ent_state       = SAMUS_NORMAL,
     };
 
     e->position     = (Coordinates){x, y};
     e->velocity     = (Coordinates){0, 0};
     e->type         = ENTITY_PLAYER;
     e->orientation  = (Orientation){ h_dir, v_dir};
+    e->hp           = 10;
+    e->invulnerable = false;
+    e->hit          = false;
+    e->mv_state     = IDLE;
     e->hitbox       = (Hitbox){
         .type       = HITBOX_RECTANGLE,
         .data       = { .rectangle={ 16, 32 } },
         .get_cells  = get_rectangle_cells,
     };
-    e->data           = d;
-    e->sm.current_state = &samus_idle;
+    e->data         = d;
+    e->sm.current_state = &samus_normal;
     e->sm.transition    = generic_transition;
+    e->sm.move_transition = &samus_move_transition;
+    e->sm.get_animation = &samus_get_animation;
     e->on_collision     = samus_collision;
     return e;
 };

@@ -45,13 +45,12 @@ def get_hitbox_lines(hb):
 def gen_states(ent, name):
     lines = [
         f"State {ent}_{name} = {{",
-        f"    .id                    = {ent.upper()}_{name.upper()},",
+        f'    .id                   = {ent.upper()}_{name.upper()},',
         f"    .allowed_transitions  = {{}},",
         f"    .count                = 0,",
-        f"    .animation            = &anim_{name},",
-        f"    .evaluate_entry       = NULL,",
-        f"    .evaluate_exit        = NULL,",
-        f"    .decide_input         = NULL,",
+        f"    .evaluate_entry       = {name}_evaluate_entry,",
+        f"    .evaluate_exit        = {name}_evaluate_exit,",
+        f"    .decide_input         = {name}_input,",
         f"}};",
     ]
 
@@ -62,121 +61,184 @@ def main():
     ents = sorted(e for e in ENTS_DIR.iterdir() if e.is_dir() and not e.name.startswith("."))
     if not ents: print("Nenhuma área encontrada"); sys.exit(1)
 
-    entidades_h_lihas = ["#pragma once", '#include "../include/entity.h"']
+    entidades_h_linhas = ["#pragma once", '#include "../include/entity.h"', '#include "../mapas/entidades/projetil/projetil.h"']
     for e in ents:
         name = e.name
-        entidades_h_lihas += [f"Entity *{name}_create(int x, int y, int h_dir, int v_dir);"]
+
         functions_output = e/f"{e.name}.c"
         dados_output     = e/f"{e.name}.h"
         animation_output = e/f"{e.name}_sprites.h"
 
-        dados_linhas = ["#pragma once", '#include "../../../include/entity.h"', "", "typedef struct {", "", f"}} {name}_data;", ""]
-
-
-        function_lines = ['#include "../../../include/entity.h"', '#include "../../../include/physics.h"', f'#include "{e.name}_sprites.h"', f'#include "{name}.h"', "", f"void {name}_collision(Entity *self, Entity *other, Grid *g, EntityList *l){{}}", ""]
         animation_lines = ["#pragma once", '#include "../../../include/entity.h"', ""]
 
+        movement_states_list = []
+        ent_states_list = []
 
-        states_lines = []
+        ent_states_path = e / "states"
+        ent_states = sorted(es for es in ent_states_path.iterdir() if es.is_dir() and not es.name.startswith("."))
 
-        states_path = e / "states"
-        states = sorted(s for s in states_path.iterdir() if s.is_dir() and not s.name.startswith("."))
+        for es in ent_states:
+            ent_states_list.append(es.name)
 
-        for s in states:
-            states_lines += [s.name]
+            movement_path = e / "states" / es.name
+            move_states = sorted(ms for ms in movement_path.iterdir() if ms.is_dir() and not ms.name.startswith("."))
 
-            sprites = sorted(p for p in s.iterdir() if p.suffix == ".png")
+            for ms in move_states:
+                if ms.name not in movement_states_list:
+                    movement_states_list.append(ms.name)
 
-            sprites_list = []
-            for sprite in sprites:
-                sprite_name = f"{s.name.upper()}_{sprite.stem}"
-                sprites_list.append(sprite_name)
+                sprites = sorted(p for p in ms.iterdir() if p.suffix == ".png")
 
-                lines, w, h = gen_pixels(sprite, sprite_name)
+                sprites_list = []
+                for sprite in sprites:
+                    sprite_name = f"{es.name.upper()}_{ms.name.upper()}_{sprite.stem}"
+                    sprites_list.append(sprite_name)
 
-                lines += [
-                    f"static Sprite {s.name.upper()}_{sprite.stem} = {{",
-                    f"    .height={h}, .width={w},",
-                    f"    .pixels=(uint16_t*){sprite_name}_PIXELS",
+                    lines, w, h = gen_pixels(sprite, sprite_name)
+
+                    lines += [
+                        f"static Sprite {sprite_name} = {{",
+                        f"    .height={h}, .width={w},",
+                        f"    .pixels=(uint16_t*){sprite_name}_PIXELS",
+                        f"}};",
+                        "",
+                    ]
+
+                    animation_lines.extend(lines)
+
+                animation_lines += [f"static Sprite *{es.name}_{ms.name}_frames[] = {{"]
+                for sn in sprites_list:
+                    animation_lines += [f"    &{sn},"]
+                animation_lines += ["};", ""]
+
+                animation_lines += [
+                    f"static Animation anim_{es.name}_{ms.stem} = {{",
+                    f"    .frames          = {es.name}_{ms.stem}_frames,",
+                    f"    .frame_count     = {len(sprites_list)},",
+                    f"    .frame_duration  = 1,",
+                    f"    .loops           = 0,",
                     f"}};",
                     "",
                 ]
 
-                animation_lines.extend(lines)
-
-            animation_lines += [f"static Sprite *{e.name}_{s.stem}_frames[] = {{"]
-            for sn in sprites_list:
-                animation_lines += [f"    &{sn},"]
-            animation_lines += ["};", ""]
-
-            animation_lines += [
-                f"static Animation anim_{s.name} = {{",
-                f"    .frames          = {e.name}_{s.stem}_frames,",
-                f"    .frame_count     = {len(sprites_list)},",
-                f"    .frame_duration  = 1,",
-                f"    .loops           = 0,",
-                f"}};",
-                "",
-            ]
-
+        #========================
+        #   GERANDO ENTIDADE_sprites.h
+        #=======================
         animation_output.write_text("\n".join(animation_lines)+"\n")
 
-        dados_linhas += ["typedef enum {"]
-        for s in states_lines:
-            dados_linhas += [f"    {e.name.upper()}_{s.upper()},"]
-        dados_linhas += [f"}} {e.name}_state;", ""]
+        #========================
+        #   GERANDO ENTIDADE.h
+        #=======================
 
-        for s in states_lines:
-            dados_linhas += [f"extern State {e.name}_{s};"]
+        dados_linhas = ["#pragma once",
+            '#include "../../../include/entity.h"', "",]
 
-        dados_linhas += ["", f"Entity *{name}_create(int x, int y, int h_dir, int v_dir);", f"void {name}_collision(Entity *self, Entity *other, Grid *g, EntityList *l);"]
+        for es in ent_states_list:
+            dados_linhas += [f"extern State {name}_{es};"]
+
+         # Adiciona os estados de entidade .h
+        dados_linhas += ["", f"typedef enum {{"]
+        for s in ent_states_list:
+            dados_linhas += [f"    {name.upper()}_{s.upper()},"]
+        dados_linhas += [f"}} {name}States;", ""]
+
+        # adiciona a struct data da entidade no .h
+        dados_linhas += [f"typedef struct {{"]
+        for atr in json_data[name]["ent_data"]:
+            dados_linhas += [f"    {atr};"]
+
+        dados_linhas += [f"    {name}States ent_state;",
+            f"}} {name}_data;", ""
+        ]
+
+        # Adiciona o header das funções create e collision no .h
+        dados_linhas += [
+            f"Entity *{name}_create({json_data[name]["create_args"]});",
+            f"void {name}_collision(Entity *self, Entity *other, Grid **g, EntityList *l);"
+        ]
+
         dados_output.write_text("\n".join(dados_linhas)+"\n")
 
+        #========================
+        #   GERANDO ENTIDADE.c
+        #=======================
 
+        function_lines = ['#include "../../../include/entity.h"', '#include "../../../include/physics.h"',
+            f'#include "{name}_sprites.h"', f'#include "{name}.h"', "",
+            f"Animation *{name}_get_animation(Entity *e){{}}", "",
+            f"bool {name}_move_transition(Entity *self, MovementState next){{",
+            f"    {name}_data *d = ({name}_data *)self->data;",
+            f"    MovementState current = self->mv_state;", "",
+            f"    switch (next) {{"
+        ]
 
-        for s in states_lines:
+        states = ["IDLE", "MOVE", "AIRBORNE", "HIT"]
+
+        for ms in states:
             function_lines += [
-                f"static bool {s}_evaluate_entry(Entity *self, State *next) {{}}",
-                f"static bool {s}_evaluate_exit(Entity *self, State *next) {{}}",
-                ""
+                f"        case {ms}:",
+                f"            break;", ""
             ]
 
-        for s in states_lines:
+        function_lines += [
+            f"        default:",
+            f"            return false;",
+            f"    }}",
+            f"    self->mv_state = next;",
+            f"    return true;",
+            f"}}",
+        ]
+
+        function_lines += [f"void {name}_collision(Entity *self, Entity *other, Grid **g, EntityList *l){{}}", "",]
+
+        for es in ent_states_list:
             function_lines += [
-                f"static Intent {s}_input(Grid *grid, Entity *self) {{",
+                f"static bool {es}_evaluate_entry(Entity *self) {{}}",
+                f"static bool {es}_evaluate_exit(Entity *self) {{}}", "",
+                f"static Intent {es}_input(Grid **grid, Entity *self) {{",
                 f"    Intent intent = {{0}};",
                 f"    return intent;",
-                f"}}",
+                f"}}"
+                ""
             ]
+            function_lines += gen_states(name, es)
 
-        for s in states_lines:
-            function_lines += gen_states(e.name, s)
+        function_lines.extend([f"Intent {name}_ai(Grid **grid, Entity *self) {{",  "    State *s = self->sm.current_state;", "    if (s->decide_input)", "        return s->decide_input(grid, self);", "    return (Intent){0};", f"}}", ""])
 
-        function_lines.extend([f"Intent {e.name}_ai(Grid *grid, Entity *self) {{",  "    State *s = self->sm.current_state;", "    if (s->decide_input)", "        return s->decide_input(grid, self);", "    return (Intent){0};", f"}}", ""])
-
-        hitbox_lines = get_hitbox_lines(json_data[e.name]["hitbox"])
+        hitbox_lines = get_hitbox_lines(json_data[name]["hitbox"])
         function_lines += [
-            f"static {e.name}_data _{e.name}_data_pool[1024];",
-            f"static int _{e.name}_data_count = 0;",
+            f"static {name}_data _{name}_data_pool[1024];",
+            f"static int _{name}_data_count = 0;",
             "",
-            f"Entity *{e.name}_create(int x, int y, int h_dir, int v_dir){{",
+            f"Entity *{name}_create({json_data[name]["create_args"]}){{",
             f"    Entity *e = entity_alloc();",
-            f"    {e.name}_data *d = &_{e.name}_data_pool[_{e.name}_data_count++];",
+            f"    {name}_data *d = &_{name}_data_pool[_{name}_data_count++];",
             f"",
-            f"    *d = ({e.name}_data){{",
-            f"",
+            f"    *d = ({name}_data){{",
+        ]
+
+        for atr in json_data[name]["ent_data"]:
+            function_lines += [f"    {atr} = ;"]
+
+        function_lines += [
             f"    }};", "",
             f"    e->position     = (Coordinates){{x, y}};",
             f"    e->velocity     = (Coordinates){{0, 0}};",
-            f"    e->type         = {json_data[e.name]["entity_type"] or "ENTITY_ENEMY"};",
+            f"    e->type         = {json_data[name]["entity_type"] or "ENTITY_ENEMY"};",
             f"    e->orientation  = (Orientation){{ h_dir, v_dir}};",
+            f"    e->hp           = 10;",
+            f"    e->invulnerable = false;",
+            f"    e->hit          = false;",
+            f"    e->mv_state     = IDLE;",
             f"    e->hitbox       = (Hitbox){{",
         ]
         function_lines += hitbox_lines
         function_lines += [
-            f"    e->data           = d;",
-            f"    e->sm.current_state = &{e.name}_{json_data[e.name]["sm_starting_state"]};",
-            f"    e->sm.transition    = {json_data[e.name]["sm_transition_func"]};",
+            f"    e->data         = d;",
+            f"    e->sm.current_state = &{name}_{json_data[name]["sm_starting_state"]};",
+            f"    e->sm.transition    = {json_data[name]["sm_transition_func"]};",
+            f"    e->sm.move_transition = &{name}_move_transition;",
+            f"    e->sm.get_animation = &{name}_get_animation;",
             f"    e->on_collision     = {e.name}_collision;",
             f"    return e;",
             "};",
@@ -184,7 +246,8 @@ def main():
 
         functions_output.write_text("\n".join(function_lines)+"\n")
 
-        OUTPUT.write_text("\n".join(entidades_h_lihas)+"\n")
+        entidades_h_linhas += [f"Entity *{name}_create({json_data[name]["create_args"]});"]
+        OUTPUT.write_text("\n".join(entidades_h_linhas)+"\n")
 
 if __name__ == "__main__":
     main()

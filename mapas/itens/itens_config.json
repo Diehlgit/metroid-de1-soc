@@ -1,6 +1,6 @@
 {
   "chave": {
-    "color": [],
+    "color": [255, 126, 0],
     "hitbox": { "type": "rectangle", "width": 16, "height": 32},
     "entity_type": "ENTITY_ITEM",
     "sm_starting_state": "normal",
@@ -9,7 +9,7 @@
     "create_args": "int x, int y"
   },
   "arma": {
-    "color": [0, 255, 69],
+    "color": [255, 242, 0],
     "hitbox": { "type": "rectangle", "width": 16, "height": 32},
     "entity_type": "ENTITY_ITEM",
     "sm_starting_state": "normal",
@@ -18,7 +18,16 @@
     "create_args": "int x, int y"
   },
   "bola": {
-    "color": [156, 255, 0],
+    "color": [211, 249, 188],
+    "hitbox": { "type": "rectangle", "width": 16, "height": 32},
+    "entity_type": "ENTITY_ITEM",
+    "sm_starting_state": "normal",
+    "sm_transition_func": "NULL",
+    "ent_data": [],
+    "create_args": "int x, int y"
+  },
+  "botas": {
+    "color": [156, 90, 60],
     "hitbox": { "type": "rectangle", "width": 16, "height": 32},
     "entity_type": "ENTITY_ITEM",
     "sm_starting_state": "normal",

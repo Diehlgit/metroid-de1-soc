@@ -1,7 +1,7 @@
 #pragma once
 #include "../../../include/entity.h"
 
-extern State projetil_base;
+extern State projetil_normal;
 extern State projetil_super;
 extern State projetil_veneno;
 

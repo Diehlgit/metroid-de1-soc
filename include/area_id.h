@@ -1,7 +1,8 @@
 #pragma once
 
 typedef enum {
-    AREA_INICIAL,
-    AREA_PUZZLE,
-    AREA_COUNT,
+    AREA_NAVE,
+    AREA_CORREDOR,
+    AREA_BOSS,
+    AREA_COUNT
 } AreaId;

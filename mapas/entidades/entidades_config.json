@@ -9,7 +9,7 @@
     "create_args": "int x, int y, int h_dir, int v_dir"
   },
   "morcego": {
-    "color": [],
+    "color": [181, 165, 213],
     "hitbox": { "type": "rectangle", "width": 16, "height": 8},
     "entity_type": "ENTITY_ENEMY",
     "sm_starting_state": "normal",
@@ -18,7 +18,7 @@
     "create_args": "int x, int y, int h_dir, int v_dir"
   },
   "scorpion": {
-    "color": [178, 0, 255],
+    "color": [111, 49, 152],
     "hitbox": { "type": "rectangle", "width": 32, "height": 16},
     "entity_type": "ENTITY_ENEMY",
     "sm_starting_state": "normal",

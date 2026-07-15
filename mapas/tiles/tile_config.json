@@ -1,6 +1,6 @@
 {
   "tijolos": {
-    "color": [255, 0, 0],
+    "color": [70, 70, 70],
     "hitbox": { "type": "rectangle", "width": 16, "height": 16 },
     "entity_type": "ENTITY_TILE",
     "sm_starting_state": "normal",
@@ -9,16 +9,16 @@
     "create_args": "int x, int y"
   },
   "porta": {
-    "color": [255, 129, 0],
+    "color": [34, 177, 76],
     "hitbox": { "type": "rectangle", "width": 16, "height": 16 },
     "entity_type": "ENTITY_DOOR",
     "sm_starting_state": "closed",
     "sm_transition_func": "NULL",
-    "ent_data": [],
-    "create_args": "int x, int y"
+    "ent_data": ["chaveState chave"],
+    "create_args": "int x, int y, chaveState chave"
   },
   "metal": {
-    "color": [0, 216, 255],
+    "color": [77, 109, 243],
     "hitbox": { "type": "rectangle", "width": 16, "height": 16 },
     "entity_type": "ENTITY_TILE",
     "sm_starting_state": "normal",
@@ -27,7 +27,7 @@
     "create_args": "int x, int y"
   },
   "transicao": {
-    "color": [255, 208, 0],
+    "color": [255, 194, 14],
     "hitbox": { "type": "rectangle", "width": 16, "height": 16 },
     "entity_type": "ENTITY_DOOR",
     "sm_starting_state": "open",

@@ -16,7 +16,7 @@
 #define TARGET_FPS 30
 #define FRAME_MS   (1000 / TARGET_FPS)
 Grid *area = NULL;
-static AreaId area_atual = AREA_PUZZLE;
+static AreaId area_atual = AREA_NAVE;
 
 Grid* switch_area(AreaId id, Entity *player, EntityList *ents_list) {
     // 1. reseta o grid da área anterior se houver

@@ -95,9 +95,13 @@ Entity *projetil_create(Entity *shooter, projetilStates tipo){
 
     int shot_x;
     if(shooter->orientation.h_direction == RIGHT){
-        shot_x = shooter->position.x + shooter->hitbox.data.rectangle.width;
+        shot_x = shooter->position.x + shooter->hitbox.data.rectangle.width ;
     } else {
+<<<<<<< HEAD
         shot_x = shooter->position.x;
+=======
+        shot_x = shooter->position.x ;
+>>>>>>> 01ffa27d05fb9f148e1d484053d991a716e73a00
     }
 
     int shot_y;
@@ -114,6 +118,15 @@ Entity *projetil_create(Entity *shooter, projetilStates tipo){
     } else  {
         e->velocity.x = -5;
     }
+<<<<<<< HEAD
+=======
+	/*
+	printf("---------------------------------\n");
+	printf("Shooter position: (x:%d,y:%d)\n", shooter->position.x, shooter->position.y);
+	printf("Projectile position: (x:%d,y:%d)\n", shot_x, shot_y);
+	printf("---------------------------------\n");
+	*/
+>>>>>>> 01ffa27d05fb9f148e1d484053d991a716e73a00
 
     e->type         = ENTITY_PROJECTILE;
     e->orientation  = (Orientation){ shooter->orientation.h_direction, shooter->orientation.v_direction};
@@ -123,7 +136,7 @@ Entity *projetil_create(Entity *shooter, projetilStates tipo){
     e->mv_state     = MOVE;
     e->hitbox       = (Hitbox){
         .type       = HITBOX_RECTANGLE,
-        .data       = { .rectangle={ 4, 4 } },
+        .data       = { .rectangle={ 1, 1 } },
         .get_cells  = get_rectangle_cells,
     };
     e->data         = d;

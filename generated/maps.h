@@ -489,13 +489,13 @@ map_add_tile(&GRID_PUZZLE, tijolos_create(304,224));
 map_add_tile(&GRID_PUZZLE, bola_create(208,96));
 map_add_tile(&GRID_PUZZLE, arma_create(112,128));
 map_add_entity(&GRID_PUZZLE, &ENTIDADES_PUZZLE, pinwheel_create(160,32, RIGHT, UP));
-map_add_entity(&GRID_PUZZLE, &ENTIDADES_PUZZLE, scorpion_create(96,48, RIGHT, UP));
-map_add_entity(&GRID_PUZZLE, &ENTIDADES_PUZZLE, scorpion_create(192,48, RIGHT, UP));
-map_add_entity(&GRID_PUZZLE, &ENTIDADES_PUZZLE, scorpion_create(288,48, RIGHT, UP));
+map_add_entity(&GRID_PUZZLE, &ENTIDADES_PUZZLE, scorpion_create(96,48, LEFT, UP));
+map_add_entity(&GRID_PUZZLE, &ENTIDADES_PUZZLE, scorpion_create(192,48, LEFT, UP));
+map_add_entity(&GRID_PUZZLE, &ENTIDADES_PUZZLE, scorpion_create(288,48, LEFT, UP));
 map_add_entity(&GRID_PUZZLE, &ENTIDADES_PUZZLE, pinwheel_create(256,96, RIGHT, UP));
 map_add_entity(&GRID_PUZZLE, &ENTIDADES_PUZZLE, pinwheel_create(48,128, RIGHT, UP));
 map_add_entity(&GRID_PUZZLE, &ENTIDADES_PUZZLE, pinwheel_create(96,128, RIGHT, UP));
-map_add_entity(&GRID_PUZZLE, &ENTIDADES_PUZZLE, scorpion_create(240,208, RIGHT, UP));
+map_add_entity(&GRID_PUZZLE, &ENTIDADES_PUZZLE, scorpion_create(240,208, LEFT, UP));
 };
 
 static Grid *_grids[] = {

@@ -2,6 +2,7 @@
 #include "../../../include/physics.h"
 #include "scorpion_sprites.h"
 #include "scorpion.h"
+#include "../../../include/grid.h"
 
 Animation *scorpion_get_animation(Entity *e){
     return &anim_normal_move;
@@ -37,8 +38,48 @@ static bool normal_evaluate_exit(Entity *self) {}
 
 static Intent normal_input(Grid **grid, Entity *self) {
     Intent intent = {0};
-    return intent;
+	Coordinates search = {.y = self->position.y};
+	int w, m;
+	int x = self->position.x;
+
+	switch (self->orientation.h_direction) {
+		case RIGHT:
+		{	
+			search.x = x;
+		    if (x + (5 * CELL_SIZE) > (*grid)->width) w = (*grid)->width - x;
+			else w = 5 * CELL_SIZE;
+			m = 1;	
+			break;
+		}
+		case LEFT:
+		{
+			if(x - (5 * CELL_SIZE) < 0) {search.x = 0;}
+		    else {search.x = x - (5 * CELL_SIZE);}
+			w = 5 * CELL_SIZE;
+			m = -1;
+			break;
+		}
+	}
+
+	EntityList l = grid_query_region(*grid, search, w, CELL_SIZE);
+
+	int found = 0;
+	for (int i=0; i<l.count; i++) {
+		if (l.ents[i]->type == ENTITY_PLAYER) {
+			found = 1;
+			intent.ax = 2 * m;
+			break;	
+		}
+	}
+
+	if (!found) {
+		if (self->orientation.h_direction == LEFT) {self->orientation.h_direction = RIGHT;}
+		else {self->orientation.h_direction = LEFT;}
+	}
+
+	return intent;
 }
+
 State scorpion_normal = {
     .id                   = SCORPION_NORMAL,
     .allowed_transitions  = {},
@@ -47,6 +88,7 @@ State scorpion_normal = {
     .evaluate_exit        = normal_evaluate_exit,
     .decide_input         = normal_input,
 };
+
 Intent scorpion_ai(Grid **grid, Entity *self) {
     State *s = self->sm.current_state;
     if (s->decide_input)

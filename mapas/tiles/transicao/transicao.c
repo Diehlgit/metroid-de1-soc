@@ -11,9 +11,9 @@ Animation *transicao_get_animation(Entity *e){
 void transicao_collision(Entity *self, Entity *other, Grid **g, EntityList *l){
     switch(other->type){
         case(ENTITY_PLAYER):
-            *g = switch_area(((transicao_data *)self->data)->destino, other, l);
             other->position.x = ((transicao_data *)self->data)->spawn_x;
             other->position.y = ((transicao_data *)self->data)->spawn_y;
+            *g = switch_area(((transicao_data *)self->data)->destino, other, l);
             break;
 
         default:

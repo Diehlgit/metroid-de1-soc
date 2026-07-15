@@ -13,6 +13,7 @@ char uart_read_char(void) {
                 case SDLK_d: return 'd';
                 case SDLK_w: return 'w';
                 case SDLK_f: return 'f';
+                case SDLK_e: return 'e';
                 case SDLK_ESCAPE: exit(0);
             }
         }

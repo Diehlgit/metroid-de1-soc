@@ -1,15 +1,15 @@
 #pragma once
 #include "../../../include/entity.h"
 
-typedef struct {
-
-} metal_data;
+extern State metal_normal;
 
 typedef enum {
-    METAL_IDLE,
-} metal_state;
+    METAL_NORMAL,
+} metalStates;
 
-extern State metal_idle;
+typedef struct {
+    metalStates ent_state;
+} metal_data;
 
 Entity *metal_create(int x, int y);
-void metal_collision(Entity *self, Entity *other, Grid *g, EntityList *l);
+void metal_collision(Entity *self, Entity *other, Grid **g, EntityList *l);

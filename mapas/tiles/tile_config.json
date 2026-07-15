@@ -3,28 +3,36 @@
     "color": [255, 0, 0],
     "hitbox": { "type": "rectangle", "width": 16, "height": 16 },
     "entity_type": "ENTITY_TILE",
-    "sm_starting_state": "idle",
-    "sm_transition_func": "NULL"
+    "sm_starting_state": "normal",
+    "sm_transition_func": "NULL",
+    "ent_data": [],
+    "create_args": "int x, int y"
   },
   "porta": {
     "color": [255, 129, 0],
     "hitbox": { "type": "rectangle", "width": 16, "height": 16 },
     "entity_type": "ENTITY_DOOR",
-    "sm_starting_state": "idle",
-    "sm_transition_func": "NULL"
+    "sm_starting_state": "closed",
+    "sm_transition_func": "NULL",
+    "ent_data": [],
+    "create_args": "int x, int y"
   },
   "metal": {
     "color": [0, 216, 255],
     "hitbox": { "type": "rectangle", "width": 16, "height": 16 },
     "entity_type": "ENTITY_TILE",
-    "sm_starting_state": "idle",
-    "sm_transition_func": "NULL"
+    "sm_starting_state": "normal",
+    "sm_transition_func": "NULL",
+    "ent_data": [],
+    "create_args": "int x, int y"
   },
   "transicao": {
     "color": [255, 208, 0],
     "hitbox": { "type": "rectangle", "width": 16, "height": 16 },
     "entity_type": "ENTITY_DOOR",
     "sm_starting_state": "open",
-    "sm_transition_func": "NULL"
+    "sm_transition_func": "NULL",
+    "ent_data": ["AreaId destino", "int spawn_x", "int spawn_y"],
+    "create_args": "int x, int y, AreaId destino, int spawn_x, int spawn_y"
   }
 }

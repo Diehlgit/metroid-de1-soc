@@ -16,7 +16,7 @@ static int clampi(int v, int lo, int hi) {
     return v;
 }
 
-static int is_solid(struct Entity *e) {
+int is_solid(struct Entity *e) {
     return e->type == ENTITY_TILE;
 }
 
@@ -34,7 +34,6 @@ static int try_move(struct Entity *mover, int new_x, int new_y, Grid **g, Entity
         if (other == mover) continue;
         if (is_solid(other)) {
             if (mover->type == ENTITY_PROJECTILE) {
-                printf("destruindo: %p\n", (void*)mover);
                 mover->should_destroy = 1;
             }
             blocked = 1;
@@ -49,6 +48,7 @@ static int try_move(struct Entity *mover, int new_x, int new_y, Grid **g, Entity
 void physics_step(struct Entity *e, Intent intent, Grid **g, EntityList *l) {
 	// ajustamos a velocidade da entidade de acordo com a aceleração da intenção
 	// na coordenada x o que mata a velocidade é a fricção
+	bool was_airborne = (e->mv_state == AIRBORNE);
 	e->velocity.x = clampi(e->velocity.x + intent.ax, -MAX_VEL, MAX_VEL);
 
 	if (try_move(e, e->position.x + e->velocity.x, e->position.y, g, l)) {
@@ -77,6 +77,16 @@ void physics_step(struct Entity *e, Intent intent, Grid **g, EntityList *l) {
     } else {
 		if (e->velocity.y > 0) on_ground = 1;
 		e->velocity.y = 0;
+	}
+
+	if(e->type != ENTITY_PROJECTILE) {
+    	if (!on_ground) {
+            e->sm.move_transition(e, AIRBORNE);
+    	} else if (abs(e->velocity.x) > 0) {
+            e->sm.move_transition(e, MOVE);
+        } else {
+            e->sm.move_transition(e, IDLE);
+        }
 	}
 
 	if (on_ground) {

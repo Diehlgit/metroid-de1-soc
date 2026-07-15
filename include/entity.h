@@ -24,6 +24,13 @@ typedef struct {
 } Orientation;
 
 typedef enum {
+    IDLE,
+    MOVE,
+    HIT,
+    AIRBORNE,
+} MovementState;
+
+typedef enum {
     ENTITY_PLAYER,
     ENTITY_TILE,
     ENTITY_ENEMY,
@@ -52,28 +59,19 @@ typedef struct {
 } Animation;
 
 /*==========================================================
- * Entidade e Máquina de Estados
+ * Máquina de Estados
  *==========================================================*/
 typedef struct Entity Entity;
 typedef struct State State;
 typedef struct Grid Grid;
 typedef struct Intent Intent;
 
-typedef struct {
-    struct Entity *ents[4096];
-    int count;
-} EntityList;
-
-typedef bool (*StateGuard)(Entity *self, State *next);
+typedef bool (*StateGuard)(Entity *self);
 
 typedef struct State {
-    int                id;
-
+    int               id;
     struct State       *allowed_transitions[8];
     int                 count;
-
-    Animation          *animation;
-
     StateGuard evaluate_entry;
     StateGuard evaluate_exit;
 
@@ -83,28 +81,36 @@ typedef struct State {
 typedef struct {
     State *current_state;
     bool (*transition)(struct Entity *self, State *next);
+    bool (*move_transition)(struct Entity *self, MovementState next);
+    Animation *(*get_animation)(Entity *e);
 } StateMachine;
 
+/*==========================================================
+ * Entidade
+ *==========================================================*/
+
 typedef struct {
-    int    hp;
-    int    max_jumps;
-    int    jumps_remaining;
-    State* tipo_projetil;
-    bool   item_bola;
-    bool   invulnerable;
-} generic_data;
+    struct Entity *ents[4096];
+    int count;
+} EntityList;
 
 struct Entity {
-  Coordinates position;
-  Coordinates velocity;
-  EntityType type;
-  Orientation orientation;
-  Hitbox hitbox;
-  int frame_timer;
-  int should_destroy;
-  void *data;
-  StateMachine sm;
-  void (*on_collision)(struct Entity *self, struct Entity *other, Grid **g, EntityList *l);
+    EntityType type;
+    Coordinates position;
+    Coordinates velocity;
+    Orientation orientation;
+    int    hp;
+    bool   invulnerable;
+    bool hit;
+    MovementState mv_state;
+    void *data;
+
+    Hitbox hitbox;
+    int frame_timer;
+    int should_destroy;
+
+    StateMachine sm;
+    void (*on_collision)(struct Entity *self, struct Entity *other, Grid **g, EntityList *l);
 };
 
 static bool generic_transition(Entity *self, State *next) {
@@ -122,8 +128,8 @@ static bool generic_transition(Entity *self, State *next) {
     if (!found) return false;
 
     // avalia guards
-    if (current->evaluate_exit  && !current->evaluate_exit(self, next))  return false;
-    if (next->evaluate_entry    && !next->evaluate_entry(self, next))    return false;
+    if (current->evaluate_exit  && !current->evaluate_exit(self))  return false;
+    if (next->evaluate_entry    && !next->evaluate_entry(self))    return false;
 
     self->sm.current_state = next;
     return true;

@@ -1,11 +1,11 @@
 #include <stdint.h>
 #include "../include/basics.h"
+#include "../include/grid.h"
 #include "../include/entity.h"
 #include "../include/print.h"
 #include "../include/physics.h"
 #include "../generated/maps.h"
 #include "../include/vga.h"
-#include "../include/uart.h"
 #include "../include/switch.h"
 #include <SDL2/SDL.h>
 
@@ -13,7 +13,7 @@
 /*  GAME LOOP                                                         */
 /* ================================================================== */
 
-#define TARGET_FPS 29
+#define TARGET_FPS 30
 #define FRAME_MS   (1000 / TARGET_FPS)
 Grid *area = NULL;
 static AreaId area_atual = AREA_PUZZLE;
@@ -49,7 +49,16 @@ Grid* switch_area(AreaId id, Entity *player, EntityList *ents_list) {
     return new_area;
 }
 
-static void game_loop(Grid **g, EntityList *list) {
+static void game_loop(Grid **g, EntityList *list){
+    printf("Entity count = %d\n", list->count);
+
+    for (int i = 0; i < list->count; i++) {
+        printf("%d: %p type=%d\n",
+               i,
+               (void*)list->ents[i],
+               list->ents[i]->mv_state);
+    }
+
     // FASE 1: coleta intents — nenhuma modificação na lista
     Intent intents[256];
     for (int i = 0; i < list->count; i++) {
@@ -67,7 +76,7 @@ static void game_loop(Grid **g, EntityList *list) {
 
         // adiciona spawns ao final da lista — fora do range atual, não afeta iteração
         for (int s = 0; s < it->spawn_count; s++) {
-            printf("spawn: %p\n", (void*)it->spawns[s]);
+            printf("spawn: %p\n", (void*)it->spawns[s]->type);
             if (list->count < 256) {
                 list->ents[list->count++] = it->spawns[s];
                 grid_add_entity(*g, it->spawns[s]);
@@ -76,7 +85,8 @@ static void game_loop(Grid **g, EntityList *list) {
 
         // no game_loop, após physics_step
         if (!e->should_destroy) {
-            Animation *anim = e->sm.current_state ? e->sm.current_state->animation : NULL;
+            printf("removendo %p\n", e);
+            Animation *anim = e->sm.current_state ? e->sm.get_animation(e) : NULL;
             if (anim && anim->frame_duration > 0) {
                 e->frame_timer++;
                 if (e->frame_timer >= anim->frame_count * anim->frame_duration)

@@ -3,21 +3,27 @@
     "color": [],
     "hitbox": { "type": "rectangle", "width": 16, "height": 32},
     "entity_type": "ENTITY_ITEM",
-    "sm_starting_state": "idle",
-    "sm_transition_func": "NULL"
+    "sm_starting_state": "normal",
+    "sm_transition_func": "NULL",
+    "ent_data": [],
+    "create_args": "int x, int y"
   },
   "arma": {
     "color": [0, 255, 69],
     "hitbox": { "type": "rectangle", "width": 16, "height": 32},
     "entity_type": "ENTITY_ITEM",
-    "sm_starting_state": "idle",
-    "sm_transition_func": "NULL"
+    "sm_starting_state": "normal",
+    "sm_transition_func": "NULL",
+    "ent_data": [],
+    "create_args": "int x, int y"
   },
   "bola": {
     "color": [156, 255, 0],
     "hitbox": { "type": "rectangle", "width": 16, "height": 32},
     "entity_type": "ENTITY_ITEM",
-    "sm_starting_state": "idle",
-    "sm_transition_func": "NULL"
+    "sm_starting_state": "normal",
+    "sm_transition_func": "NULL",
+    "ent_data": [],
+    "create_args": "int x, int y"
   }
 }

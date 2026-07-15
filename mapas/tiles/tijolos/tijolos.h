@@ -1,15 +1,15 @@
 #pragma once
 #include "../../../include/entity.h"
 
-typedef struct {
-
-} tijolos_data;
+extern State tijolos_normal;
 
 typedef enum {
-    TIJOLOS_IDLE,
-} tijolos_state;
+    TIJOLOS_NORMAL,
+} tijolosStates;
 
-extern State tijolos_idle;
+typedef struct {
+    tijolosStates ent_state;
+} tijolos_data;
 
 Entity *tijolos_create(int x, int y);
-void tijolos_collision(Entity *self, Entity *other, Grid *g, EntityList *l);
+void tijolos_collision(Entity *self, Entity *other, Grid **g, EntityList *l);

@@ -1,15 +1,15 @@
 #pragma once
 #include "../../../include/entity.h"
 
-typedef struct {
-
-} chave_data;
+extern State chave_normal;
 
 typedef enum {
-    CHAVE_IDLE,
-} chave_state;
+    CHAVE_NORMAL,
+} chaveStates;
 
-extern State chave_idle;
+typedef struct {
+    chaveStates ent_state;
+} chave_data;
 
 Entity *chave_create(int x, int y);
-void chave_collision(Entity *self, Entity *other, Grid *g, EntityList *l);
+void chave_collision(Entity *self, Entity *other, Grid **g, EntityList *l);

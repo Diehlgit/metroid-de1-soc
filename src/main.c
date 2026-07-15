@@ -115,8 +115,8 @@ int main(void) {
 	    struct timespec frame_start, frame_end;
 	    clock_gettime(CLOCK_MONOTONIC, &frame_start);
 
-            //display_score(score);
-            //display_live(lives);
+            display_score(score);
+            display_live(lives);
 
             clear_screen(0x0000);
             Coordinates samus_pos = entidades.ents[0]->position;

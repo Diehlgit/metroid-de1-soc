@@ -8,6 +8,7 @@ CFLAGS = -Wall -Wextra -std=c1x -I include -I generated \
          -DRUNNING_SDL2 $(shell sdl2-config --cflags)
 CFLAGS += -g -O0
 LDFLAGS = $(shell sdl2-config --libs)
+LDFLAFS += -lrt
 
 SRC      = $(wildcard src/*.c)
 TILE_SRC = $(wildcard mapas/tiles/*/*.c)

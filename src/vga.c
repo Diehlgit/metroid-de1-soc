@@ -119,8 +119,8 @@ void swap_buffers(void) {
     } else {
         *(pixel_ctrl_ptr + 1) = FRAME_BUFFER0;
     }
-    printf("BUFFER:%u\n", *(pixel_ctrl_ptr + 1));
-    fflush(stdout);
+    /*printf("BUFFER:%u\n", *(pixel_ctrl_ptr + 1));
+    fflush(stdout);*/
     *pixel_ctrl_ptr = 1;
 
     while ((*(pixel_ctrl_ptr + 3)) & 1);

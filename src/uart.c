@@ -38,7 +38,7 @@ static void keyboard_handler(int sig) {
 				
 				case KEY_S:
 					last_key='s';
-					break
+					break;
 
                 case KEY_F:
                     last_key='f';

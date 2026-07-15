@@ -277,7 +277,7 @@ Entity *samus_create(int x, int y, int h_dir, int v_dir){
     e->velocity     = (Coordinates){0, 0};
     e->type         = ENTITY_PLAYER;
     e->orientation  = (Orientation){ h_dir, v_dir};
-    e->hp           = 10;
+    e->hp           = 99;
     e->invulnerable = false;
     e->hit          = false;
     e->mv_state     = IDLE;

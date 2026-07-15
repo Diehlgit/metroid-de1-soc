@@ -3,6 +3,7 @@
 #include "scorpion_sprites.h"
 #include "scorpion.h"
 #include "../../../include/grid.h"
+#include <stdio.h>
 
 Animation *scorpion_get_animation(Entity *e){
     return &anim_normal_move;
@@ -31,7 +32,26 @@ bool scorpion_move_transition(Entity *self, MovementState next){
     self->mv_state = next;
     return true;
 }
-void scorpion_collision(Entity *self, Entity *other, Grid **g, EntityList *l){}
+void scorpion_collision(Entity *self, Entity *other, Grid **g, EntityList *l){
+    switch(other->type){
+        case ENTITY_PLAYER:
+            if(!other->invulnerable){
+		printf("SAMUS HP:%d\n",other->hp);
+		fflush(stdout);
+                other->hp -= 1;
+                if(other->hp <= 0){
+                    other->should_destroy = 1;
+                } else {
+                    other->hit = true;
+                    other->sm.move_transition(other, HIT);
+                }
+            }
+		break;
+
+		default:
+		break;
+    }
+}
 
 static bool normal_evaluate_entry(Entity *self) {}
 static bool normal_evaluate_exit(Entity *self) {}
@@ -67,7 +87,7 @@ static Intent normal_input(Grid **grid, Entity *self) {
 	for (int i=0; i<l.count; i++) {
 		if (l.ents[i]->type == ENTITY_PLAYER) {
 			found = 1;
-			intent.ax = 2 * m;
+			intent.ax = 1 * m;
 			break;	
 		}
 	}
@@ -116,7 +136,7 @@ Entity *scorpion_create(int x, int y, int h_dir, int v_dir){
     e->mv_state     = IDLE;
     e->hitbox       = (Hitbox){
         .type       = HITBOX_RECTANGLE,
-        .data       = { .rectangle={ 32, 16 } },
+        .data       = { .rectangle={ 16, 12} },
         .get_cells  = get_rectangle_cells,
     };
     e->data         = d;

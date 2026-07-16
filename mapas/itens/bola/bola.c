@@ -5,7 +5,7 @@
 #include "bola.h"
 
 Animation *bola_get_animation(Entity *e){
-    return &anim_bola;
+    return &anim_normal_idle;
 }
 void bola_collision(Entity *self, Entity *other, Grid **g, EntityList *l){
     switch(other->type){

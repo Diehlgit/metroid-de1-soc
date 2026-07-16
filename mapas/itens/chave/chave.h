@@ -8,8 +8,9 @@ typedef enum {
 } chaveStates;
 
 typedef struct {
+    int array_pos;
     chaveStates ent_state;
 } chave_data;
 
-Entity *chave_create(int x, int y);
+Entity *chave_create(int x, int y, int array_pos);
 void chave_collision(Entity *self, Entity *other, Grid **g, EntityList *l);

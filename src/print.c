@@ -61,6 +61,55 @@ void print_sprite(volatile uint16_t (*buf)[LWIDTH], Sprite *sprite, int ofx, int
     #undef CALL_GET
 }
 
+static inline uint16_t whiten_pixel(uint16_t pixel) {
+    if (pixel == 0x8001) return pixel;   // mantém transparência
+
+    int r = (pixel >> 11) & 0x1F;
+    int g = (pixel >> 5)  & 0x3F;
+    int b = pixel & 0x1F;
+
+    // aproxima cada canal do branco
+    r = r + (31 - r) / 2;
+    g = g + (63 - g) / 2;
+    b = b + (31 - b) / 2;
+
+    return (r << 11) | (g << 5) | b;
+}
+
+void print__whitened_sprite(volatile uint16_t (*buf)[LWIDTH], Sprite *sprite, int ofx, int ofy, int screen_x, int screen_y, Orientation o) {
+    int pos_y  = screen_y;
+    int pos_x  = screen_x;
+    int largura = sprite->width;
+    int altura  = sprite->height;
+
+    // seleciona o índice de pixel uma única vez
+    #define CALL_GET(fn) fn(sprite, x, y, largura, altura)
+
+    int modo = (o.v_direction == DOWN ? 2 : 0) | (o.h_direction == LEFT ? 1 : 0);
+
+    for (int y = ofy; y < altura; y++) {
+        for (int x = ofx; x < largura; x++) {
+            if (pos_x >= COLS) break;
+
+            uint16_t pixel;
+            switch (modo) {
+                case 0: pixel = CALL_GET(GET_PIXEL_RU); break;
+                case 1: pixel = CALL_GET(GET_PIXEL_LU); break;
+                case 2: pixel = CALL_GET(GET_PIXEL_RD); break;
+                case 3: pixel = CALL_GET(GET_PIXEL_LD); break;
+            }
+
+            pixel = whiten_pixel(pixel);
+            print_on_screen(buf, pixel, pos_x, pos_y);
+            pos_x++;
+        }
+        pos_x = screen_x;
+        pos_y++;
+        if (pos_y >= ROWS) break;
+    }
+    #undef CALL_GET
+}
+
 void print_game(volatile uint16_t (*buf)[LWIDTH], Grid *area, Coordinates pos_samus, int cell_size){
     int x0_tela;
     int y0_tela;
@@ -105,6 +154,11 @@ void print_game(volatile uint16_t (*buf)[LWIDTH], Grid *area, Coordinates pos_sa
 
         Sprite *sprite = get_current_sprite(e);
         if (!sprite) continue;
-        print_sprite(buf, sprite, offset_x, offset_y, pos_x, pos_y, e->orientation);
+        if(e->hit){
+            e->hit = false;
+            print__whitened_sprite(buf, sprite, offset_x, offset_y, pos_x, pos_y, e->orientation);
+        } else {
+            print_sprite(buf, sprite, offset_x, offset_y, pos_x, pos_y, e->orientation);
+        }
     }
 }

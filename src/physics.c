@@ -2,8 +2,8 @@
 #include "../include/entity.h"
 #include "../include/grid.h"
 #include "../include/physics.h"
-#include "../include/uart.h"
-#include <stdio.h>
+#include "../mapas/entidades/samus/samus.h"
+#include "../mapas/tiles/porta/porta.h"
 
 #define GRAVITY 1
 #define FRICTION 1
@@ -16,8 +16,29 @@ static int clampi(int v, int lo, int hi) {
     return v;
 }
 
-int is_solid(struct Entity *e) {
-    return e->type == ENTITY_TILE;
+int is_solid(struct Entity *mover, struct Entity *e) {
+    switch(e->type){
+        case ENTITY_TILE:
+            return true;
+        case ENTITY_DOOR:
+            switch(mover->type){
+                case ENTITY_PLAYER:
+                    return !(((samus_data *)mover->data)->keys[((porta_data *)e->data)->array_pos]);
+                default:
+                    return true;
+            }
+        case ENTITY_PLAYER:
+            return false;
+        case ENTITY_ITEM:
+            return false;
+        case ENTITY_ENEMY:
+            return false;
+        case ENTITY_TRANSITION:
+            return false;
+        default:
+            return true;
+        break;
+    }
 }
 
 // Testa movimento num eixo, retorna 1 se livre, 0 se bloqueado
@@ -32,7 +53,7 @@ static int try_move(struct Entity *mover, int new_x, int new_y, Grid **g, Entity
     for (int i = 0; i < hit.count; i++) {
         struct Entity *other = hit.ents[i];
         if (other == mover) continue;
-        if (is_solid(other)) {
+        if (is_solid(mover, other)) {
             if (mover->type == ENTITY_PROJECTILE) {
                 mover->should_destroy = 1;
             }

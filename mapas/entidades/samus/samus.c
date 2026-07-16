@@ -2,6 +2,7 @@
 #include "../../../include/physics.h"
 #include "../../../include/uart.h"
 #include "../../../generated/entidades.h"
+#include <stdio.h>
 #include "samus_sprites.h"
 #include "samus.h"
 
@@ -139,7 +140,7 @@ static Intent ball_input(Grid **grid, Entity *self) {
 
         int blocked  = 0;
         for(int i = 0; i < ent_list.count; i ++){
-            if(is_solid(ent_list.ents[i])){
+            if(is_solid(self, ent_list.ents[i])){
                 blocked = 1;
                 break;
             }
@@ -187,11 +188,12 @@ static Intent kneel_input(Grid **grid, Entity *self) {
     if (key == 's') {
         Coordinates next_coord = {self->position.x, self->position.y - 16};
         int w = self->hitbox.data.rectangle.width;
-        EntityList ent_list = grid_query_region(*grid, next_coord, w, CELL_SIZE);
+        EntityList ent_list = grid_query_region(*grid, next_coord, w, 16);
+        printf("pos.y=%d next_coord.y=%d\n", self->position.y, self->position.y - 16);
 
         int blocked  = 0;
         for(int i = 0; i < ent_list.count; i ++){
-            if(is_solid(ent_list.ents[i])){
+            if(is_solid(self, ent_list.ents[i])){
                 blocked = 1;
                 break;
             }
@@ -265,8 +267,8 @@ Entity *samus_create(int x, int y, int h_dir, int v_dir){
     samus_data *d = &_samus_data_pool[_samus_data_count++];
 
     *d = (samus_data){
-        .max_jumps       = 2,
-        .jumps_remaining = 2,
+        .max_jumps       = 1,
+        .jumps_remaining = 1,
         .item_bola       = false,
         .tipo_arma       = PROJETIL_BASE,
         .atirando        = false,

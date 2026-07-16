@@ -19,6 +19,7 @@ typedef struct {
     bool atirando;
     projetilStates tipo_arma;
     samusStates ent_state;
+    bool keys[8];
 } samus_data;
 
 Entity *samus_create(int x, int y, int h_dir, int v_dir);

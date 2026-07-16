@@ -19,7 +19,7 @@
 
 #define TARGET_NS   (1000000000L / 60)
 Grid *area = NULL;
-static AreaId area_atual = AREA_PUZZLE;
+static AreaId area_atual = AREA_CAVERNA;
 
 int score = 0;
 
@@ -109,20 +109,20 @@ int main(void) {
     EntityList entidades = { .count = 0 };
     Entity *Samus = samus_create(32, 16, RIGHT, UP);
     Grid *area = switch_area(area_atual, Samus, &entidades);
-	
+
 	int ent_count = entidades.count;
 	int prev_count = ent_count;
 	while (1) {
 	    struct timespec frame_start, frame_end;
 	    clock_gettime(CLOCK_MONOTONIC, &frame_start);
-			
+
 			ent_count = entidades.count;
         	if (prev_count > ent_count) {
 				score += 10;
 				prev_count = ent_count;
 			}
 			display_score(score);
-		
+
             display_live(Samus->hp);
 			if (Samus->hp <= 0) {
 				printf("GAME OVER\n");

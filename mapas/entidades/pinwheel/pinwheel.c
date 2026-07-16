@@ -1,5 +1,6 @@
 #include "../../../include/entity.h"
 #include "../../../include/physics.h"
+#include "../projetil/projetil.h"
 #include "pinwheel_sprites.h"
 #include "pinwheel.h"
 
@@ -37,6 +38,28 @@ static bool normal_evaluate_exit(Entity *self) {}
 
 static Intent normal_input(Grid **grid, Entity *self) {
     Intent intent = {0};
+    Coordinates search;
+	int w, h, m;
+	int x = self->position.x;
+	int y = self->position.y;
+
+	if(x - (5 * CELL_SIZE) < 0) {search.x = 0;}
+	else {search.x = x - (5*CELL_SIZE);}
+
+	if(x + (10 * CELL_SIZE) > (*grid)->width) w = (*grid)->width - x;
+	else w = 10 * CELL_SIZE;
+
+	EntityList l = grid_query_region(*grid, search, w, self->hitbox.data.rectangle.height);
+
+	int found = 0;
+	for (int i=0; i<l.count; i++) {
+		if (l.ents[i]->type == ENTITY_PLAYER) {
+			found = 1;
+			intent.spawns[intent.spawn_count++] = projetil_create(self, PROJETIL_VENENO);
+			break;
+		}
+	}
+
     return intent;
 }
 State pinwheel_normal = {

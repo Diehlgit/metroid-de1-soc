@@ -35,32 +35,59 @@ void pinwheel_collision(Entity *self, Entity *other, Grid **g, EntityList *l){}
 
 static bool normal_evaluate_entry(Entity *self) {}
 static bool normal_evaluate_exit(Entity *self) {}
-
 static Intent normal_input(Grid **grid, Entity *self) {
-    Intent intent = {0};
-    Coordinates search;
-	int w, h, m;
-	int x = self->position.x;
-	int y = self->position.y;
+    pinwheel_data *d = self->data;
 
-	if(x - (5 * CELL_SIZE) < 0) {search.x = 0;}
-	else {search.x = x - (5*CELL_SIZE);}
+    if (d->ai_timer > 0){
+        d->ai_timer--;
+		return (Intent){0};
+	} else {
+        d->ai_timer = 10;
+static Intent normal_input(Grid **grid, Entity *self) {
+    pinwheel_data *d = self->data;
 
-	if(x + (10 * CELL_SIZE) > (*grid)->width) w = (*grid)->width - x;
-	else w = 10 * CELL_SIZE;
+    if (d->ai_timer > 0)
+        d->ai_timer--;
+    else {
+        d->ai_timer = 60;
 
-	EntityList l = grid_query_region(*grid, search, w, self->hitbox.data.rectangle.height);
+        Intent intent = {0};
+        Coordinates search = {.y = self->position.y};
+        int w, m;
+        int x = self->position.x;
 
-	int found = 0;
-	for (int i=0; i<l.count; i++) {
-		if (l.ents[i]->type == ENTITY_PLAYER) {
-			found = 1;
-			intent.spawns[intent.spawn_count++] = projetil_create(self, PROJETIL_VENENO);
-			break;
-		}
-	}
+        switch (self->orientation.h_direction) {
+            case RIGHT:
+            {
+                search.x = x;
+                if (x + (10 * CELL_SIZE) > (*grid)->width) w = (*grid)->width - x;
+                else w = 10 * CELL_SIZE;
+                m = 1;
+                break;
+            }
+            case LEFT:
+            {
+                if (x - (10 * CELL_SIZE) < 0) {search.x = 0;}
+                else {search.x = x - (10 * CELL_SIZE);}
+                w = 10 * CELL_SIZE;
+                m = -1;
+                break;
+            }
+        }
 
-    return intent;
+        EntityList l = grid_query_region(*grid, search, w, self->hitbox.data.rectangle.height);
+
+        int found = 0;
+        for (int i = 0; i < l.count; i++) {
+            if (l.ents[i]->type == ENTITY_PLAYER) {
+                found = 1;
+                intent.spawns[intent.spawn_count++] = projetil_create(self, PROJETIL_VENENO);
+                break;
+            }
+        }
+
+        return intent;
+    }
 }
 State pinwheel_normal = {
     .id                   = PINWHEEL_NORMAL,
@@ -85,7 +112,8 @@ Entity *pinwheel_create(int x, int y, int h_dir, int v_dir){
     pinwheel_data *d = &_pinwheel_data_pool[_pinwheel_data_count++];
 
     *d = (pinwheel_data){
-    };
+    	d->ai_timer = 60
+	};
 
     e->position     = (Coordinates){x, y};
     e->velocity     = (Coordinates){0, 0};

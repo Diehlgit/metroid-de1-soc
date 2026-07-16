@@ -9,6 +9,7 @@ typedef enum {
 
 typedef struct {
     pinwheelStates ent_state;
+	int ai_timer;
 } pinwheel_data;
 
 Entity *pinwheel_create(int x, int y, int h_dir, int v_dir);

@@ -5,7 +5,7 @@
     "entity_type": "ENTITY_PLAYER",
     "sm_starting_state": "normal",
     "sm_transition_func": "generic_transition",
-    "ent_data": ["int jumps_remaining", "int max_jumps", "bool item_bola", "bool atirando", "projetilStates tipo_arma"],
+    "ent_data": ["int jumps_remaining", "int max_jumps", "bool item_bola", "bool atirando", "projetilStates tipo_arma", "bool keys[8];"],
     "create_args": "int x, int y, int h_dir, int v_dir"
   },
   "morcego": {
@@ -18,8 +18,8 @@
     "create_args": "int x, int y, int h_dir, int v_dir"
   },
   "scorpion": {
-    "color": [178, 0, 255],
-    "hitbox": { "type": "rectangle", "width": 32, "height": 16},
+    "color": [254, 245, 0],
+    "hitbox": { "type": "rectangle", "width": 16, "height": 16},
     "entity_type": "ENTITY_ENEMY",
     "sm_starting_state": "normal",
     "sm_transition_func": "generic_transition",
@@ -27,21 +27,12 @@
     "create_args": "int x, int y, int h_dir, int v_dir"
   },
   "pinwheel": {
-    "color": [0, 255, 2],
+    "color": [247, 153, 48],
     "hitbox": { "type": "rectangle", "width": 32, "height": 32},
     "entity_type": "ENTITY_ENEMY",
     "sm_starting_state": "normal",
     "sm_transition_func": "generic_transition",
     "ent_data": [],
     "create_args": "int x, int y, int h_dir, int v_dir"
-  },
-  "projetil": {
-    "color": [40, 117, 74],
-    "hitbox": { "type": "rectangle", "width": 4, "height": 4},
-    "entity_type": "ENTITY_PROJECTILE",
-    "sm_starting_state": "move",
-    "sm_transition_func": "generic_transition",
-    "ent_data": ["int dano", "Entity *shooter"],
-    "create_args": "Entity *shooter, projetilStates tipo"
   }
 }

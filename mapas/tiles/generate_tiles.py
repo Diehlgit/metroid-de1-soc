@@ -1,220 +1,258 @@
+"""
+generate_entities.py
+Lê um arquivo de configuração JSON e os diretórios de entidades,
+gerando [nome].h e [nome].c para cada uma.
+Também gera um header agregador (ex: generated/tiles.h).
+
+Uso:
+    cd mapas/entidades && python3 generate_entities.py entidades_config.json ../../generated/entidades.h
+    cd mapas/tiles     && python3 generate_entities.py tile_config.json      ../../generated/tiles.h
+    cd mapas/itens     && python3 generate_entities.py itens_config.json     ../../generated/itens.h
+
+Campos obrigatórios em cada entrada do JSON:
+    create_args        : string com os argumentos de create() ex: "int x, int y, int h_dir, int v_dir"
+    entity_type        : ex: "ENTITY_TILE", "ENTITY_ENEMY"
+    hitbox             : { "type": "rectangle", "width": 16, "height": 16 }
+    sm_starting_state  : nome do estado inicial ex: "idle"
+    sm_transition_func : ex: "generic_transition" ou "NULL"
+    ent_data           : lista de declarações de campos ex: ["int hp", "bool item_bola"]
+    is_player          : true → usa player_alloc(), false → usa entity_alloc()
+    extra_includes     : lista de includes extras ex: ["../projetil/projetil.h"]
+"""
+
 import json
 import sys
 from pathlib import Path
 
-from PIL import Image
+ROOT    = Path(".")
+CONFIG  = Path(sys.argv[1]) if len(sys.argv) > 1 else Path("config.json")
+OUTPUT  = Path(sys.argv[2]) if len(sys.argv) > 2 else Path("../../generated/entities.h")
 
-E_CONFIG = Path("tile_config.json")
-ENTS_DIR = Path(".")
-OUTPUT = Path("../../generated/tiles.h")
-
-def to_rgb565(r, g, b):
-    return ((r & 0xF8) << 8) | ((g & 0xFC) << 3) | (b >> 3)
-
-
-def c_id(s):
-    return s.upper().replace("-", "_").replace(" ", "_")
-
-
-def gen_pixels(path, name):
-    img = Image.open(path).convert("RGBA")
-    w, h = img.size
-    lines = [f"static const uint16_t {name}_PIXELS[{w * h}] = {{"]
-    for y in range(h):
-        row = []
-        for x in range(w):
-            r, g, b, a = img.getpixel((x, y))
-            row.append("0x8001" if a < 128 else f"0x{to_rgb565(r, g, b):04X}")
-        lines.append("    " + ", ".join(row) + ",")
-    lines.append("};")
-    return lines, w, h
-
-HITBOX_ENUM = {"rectangle":"HITBOX_RECTANGLE","circle":"HITBOX_CIRCLE","triangle":"HITBOX_TRIANGLE"}
-HITBOX_FN   = {"rectangle":"get_rectangle_cells","circle":"get_circle_cells","triangle":"get_triangle_cells"}
+HITBOX_ENUM = {
+    "rectangle": "HITBOX_RECTANGLE",
+    "circle":    "HITBOX_CIRCLE",
+    "triangle":  "HITBOX_TRIANGLE",
+}
+HITBOX_FN = {
+    "rectangle": "get_rectangle_cells",
+    "circle":    "get_circle_cells",
+    "triangle":  "get_triangle_cells",
+}
+MOVE_STATES = ["IDLE", "MOVE", "AIRBORNE", "HIT"]
 
 def get_hitbox_lines(hb):
     t = hb["type"]
-    if   t=="rectangle": data=f".rectangle={{ {hb['width']}, {hb['height']} }}"
-    elif t=="circle":    data=f".circle   ={{ {hb['radius']} }}"
-    else:                data=f".triangle ={{ {hb['width']}, {hb['height']} }}"
-    return [f"        .type       = {HITBOX_ENUM[t]},",
-            f"        .data       = {{ {data} }},",
-            f"        .get_cells  = {HITBOX_FN[t]},",
-            "    };"]
-
-def gen_states(ent, name):
-    lines = [
-        f"State {ent}_{name} = {{",
-        f"    .id                    = {ent.upper()}_{name.upper()},",
-        f"    .allowed_transitions  = {{}},",
-        f"    .count                = 0,",
-        f"    .evaluate_entry       = NULL,",
-        f"    .evaluate_exit        = NULL,",
-        f"    .decide_input         = NULL,",
-        f"}};",
+    if   t == "rectangle": data = f".rectangle={{ {hb['width']}, {hb['height']} }}"
+    elif t == "circle":    data = f".circle   ={{ {hb['radius']} }}"
+    else:                  data = f".triangle ={{ {hb['width']}, {hb['height']} }}"
+    return [
+        f"        .type      = {HITBOX_ENUM[t]},",
+        f"        .data      = {{ {data} }},",
+        f"        .get_cells = {HITBOX_FN[t]},",
+        "    };",
     ]
 
+def get_state_dirs(ent_dir: Path):
+    states_path = ent_dir / "states"
+    if not states_path.exists():
+        return []
+    return sorted(s for s in states_path.iterdir() if s.is_dir() and not s.name.startswith("."))
+
+def gen_header(name, cfg, state_dirs):
+    lines = [
+        "/* AUTO-GERADO por generate_entities.py — não edite */",
+        "#pragma once",
+        '#include "../../../include/entity.h"',
+        "",
+    ]
+
+    # extern dos estados
+    for s in state_dirs:
+        lines.append(f"extern State {name}_{s.name};")
+
+    # enum de estados
+    lines += ["", f"typedef enum {{"]
+    for s in state_dirs:
+        lines.append(f"    {name.upper()}_{s.name.upper()},")
+    lines += [f"}} {name}States;", ""]
+
+    # struct de dados
+    lines.append(f"typedef struct {{")
+    for field in cfg.get("ent_data", []):
+        lines.append(f"    {field};")
+    lines += [
+        f"    {name}States ent_state;",
+        f"}} {name}_data;",
+        "",
+        f"Entity *{name}_create({cfg['create_args']});",
+        f"void {name}_collision(Entity *self, Entity *other, Grid **g, EntityList *l);",
+    ]
+    return lines
+
+def gen_source(name, cfg, state_dirs, ent_dir: Path):
+    is_player   = cfg.get("is_player", False)
+    alloc_fn    = "player_alloc" if is_player else "entity_alloc"
+    extra_inc   = cfg.get("extra_includes", [])
+
+    lines = [
+        "/* AUTO-GERADO por generate_entities.py — não edite */",
+        '#include "../../../include/entity.h"',
+        '#include "../../../include/physics.h"',
+        f'#include "{name}_sprites.h"',
+        f'#include "{name}.h"',
+    ]
+    for inc in extra_inc:
+        lines.append(f'#include "{inc}"')
+    lines.append("")
+
+    # get_animation stub
+    lines += [
+        f"Animation *{name}_get_animation(Entity *e) {{",
+        f"    /* TODO: implementar */",
+        f"    return NULL;",
+        f"}}",
+        "",
+    ]
+
+    # move_transition
+    lines += [
+        f"bool {name}_move_transition(Entity *self, MovementState next) {{",
+        f"    {name}_data *d = ({name}_data *)self->data;",
+        f"    (void)d;",
+        f"    switch (next) {{",
+    ]
+    for ms in MOVE_STATES:
+        lines += [f"        case {ms}:", f"            break;"]
+    lines += [
+        "        default: return false;",
+        "    }",
+        "    self->mv_state = next;",
+        "    return true;",
+        "}",
+        "",
+    ]
+
+    # collision stub
+    lines += [
+        f"void {name}_collision(Entity *self, Entity *other, Grid **g, EntityList *l) {{",
+        f"    (void)self; (void)other; (void)g; (void)l;",
+        f"}}",
+        "",
+    ]
+
+    # por estado: evaluate_entry/exit + input + State
+    for s in state_dirs:
+        sname = s.name
+        lines += [
+            f"/* ── estado: {sname} ── */",
+            f"static bool {sname}_evaluate_entry(Entity *self) {{ (void)self; return true; }}",
+            f"static bool {sname}_evaluate_exit (Entity *self) {{ (void)self; return true; }}",
+            "",
+            f"static Intent {sname}_input(Grid **grid, Entity *self) {{",
+            f"    (void)grid; (void)self;",
+            f"    Intent intent = {{0}};",
+            f"    return intent;",
+            f"}}",
+            "",
+            f"State {name}_{sname} = {{",
+            f"    .id                  = {name.upper()}_{sname.upper()},",
+            f"    .allowed_transitions = {{}},",
+            f"    .count               = 0,",
+            f"    .evaluate_entry      = {sname}_evaluate_entry,",
+            f"    .evaluate_exit       = {sname}_evaluate_exit,",
+            f"    .decide_input        = {sname}_input,",
+            f"}};",
+            "",
+        ]
+
+    # ai
+    lines += [
+        f"Intent {name}_ai(Grid **grid, Entity *self) {{",
+        f"    State *s = self->sm.current_state;",
+        f"    if (s && s->decide_input) return s->decide_input(grid, self);",
+        f"    return (Intent){{0}};",
+        f"}}",
+        "",
+    ]
+
+    # pool + create
+    starting = cfg["sm_starting_state"]
+    trans_fn  = cfg["sm_transition_func"]
+    lines += [
+        f"static {name}_data _{name}_data_pool[1024];",
+        f"static int _{name}_data_count = 0;",
+        "",
+        f"Entity *{name}_create({cfg['create_args']}) {{",
+        f"    Entity *e = {alloc_fn}();",
+        f"    {name}_data *d = &_{name}_data_pool[_{name}_data_count++];",
+        "",
+        f"    *d = ({name}_data){{",
+        f"        .ent_state = {name.upper()}_{starting.upper()},",
+        f"    }};",
+        "",
+        f"    e->position     = (Coordinates){{x, y}};",
+        f"    e->velocity     = (Coordinates){{0, 0}};",
+        f"    e->type         = {cfg.get('entity_type', 'ENTITY_ENEMY')};",
+        f"    e->orientation  = (Orientation){{ RIGHT, UP }};"
+        f"    e->hp           = 10;",
+        f"    e->invulnerable = false;",
+        f"    e->hit          = false;",
+        f"    e->mv_state     = IDLE;",
+        f"    e->hitbox       = (Hitbox){{",
+    ]
+    lines += get_hitbox_lines(cfg["hitbox"])
+    lines += [
+        f"    e->data               = d;",
+        f"    e->sm.current_state   = &{name}_{starting};",
+        f"    e->sm.transition      = {trans_fn};",
+        f"    e->sm.move_transition = &{name}_move_transition;",
+        f"    e->sm.get_animation   = &{name}_get_animation;",
+        f"    e->on_collision       = {name}_collision;",
+        f"    return e;",
+        "}",
+    ]
     return lines
 
 def main():
-    json_data = json.loads(E_CONFIG.read_text())
-    tiles = sorted(e for e in ENTS_DIR.iterdir() if e.is_dir() and not e.name.startswith("."))
-    if not tiles: print("Nenhuma área encontrada"); sys.exit(1)
+    if not CONFIG.exists():
+        print(f"Config não encontrado: {CONFIG}"); sys.exit(1)
 
-    tiles_h_linhas = ["#pragma once", '#include "../include/entity.h"', '#include "../include/area_id.h"']
-    for t in tiles:
-        name = t.name
+    all_cfg = json.loads(CONFIG.read_text())
+    ent_dirs = sorted(e for e in ROOT.iterdir() if e.is_dir() and not e.name.startswith("."))
 
-        functions_output = t/f"{name}.c"
-        dados_output     = t/f"{name}.h"
-        animation_output = t/f"{name}_sprites.h"
+    if not ent_dirs:
+        print("Nenhum diretório encontrado."); sys.exit(1)
 
-        animation_lines = ["#pragma once", '#include "../../../include/entity.h"', ""]
+    OUTPUT.parent.mkdir(parents=True, exist_ok=True)
+    aggregator = [
+        "/* AUTO-GERADO por generate_entities.py — não edite */",
+        "#pragma once",
+        '#include "../include/entity.h"',
+        "",
+    ]
 
-        movement_states_list = []
-        tiles_states_list = []
+    print("Gerando .h e .c:")
+    for ent_dir in ent_dirs:
+        name = ent_dir.name
+        if name not in all_cfg:
+            print(f"  AVISO: {name} não encontrado em {CONFIG}, pulando")
+            continue
 
-        ent_states_path = t / "states"
-        tiles_states = sorted(es for es in ent_states_path.iterdir() if es.is_dir() and not es.name.startswith("."))
+        cfg        = all_cfg[name]
+        state_dirs = get_state_dirs(ent_dir)
 
-        for ts in tiles_states:
-            tiles_states_list.append(ts.name)
+        header_path = ent_dir / f"{name}.h"
+        source_path = ent_dir / f"{name}.c"
 
-            movement_path = t / "states" / ts.name
-            move_states = sorted(ms for ms in movement_path.iterdir() if ms.is_dir() and not ms.name.startswith("."))
+        header_path.write_text("\n".join(gen_header(name, cfg, state_dirs)) + "\n")
+        source_path.write_text("\n".join(gen_source(name, cfg, state_dirs, ent_dir)) + "\n")
 
-            for ms in move_states:
-                if ms.name not in movement_states_list:
-                    movement_states_list.append(ms.name)
+        aggregator.append(f"Entity *{name}_create({cfg['create_args']});")
+        print(f"  {header_path}")
+        print(f"  {source_path}")
 
-                sprites = sorted(p for p in ms.iterdir() if p.suffix == ".png")
-
-                sprites_list = []
-                for sprite in sprites:
-                    sprite_name = f"{ts.name.upper()}_{ms.name.upper()}_{sprite.stem}"
-                    sprites_list.append(sprite_name)
-
-                    lines, w, h = gen_pixels(sprite, sprite_name)
-
-                    lines += [
-                        f"static Sprite {sprite_name} = {{",
-                        f"    .height={h}, .width={w},",
-                        f"    .pixels=(uint16_t*){sprite_name}_PIXELS",
-                        f"}};",
-                        "",
-                    ]
-
-                    animation_lines.extend(lines)
-
-                animation_lines += [f"static Sprite *{ts.name}_{ms.stem}_frames[] = {{"]
-                for sn in sprites_list:
-                    animation_lines += [f"    &{sn},"]
-                animation_lines += ["};", ""]
-
-                animation_lines += [
-                    f"static Animation anim_{ts.name}_{ms.stem} = {{",
-                    f"    .frames          = {ts.name}_{ms.stem}_frames,",
-                    f"    .frame_count     = {len(sprites_list)},",
-                    f"    .frame_duration  = 1,",
-                    f"    .loops           = 0,",
-                    f"}};",
-                    "",
-                ]
-
-        #========================
-        #   GERANDO tiles_sprites.h
-        #=======================
-        animation_output.write_text("\n".join(animation_lines)+"\n")
-
-        #========================
-        #   GERANDO ENTIDADE.h
-        #=======================
-
-        dados_linhas = ["#pragma once",
-            '#include "../../../include/entity.h"', "",]
-
-        for ts in tiles_states_list:
-            dados_linhas += [f"extern State {name}_{ts};"]
-
-         # Adiciona os estados de entidade .h
-        dados_linhas += ["", f"typedef enum {{"]
-        for s in tiles_states_list:
-            dados_linhas += [f"    {name.upper()}_{s.upper()},"]
-        dados_linhas += [f"}} {name}States;", ""]
-
-        # adiciona a struct data da entidade no .h
-        dados_linhas += [f"typedef struct {{"]
-        for atr in json_data[name]["ent_data"]:
-            dados_linhas += [f"    {atr};"]
-
-        dados_linhas += [f"    {name}States ent_state;",
-            f"}} {name}_data;", ""
-        ]
-
-        # Adiciona o header das funções create e collision no .h
-        dados_linhas += [
-            f"Entity *{name}_create({json_data[name]["create_args"]});",
-            f"void {name}_collision(Entity *self, Entity *other, Grid **g, EntityList *l);"
-        ]
-
-        dados_output.write_text("\n".join(dados_linhas)+"\n")
-
-        #========================
-        #   GERANDO ENTIDADE.c
-        #=======================
-
-        function_lines = ['#include "../../../include/entity.h"', '#include "../../../include/physics.h"',
-            f'#include "{name}_sprites.h"', f'#include "{name}.h"', "",
-            f"Animation *{name}_get_animation(Entity *e){{}}", "",
-        ]
-
-        function_lines += [f"void {name}_collision(Entity *self, Entity *other, Grid **g, EntityList *l){{}}", "",]
-
-        for ts in tiles_states_list:
-            function_lines += gen_states(name, ts)
-
-        function_lines += [
-            f"static {name}_data _{name}_data_pool[1024];",
-            f"static int _{name}_data_count = 0;",
-            "",
-            f"Entity *{name}_create({json_data[name]["create_args"]}){{",
-            f"    Entity *e = entity_alloc();",
-            f"    {name}_data *d = &_{name}_data_pool[_{name}_data_count++];",
-            f"",
-            f"    *d = ({name}_data){{",
-        ]
-        for atr in json_data[name]["ent_data"]:
-            function_lines += [f"        {atr} = ,"]
-
-        hitbox_lines = get_hitbox_lines(json_data[name]["hitbox"])
-        function_lines += [
-            f"    }};", "",
-            f"    e->position     = (Coordinates){{x, y}};",
-            f"    e->velocity     = (Coordinates){{0, 0}};",
-            f"    e->type         = {json_data[name]["entity_type"] or "ENTITY_TILE"};",
-            f"    e->orientation  = (Orientation){{ RIGHT, UP}};",
-            f"    e->hp           = 10;",
-            f"    e->invulnerable = true;",
-            f"    e->hit          = false;",
-            f"    e->mv_state     = IDLE;",
-            f"    e->hitbox       = (Hitbox){{",
-        ]
-        function_lines += hitbox_lines
-        function_lines += [
-            f"    e->data         = d;",
-            f"    e->sm.current_state = &{name}_{json_data[name]["sm_starting_state"]};",
-            f"    e->sm.transition    = {json_data[name]["sm_transition_func"]};",
-            f"    e->sm.move_transition = NULL;",
-            f"    e->sm.get_animation = &{name}_get_animation;",
-            f"    e->on_collision     = {name}_collision;",
-            f"    return e;",
-            "};",
-        ]
-
-        functions_output.write_text("\n".join(function_lines)+"\n")
-
-        tiles_h_linhas += [f"Entity *{name}_create({json_data[name]["create_args"]});"]
-        OUTPUT.write_text("\n".join(tiles_h_linhas)+"\n")
+    OUTPUT.write_text("\n".join(aggregator) + "\n")
+    print(f"Agregador: {OUTPUT}")
 
 if __name__ == "__main__":
     main()

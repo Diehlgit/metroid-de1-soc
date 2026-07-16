@@ -1,3 +1,4 @@
+/* AUTO-GERADO por generate_sprites.py — não edite */
 #pragma once
 #include "../../../include/entity.h"
 
@@ -29,10 +30,10 @@ static Sprite *closed_idle_frames[] = {
 };
 
 static Animation anim_closed_idle = {
-    .frames          = closed_idle_frames,
-    .frame_count     = 1,
-    .frame_duration  = 1,
-    .loops           = 0,
+    .frames         = closed_idle_frames,
+    .frame_count    = 1,
+    .frame_duration = 6,
+    .loops          = 0,
 };
 
 static const uint16_t OPEN_IDLE_00_PIXELS[256] = {
@@ -63,9 +64,9 @@ static Sprite *open_idle_frames[] = {
 };
 
 static Animation anim_open_idle = {
-    .frames          = open_idle_frames,
-    .frame_count     = 1,
-    .frame_duration  = 1,
-    .loops           = 0,
+    .frames         = open_idle_frames,
+    .frame_count    = 1,
+    .frame_duration = 6,
+    .loops          = 0,
 };
 

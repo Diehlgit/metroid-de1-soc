@@ -1,3 +1,4 @@
+/* AUTO-GERADO por generate_entities.py — não edite */
 #pragma once
 #include "../../../include/entity.h"
 

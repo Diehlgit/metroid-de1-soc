@@ -44,7 +44,7 @@ Entity *transicao_create(int x, int y, AreaId destino, int spawn_x, int spawn_y)
 
     e->position     = (Coordinates){x, y};
     e->velocity     = (Coordinates){0, 0};
-    e->type         = ENTITY_DOOR;
+    e->type         = ENTITY_TRANSITION;
     e->orientation  = (Orientation){ RIGHT, UP};
     e->hp           = 10;
     e->invulnerable = true;

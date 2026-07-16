@@ -1,6 +1,6 @@
 {
   "tijolos": {
-    "color": [255, 0, 0],
+    "color": [163, 163, 163],
     "hitbox": { "type": "rectangle", "width": 16, "height": 16 },
     "entity_type": "ENTITY_TILE",
     "sm_starting_state": "normal",
@@ -9,16 +9,16 @@
     "create_args": "int x, int y"
   },
   "porta": {
-    "color": [255, 129, 0],
+    "color": [254, 0, 0],
     "hitbox": { "type": "rectangle", "width": 16, "height": 16 },
     "entity_type": "ENTITY_DOOR",
     "sm_starting_state": "closed",
     "sm_transition_func": "NULL",
-    "ent_data": [],
+    "ent_data": ["int key"],
     "create_args": "int x, int y"
   },
   "metal": {
-    "color": [0, 216, 255],
+    "color": [196, 207, 67],
     "hitbox": { "type": "rectangle", "width": 16, "height": 16 },
     "entity_type": "ENTITY_TILE",
     "sm_starting_state": "normal",
@@ -27,12 +27,30 @@
     "create_args": "int x, int y"
   },
   "transicao": {
-    "color": [255, 208, 0],
+    "color": [245, 0, 255],
     "hitbox": { "type": "rectangle", "width": 16, "height": 16 },
-    "entity_type": "ENTITY_DOOR",
+    "entity_type": "ENTITY_TRANSITION",
     "sm_starting_state": "open",
     "sm_transition_func": "NULL",
     "ent_data": ["AreaId destino", "int spawn_x", "int spawn_y"],
     "create_args": "int x, int y, AreaId destino, int spawn_x, int spawn_y"
+  },
+  "estalactite": {
+    "color": [76, 78, 77],
+    "hitbox": { "type": "rectangle", "width": 16, "height": 32 },
+    "entity_type": "ENTITY_TILE",
+    "sm_starting_state": "normal",
+    "sm_transition_func": "NULL",
+    "ent_data": [],
+    "create_args": "int x, int y"
+  },
+  "espinhos": {
+    "color": [119, 32, 146],
+    "hitbox": { "type": "rectangle", "width": 16, "height": 16 },
+    "entity_type": "ENTITY_TRANSITION",
+    "sm_starting_state": "normal",
+    "sm_transition_func": "NULL",
+    "ent_data": ["int spawn_x", "int spawn_y"],
+    "create_args": "int x, int y"
   }
 }

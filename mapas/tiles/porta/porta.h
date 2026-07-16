@@ -1,3 +1,4 @@
+/* AUTO-GERADO por generate_entities.py — não edite */
 #pragma once
 #include "../../../include/entity.h"
 
@@ -10,8 +11,9 @@ typedef enum {
 } portaStates;
 
 typedef struct {
+    int array_pos;
     portaStates ent_state;
 } porta_data;
 
-Entity *porta_create(int x, int y);
+Entity *porta_create(int x, int y, int array_pos);
 void porta_collision(Entity *self, Entity *other, Grid **g, EntityList *l);

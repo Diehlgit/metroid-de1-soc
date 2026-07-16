@@ -16,7 +16,7 @@ struct Intent {
     int destroy_self;
 };
 
-int is_solid(struct Entity *e);
+int is_solid(struct Entity *self, struct Entity *other);
 
 static int try_move(struct Entity *mover, int new_x, int new_y, Grid **g, EntityList *l);
 

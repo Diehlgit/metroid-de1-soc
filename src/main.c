@@ -23,6 +23,15 @@ static AreaId area_atual = AREA_CAVERNA;
 
 int score = 0;
 
+static int count_enemies(EntityList *list) {
+    int count = 0;
+    for (int i = 0; i < list->count; i++) {
+        if (list->ents[i]->type == ENTITY_ENEMY)
+            count++;
+    }
+    return count;
+}
+
 Grid* switch_area(AreaId id, Entity *player, EntityList *ents_list) {
     // 1. reseta o grid da área anterior se houver
     Grid *old = get_grid(area_atual);
@@ -110,17 +119,18 @@ int main(void) {
     Entity *Samus = samus_create(32, 16, RIGHT, UP);
     Grid *area = switch_area(area_atual, Samus, &entidades);
 
-	int ent_count = entidades.count;
-	int prev_count = ent_count;
+	int enemy_count = count_enemies(&entidades);
+	int prev_count = enemy_count;
+
 	while (1) {
 	    struct timespec frame_start, frame_end;
 	    clock_gettime(CLOCK_MONOTONIC, &frame_start);
 
-			ent_count = entidades.count;
-        	if (prev_count > ent_count) {
-				score += 10;
-				prev_count = ent_count;
+			enemy_count = count_enemies(&entidades);
+        	if (prev_count > enemy_count) {
+				score += 10 * (prev_count - enemy_count);
 			}
+			prev_count = enemy_count;
 			display_score(score);
 
             display_live(Samus->hp);
